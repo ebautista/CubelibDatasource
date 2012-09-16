@@ -25,78 +25,6 @@ Public Class CDatasource
         MyBase.New()
     End Sub
 
-    Public Function ExecuteQuery(ByVal SQL As String, _
-                                 ByVal DBName As String, _
-                        Optional ByVal CursorType As CursorTypeEnum = CursorTypeEnum.adOpenKeyset, _
-                        Optional ByVal LockType As LockTypeEnum = LockTypeEnum.adLockOptimistic, _
-                        Optional ByVal UseDataShaping As Boolean = False) As Recordset
-
-        Dim conTemp As DbConnection
-        Dim adapter As DataAdapter
-        Dim dsTemp As New DataSet
-
-        Dim rstADO As New Recordset
-        Dim objADO As New Stream
-
-        Dim objConvert As New ConvertToRs()
-        Dim objProp As New CDatabaseProperty
-
-        Select Case objProp.getDatabaseType()
-            Case DatabaseType.ACCESS
-                DBName = IIf(DBName.Contains(".mdb"), DBName, DBName & ACCESS_DB_EXTENSION_97_2003)
-
-                If UseDataShaping Then
-                    conTemp = New OleDbConnection("Provider=MSDataShape;Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & objProp.getDatabasePath() & "\" & DBName & ";Persist Security Info=False;Jet OLEDB:Database Password=" & objProp.getPassword())
-                Else
-                    conTemp = New OleDbConnection("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & objProp.getDatabasePath() & "\" & DBName & ";Persist Security Info=False;Jet OLEDB:Database Password=" & objProp.getPassword())
-                End If
-
-                conTemp.Open()
-                adapter = New OleDbDataAdapter(SQL, conTemp)
-                adapter.Fill(dsTemp)
-
-            Case DatabaseType.SQLSERVER
-                DBName = Replace(DBName, ".mdb", vbNullString)
-
-                If UseDataShaping Then
-                    conTemp = New SqlConnection("Provider=MSDataShape;Data Source=" & objProp.getServerName() & ";Integrated Security=SSPI;Initial Catalog=" & DBName & ";User ID=" & objProp.getUserName() & ";Password=" & objProp.getPassword() & ";")
-                Else
-                    conTemp = New SqlConnection("Data Source=" & objProp.getServerName() & ";Integrated Security=SSPI;Initial Catalog=" & DBName & ";User ID=" & objProp.getUserName() & ";Password=" & objProp.getPassword() & ";")
-                End If
-
-                conTemp.Open()
-                adapter = New SqlClient.SqlDataAdapter(SQL, conTemp)
-                adapter.Fill(dsTemp)
-
-            Case DatabaseType.ORACLE
-                Throw (New Exception("ExecuteNonQuery: Oracle Database is not yet supported."))
-
-            Case DatabaseType.MYSQL
-                Throw (New Exception("ExecuteNonQuery: MYSQL Database is not yet supported."))
-
-            Case Else
-                Throw (New Exception("ExecuteNonQuery: Unknown Database Type."))
-
-        End Select
-
-        If dsTemp.Tables.Count > 0 AndAlso dsTemp.Tables(0).Rows.Count > 0 Then
-            objADO.Open()
-            objADO.WriteText(objConvert.GetADORS(dsTemp, Replace(DBName, ".mdb", vbNullString)))
-            objADO.Position = 0
-
-            rstADO.CursorType = CursorType
-            rstADO.LockType = LockType
-            rstADO.Open(objADO)
-
-            objADO.Flush()
-            objADO.Close()
-        End If
-
-        conTemp.Close()
-        conTemp.Dispose()
-
-        Return rstADO
-    End Function
 
     Public Function ExecuteNonQuery(ByVal SQL As String, _
                                     ByVal DBName As String) As Integer
@@ -120,7 +48,7 @@ Public Class CDatasource
     End Function
 
 
-    Public Function ExecuteQueryEx(ByVal SQL As String, _
+    Public Function ExecuteQuery(ByVal SQL As String, _
                                  ByVal DBName As String, _
                         Optional ByVal UseDataShaping As Boolean = False) As Recordset
 
