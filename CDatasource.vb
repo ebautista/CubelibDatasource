@@ -4,6 +4,8 @@ Imports System.Data.Common
 Imports System.Data.OleDb
 Imports System.Data.SqlClient
 Imports CubelibDatasource.CDatabaseProperty
+Imports System.IO
+Imports System.Text
 
 <ComClass(CDatasource.ClassId, CDatasource.InterfaceId, CDatasource.EventsId)> _
 Public Class CDatasource
@@ -25,74 +27,95 @@ Public Class CDatasource
         MyBase.New()
     End Sub
 
+    Public Enum DBInstanceType
+        DATABASE_SADBEL
+        DATABASE_DATA
+        DATABASE_EDIFACT
+        DATABASE_SCHEDULER
+        DATABASE_TEMPLATE
+        DATABASE_TARIC
+        DATABASE_HISTORY
+        DATABASE_REPERTORY
+        DATABASE_EDI_HISTORY
+    End Enum
+
+    Private Const FAILURE As Integer = 0
+    Private Const SUCCESS As Integer = 0
 
     Public Function ExecuteNonQuery(ByVal SQL As String, _
-                                    ByVal DBName As String) As Integer
+                                    ByVal Database As DBInstanceType, _
+                           Optional ByVal Year As String = vbNullString) As Integer
 
         Dim conObjects() As Object
 
         Try
-            conObjects = getConnectionObjects(SQL, DBName)
+            conObjects = getConnectionObjects(SQL, Database, False, False)
             conObjects(1).ExecuteNonQuery()
 
             conObjects(1).Dispose()
             conObjects(0).Close()
             conObjects(0).Dispose()
         Catch ex As Exception
-            Throw New Exception(ex.Message)
-            Return 0
+            AddToTrace("ExecuteNonQuery: " & ex.Message)
+            Return FAILURE
         End Try
 
-        Return 1
+        Return SUCCESS
 
     End Function
 
 
     Public Function ExecuteQuery(ByVal SQL As String, _
-                                 ByVal DBName As String, _
-                        Optional ByVal UseDataShaping As Boolean = False) As Recordset
+                                 ByVal Database As DBInstanceType, _
+                        Optional ByVal UseDataShaping As Boolean = False, _
+                        Optional ByVal Year As String = vbNullString) As Recordset
 
         Dim rstADO As New Recordset
-
         Dim conObjects() As Object
 
-        conObjects = getConnectionObjects(SQL, DBName, UseDataShaping)
+        Try
+            conObjects = getConnectionObjects(SQL, Database, UseDataShaping, True, Year)
 
-        If conObjects(2).Tables.Count > 0 AndAlso conObjects(2).Tables(0).Rows.Count > 0 Then
-            Dim fields As ADODB.Fields = rstADO.Fields
-            Dim columns As DataColumnCollection = conObjects(2).Tables(0).Columns
+            If conObjects(2).Tables.Count > 0 AndAlso conObjects(2).Tables(0).Rows.Count > 0 Then
+                Dim fields As ADODB.Fields = rstADO.Fields
+                Dim columns As DataColumnCollection = conObjects(2).Tables(0).Columns
 
-            For Each column As DataColumn In columns
-                fields.Append(column.ColumnName, _
-                              TranslateType(column.DataType), _
-                              column.MaxLength, _
-                              IIf(column.AllowDBNull, FieldAttributeEnum.adFldIsNullable, FieldAttributeEnum.adFldUnspecified))
-            Next
-
-            rstADO.CursorLocation = CursorLocationEnum.adUseClient
-            rstADO.Open(System.Reflection.Missing.Value, System.Reflection.Missing.Value, CursorTypeEnum.adOpenKeyset, LockTypeEnum.adLockOptimistic, 0)
-
-            For Each row As DataRow In conObjects(2).Tables(0).Rows
-                rstADO.AddNew(System.Reflection.Missing.Value, System.Reflection.Missing.Value)
-
-                For colIdx As Integer = 0 To columns.Count - 1
-                    fields(colIdx).Value = row(colIdx)
+                For Each column As DataColumn In columns
+                    fields.Append(column.ColumnName, _
+                                  TranslateType(column.DataType), _
+                                  column.MaxLength, _
+                                  IIf(column.AllowDBNull, FieldAttributeEnum.adFldIsNullable, FieldAttributeEnum.adFldUnspecified))
                 Next
-            Next
-        End If
 
-        conObjects(2).Dispose()
-        conObjects(1).Dispose()
-        conObjects(0).Close()
-        conObjects(0).Dispose()
+                rstADO.CursorLocation = CursorLocationEnum.adUseClient
+                rstADO.Open(System.Reflection.Missing.Value, System.Reflection.Missing.Value, CursorTypeEnum.adOpenKeyset, LockTypeEnum.adLockOptimistic, 0)
+
+                For Each row As DataRow In conObjects(2).Tables(0).Rows
+                    rstADO.AddNew(System.Reflection.Missing.Value, System.Reflection.Missing.Value)
+
+                    For colIdx As Integer = 0 To columns.Count - 1
+                        fields(colIdx).Value = row(colIdx)
+                    Next
+                Next
+            End If
+
+            conObjects(2).Dispose()
+            conObjects(1).Dispose()
+            conObjects(0).Close()
+            conObjects(0).Dispose()
+        Catch ex As Exception
+            AddToTrace("ExecuteQuery: " & ex.Message)
+        End Try
 
         Return rstADO
     End Function
 
     Public Function getConnectionObjects(ByVal SQL As String, _
-                                         ByVal DBName As String, _
+                                         ByVal Database As DBInstanceType, _
                                 Optional ByVal UseDataShaping As Boolean = False,
-                                Optional ByVal IsQuery As Boolean = True) As Object()
+                                Optional ByVal IsQuery As Boolean = True, _
+                                Optional ByVal Year As String = vbNullString) As Object()
+
         Dim conObjects(IIf(IsQuery, 3, 2)) As Object
 
         Dim objProp As New CDatabaseProperty
@@ -100,18 +123,13 @@ Public Class CDatasource
         Dim adapter As DataAdapter
         Dim dsTemp As New DataSet
         Dim command As DbCommand
+        Dim strDBName As String
+
+        strDBName = getDatabaseName(Database, Year, objProp.getDatabaseType())
+        conTemp = getConnection(strDBName, objProp, UseDataShaping)
 
         Select Case objProp.getDatabaseType()
             Case DatabaseType.ACCESS
-                DBName = IIf(DBName.Contains(".mdb"), DBName, DBName & ACCESS_DB_EXTENSION_97_2003)
-
-                If UseDataShaping Then
-                    conTemp = New OleDbConnection("Provider=MSDataShape;Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & objProp.getDatabasePath() & "\" & DBName & ";Persist Security Info=False;Jet OLEDB:Database Password=" & objProp.getPassword())
-                Else
-                    conTemp = New OleDbConnection("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & objProp.getDatabasePath() & "\" & DBName & ";Persist Security Info=False;Jet OLEDB:Database Password=" & objProp.getPassword())
-                End If
-
-                conTemp.Open()
                 conObjects.SetValue(conTemp, 0)
 
                 If IsQuery Then
@@ -124,16 +142,8 @@ Public Class CDatasource
                     command = New OleDbCommand(SQL, conTemp)
                     conObjects.SetValue(command, 1)
                 End If
+
             Case DatabaseType.SQLSERVER
-                DBName = Replace(DBName, ".mdb", vbNullString)
-
-                If UseDataShaping Then
-                    conTemp = New SqlConnection("Provider=MSDataShape;Data Source=" & objProp.getServerName() & ";Integrated Security=SSPI;Initial Catalog=" & DBName & ";User ID=" & objProp.getUserName() & ";Password=" & objProp.getPassword() & ";")
-                Else
-                    conTemp = New SqlConnection("Data Source=" & objProp.getServerName() & ";Integrated Security=SSPI;Initial Catalog=" & DBName & ";User ID=" & objProp.getUserName() & ";Password=" & objProp.getPassword() & ";")
-                End If
-
-                conTemp.Open()
                 conObjects.SetValue(conTemp, 0)
 
                 If IsQuery Then
@@ -146,19 +156,131 @@ Public Class CDatasource
                     command = New SqlCommand(SQL, conTemp)
                     conObjects.SetValue(command, 1)
                 End If
-            Case DatabaseType.ORACLE
-                Throw (New Exception("ExecuteNonQuery: Oracle Database is not yet supported."))
-
-            Case DatabaseType.MYSQL
-                Throw (New Exception("ExecuteNonQuery: MYSQL Database is not yet supported."))
 
             Case Else
-                Throw (New Exception("ExecuteNonQuery: Unknown Database Type."))
+                Throw New NotSupportedException("ExecuteNonQuery: Unknown Database Type or Database Type not supported.")
 
         End Select
 
         Return conObjects
     End Function
+
+    Public Function getConnection(ByVal DBName As String, _
+                                  ByVal objProp As CDatabaseProperty, _
+                         Optional ByVal UseDataShaping As Boolean = False) As DbConnection
+
+        Dim conTemp As DbConnection
+        Dim sbConn As New StringBuilder
+
+        Select Case objProp.getDatabaseType()
+            Case DatabaseType.ACCESS
+                If UseDataShaping Then
+                    sbConn.Append("Provider=MSDataShape;Provider=Microsoft.Jet.OLEDB.4.0;Data Source=")
+                    sbConn.Append(objProp.getDatabasePath())
+                    sbConn.Append("\")
+                    sbConn.Append(DBName)
+                    sbConn.Append(";Persist Security Info=False;Jet OLEDB:Database Password=")
+                    sbConn.Append(objProp.getPassword())
+                Else
+                    sbConn.Append("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=")
+                    sbConn.Append(objProp.getDatabasePath())
+                    sbConn.Append("\")
+                    sbConn.Append(DBName)
+                    sbConn.Append(";Persist Security Info=False;Jet OLEDB:Database Password=")
+                    sbConn.Append(objProp.getPassword())
+                End If
+
+                conTemp = New OleDbConnection(sbConn.ToString())
+
+            Case DatabaseType.SQLSERVER
+                If UseDataShaping Then
+                    sbConn.Append("Provider=MSDataShape;Data Source=")
+                    sbConn.Append(objProp.getServerName())
+                    sbConn.Append(";Integrated Security=SSPI;Initial Catalog=")
+                    sbConn.Append(DBName)
+                    sbConn.Append(";User ID=")
+                    sbConn.Append(objProp.getUserName())
+                    sbConn.Append(";Password=")
+                    sbConn.Append(objProp.getPassword())
+                    sbConn.Append(";")
+                Else
+                    sbConn.Append("Data Source=")
+                    sbConn.Append(objProp.getServerName())
+                    sbConn.Append(";Integrated Security=SSPI;Initial Catalog=")
+                    sbConn.Append(DBName)
+                    sbConn.Append(";User ID=")
+                    sbConn.Append(objProp.getUserName())
+                    sbConn.Append(";Password=")
+                    sbConn.Append(objProp.getPassword())
+                    sbConn.Append(";")
+                End If
+
+                conTemp = New SqlConnection(sbConn.ToString())
+            Case Else
+                Throw New NotSupportedException("ExecuteNonQuery: Unknown Database Type.")
+
+        End Select
+
+        conTemp.Open()
+        Return conTemp
+    End Function
+
+    Private Function getDatabaseName(ByVal DBInstanceType As DBInstanceType, _
+                                     ByVal Year As String, _
+                                     ByVal DBType As DatabaseType) As String
+
+        Dim strDatabaseName As String = vbNullString
+
+        If Year.Length <> 4 Then
+            Throw New InvalidDataException("Year supplied is of invalid format, right format is YYYY.")
+        End If
+
+        'GET DB INSTANCE NAME
+        Select Case DBInstanceType
+            Case CDatasource.DBInstanceType.DATABASE_SADBEL
+                strDatabaseName = "mdb_sadbel"
+
+            Case CDatasource.DBInstanceType.DATABASE_DATA
+                strDatabaseName = "mdb_data"
+
+            Case CDatasource.DBInstanceType.DATABASE_EDIFACT
+                strDatabaseName = "mdb_edifact"
+
+            Case CDatasource.DBInstanceType.DATABASE_SCHEDULER
+                strDatabaseName = "mdb_scheduler"
+
+            Case CDatasource.DBInstanceType.DATABASE_TEMPLATE
+                strDatabaseName = "CPTemplate"
+
+            Case CDatasource.DBInstanceType.DATABASE_TARIC
+                strDatabaseName = "mdb_taric"
+
+            Case CDatasource.DBInstanceType.DATABASE_HISTORY
+                strDatabaseName = "mdb_history" + Year.Substring(2, 2)
+
+            Case CDatasource.DBInstanceType.DATABASE_REPERTORY
+                If Now.Year = Year Then
+                    strDatabaseName = "mdb_repertory"
+                Else
+                    strDatabaseName = "mdb_repertory_" + Year
+                End If
+
+            Case CDatasource.DBInstanceType.DATABASE_EDI_HISTORY
+                strDatabaseName = "mdb_history" + Year.Substring(2, 2)
+
+            Case Else
+                Throw New NotSupportedException("Database instance not supported.")
+
+        End Select
+
+        'ADD FILE EXTENSION FOR ACCESS DB
+        If DatabaseType.ACCESS.Equals(DBType) Then
+            strDatabaseName = strDatabaseName & ACCESS_DB_EXTENSION_97_2003
+        End If
+
+        Return strDatabaseName
+    End Function
+
 End Class
 
 

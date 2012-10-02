@@ -1,4 +1,5 @@
 ﻿Imports ADODB
+Imports System.Data.Common
 
 Module MGlobal
     Public Enum CrudType
@@ -63,4 +64,5 @@ Module MGlobal
 
         End Select
     End Function
+
 End Module

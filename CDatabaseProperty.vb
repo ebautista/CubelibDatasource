@@ -37,6 +37,8 @@ Public Class CDatabaseProperty
         regKey = Registry.LocalMachine.OpenSubKey(REGKEY_CLEARINGPOINT_SETTINGS, False)
         strDBPath = regKey.GetValue("MdbPath")
 
+        G_strMdbPath = strDBPath
+
         Return strDBPath
     End Function
 
