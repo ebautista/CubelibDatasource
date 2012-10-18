@@ -14,7 +14,7 @@ Module MTrace
 
         Try
             If (info.Exists) Then
-                If (info.Length < 360,000 then
+                If info.Length < 360000 Then
                     sw = info.AppendText()
                 Else
                     info.CopyTo(fileReName)
