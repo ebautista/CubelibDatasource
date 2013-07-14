@@ -72,6 +72,7 @@
     <Compile Include="CDatasource.vb" />
     <Compile Include="ConvertToRs.vb" />
     <Compile Include="CProperty.vb" />
+    <Compile Include="CRecordset.vb" />
     <Compile Include="MGlobal.vb" />
     <Compile Include="MTrace.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
