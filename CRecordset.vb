@@ -56,14 +56,14 @@ Public Class CRecordset
         Return m_rstADO.RecordCount
     End Function
 
-    Public Property Fields(ByVal Index As Integer)
-        Get
-            Return m_rstADO.Fields(Index).Value
-        End Get
-        Set(value)
-            m_rstADO.Fields(Index).Value = value
-        End Set
-    End Property
+    'Public Property Fields(ByVal Index As Integer)
+    '    Get
+    '        Return m_rstADO.Fields(Index).Value
+    '    End Get
+    '    Set(value)
+    '        m_rstADO.Fields(Index).Value = value
+    '    End Set
+    'End Property
 
 End Class
 

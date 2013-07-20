@@ -6,6 +6,7 @@ Imports System.Data.SqlClient
 Imports CubelibDatasource.CDatabaseProperty
 Imports System.IO
 Imports System.Text
+Imports System.Text.RegularExpressions
 
 <ComClass(CDatasource.ClassId, CDatasource.InterfaceId, CDatasource.EventsId)> _
 Public Class CDatasource
@@ -64,6 +65,44 @@ Public Class CDatasource
 
     End Function
 
+    Public Function Update(ByRef RecordsetToUpdate As ADODB.Recordset, _
+                           ByVal Bookmark As Integer) As Integer
+
+        Dim conObjects() As Object
+        Dim dbType As DBInstanceType
+
+        If RecordsetToUpdate Is Nothing AndAlso RecordsetToUpdate.Source Is Nothing Then
+            AddToTrace("Error in CDatasource.Update() - source recordset was not properly initialized.")
+        End If
+
+        RecordsetToUpdate.Bookmark = Bookmark
+
+        Try
+            dbType = GetDatabaseInstanceType(RecordsetToUpdate.ActiveConnection)
+            conObjects = getConnectionObjects(RecordsetToUpdate.Source, dbType, False, True)
+
+            If conObjects(2).Tables.Count > 0 AndAlso conObjects(2).Tables(0).Rows.Count > 0 AndAlso RecordsetToUpdate.RecordCount > 0 Then
+                Dim table As DataTable = conObjects(2).Tables(0)
+                Dim tableToMerge As DataTable = table.Clone
+                Dim row As DataRow = tableToMerge.NewRow()
+
+                For Each Field As ADODB.Field In RecordsetToUpdate.Fields
+                    'If Field.OriginalValue <> Field.Value Then
+                    row(Field.Name) = Field.Value
+                    'End If
+                Next
+
+                tableToMerge.Rows().Add(row)
+                table.Merge(tableToMerge)
+            End If
+        Catch ex As Exception
+            AddToTrace("ExecuteNonQuery: " & ex.Message)
+            Return FAILURE
+        End Try
+
+        Return SUCCESS
+
+    End Function
 
     Public Function ExecuteQuery(ByVal SQL As String, _
                                  ByVal Database As DBInstanceType, _
@@ -281,6 +320,50 @@ Public Class CDatasource
         Return strDatabaseName
     End Function
 
+    Private Function GetDatabaseInstanceType(ByVal ConnectionString As String) As DBInstanceType
+        Dim dbRegex As New Regex("Source=.*mdb")
+        Dim match As Match = dbRegex.Match(ConnectionString)
+
+        If match.Success Then
+            Dim dbName As String = match.Value
+            dbName = dbName.Substring(dbName.LastIndexOf("/") + 1)
+            dbName = dbName.Replace(".mdb", vbNullString)
+
+            Select Case dbName
+                Case "mdb_sadbel"
+                    Return DBInstanceType.DATABASE_SADBEL
+
+                Case "mdb_data"
+                    Return DBInstanceType.DATABASE_DATA
+
+                Case "mdb_edifact"
+                    Return DBInstanceType.DATABASE_EDIFACT
+
+                Case "mdb_scheduler"
+                    Return DBInstanceType.DATABASE_SCHEDULER
+
+                Case "CPTemplate"
+                    Return DBInstanceType.DATABASE_TEMPLATE
+
+                Case "mdb_taric"
+                    Return DBInstanceType.DATABASE_TARIC
+
+                Case "mdb_history"
+                    Return DBInstanceType.DATABASE_HISTORY
+
+                Case "mdb_repertory"
+                    Return DBInstanceType.DATABASE_REPERTORY
+
+                Case Else
+                    AddToTrace("Error in CDatasource.GetDatabaseInstanceType() - could not determine db type from connectionString = " & ConnectionString)
+                    Return Nothing
+
+            End Select
+        Else
+            AddToTrace("Error in CDatasource.GetDatabaseInstanceType() - could not extract database name from connectionString = " & ConnectionString)
+            Return Nothing
+        End If
+    End Function
 End Class
 
 
