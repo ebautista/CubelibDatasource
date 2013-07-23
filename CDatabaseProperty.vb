@@ -35,7 +35,12 @@ Public Class CDatabaseProperty
         Dim regKey As RegistryKey
 
         regKey = Registry.LocalMachine.OpenSubKey(REGKEY_CLEARINGPOINT_SETTINGS, False)
-        strDBPath = regKey.GetValue("MdbPath")
+
+        If Not regKey Is Nothing Then
+            strDBPath = regKey.GetValue("MdbPath")
+        Else
+            strDBPath = m_objProp.getPropertyKey("dbPath")
+        End If
 
         G_strMdbPath = strDBPath
 

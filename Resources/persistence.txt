@@ -11,4 +11,7 @@ database=ACCESS
 username=sa
 
 # password should not be here or this file should be encrypted
-password=edwin756
+password=wack2
+
+# database path override when registry key is not found
+dbPath=C:\ClearingPoint\Data

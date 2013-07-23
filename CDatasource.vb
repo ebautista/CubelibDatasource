@@ -40,7 +40,7 @@ Public Class CDatasource
         DATABASE_EDI_HISTORY
     End Enum
 
-    Private Const FAILURE As Integer = 0
+    Private Const FAILURE As Integer = -1
     Private Const SUCCESS As Integer = 0
 
     Public Function ExecuteNonQuery(ByVal SQL As String, _
@@ -66,7 +66,7 @@ Public Class CDatasource
     End Function
 
     Public Function Update(ByRef RecordsetToUpdate As ADODB.Recordset, _
-                           ByVal Bookmark As Integer) As Integer
+                           ByVal Bookmark As Double) As Integer
 
         Dim conObjects() As Object
         Dim dbType As DBInstanceType
@@ -81,8 +81,13 @@ Public Class CDatasource
             dbType = GetDatabaseInstanceType(RecordsetToUpdate.ActiveConnection)
             conObjects = getConnectionObjects(RecordsetToUpdate.Source, dbType, False, True)
 
-            If conObjects(2).Tables.Count > 0 AndAlso conObjects(2).Tables(0).Rows.Count > 0 AndAlso RecordsetToUpdate.RecordCount > 0 Then
-                Dim table As DataTable = conObjects(2).Tables(0)
+            Dim ds As DataSet = conObjects(2)
+
+            Debug.Print(ds.Tables.Count)
+            Debug.Print(ds.Tables(0).TableName)
+
+            If ds.Tables.Count > 0 AndAlso ds.Tables(0).Rows.Count > 0 AndAlso RecordsetToUpdate.RecordCount > 0 Then
+                Dim table As DataTable = ds.Tables(0)
                 Dim tableToMerge As DataTable = table.Clone
                 Dim row As DataRow = tableToMerge.NewRow()
 
@@ -94,6 +99,8 @@ Public Class CDatasource
 
                 tableToMerge.Rows().Add(row)
                 table.Merge(tableToMerge)
+                table.AcceptChanges()
+                table.Dispose()
             End If
         Catch ex As Exception
             AddToTrace("ExecuteNonQuery: " & ex.Message)
@@ -270,7 +277,7 @@ Public Class CDatasource
 
         Dim strDatabaseName As String = vbNullString
 
-        If Year.Length <> 4 Then
+        If Not Year Is Nothing AndAlso Year.Length <> 4 Then
             Throw New InvalidDataException("Year supplied is of invalid format, right format is YYYY.")
         End If
 
@@ -320,13 +327,14 @@ Public Class CDatasource
         Return strDatabaseName
     End Function
 
-    Private Function GetDatabaseInstanceType(ByVal ConnectionString As String) As DBInstanceType
+    Private Function GetDatabaseInstanceType(ByVal ConnectionString As ADODB.Connection) As DBInstanceType
+        Dim strConnection As String = ConnectionString.ConnectionString
         Dim dbRegex As New Regex("Source=.*mdb")
-        Dim match As Match = dbRegex.Match(ConnectionString)
+        Dim match As Match = dbRegex.Match(strConnection)
 
         If match.Success Then
             Dim dbName As String = match.Value
-            dbName = dbName.Substring(dbName.LastIndexOf("/") + 1)
+            dbName = dbName.Substring(dbName.LastIndexOf("\") + 1)
             dbName = dbName.Replace(".mdb", vbNullString)
 
             Select Case dbName
@@ -355,12 +363,12 @@ Public Class CDatasource
                     Return DBInstanceType.DATABASE_REPERTORY
 
                 Case Else
-                    AddToTrace("Error in CDatasource.GetDatabaseInstanceType() - could not determine db type from connectionString = " & ConnectionString)
+                    AddToTrace("Error in CDatasource.GetDatabaseInstanceType() - could not determine db type from connectionString = " & strConnection)
                     Return Nothing
 
             End Select
         Else
-            AddToTrace("Error in CDatasource.GetDatabaseInstanceType() - could not extract database name from connectionString = " & ConnectionString)
+            AddToTrace("Error in CDatasource.GetDatabaseInstanceType() - could not extract database name from connectionString = " & strConnection)
             Return Nothing
         End If
     End Function
