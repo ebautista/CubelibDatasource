@@ -6,7 +6,7 @@ Module MTrace
 
     Private Const CONST_PREFIX As String = "CubelibDataSource Error Log: "
 
-    Public Sub AddToTrace(ByVal Message As String)
+    Public Sub AddToTrace(ByVal Message As String, Optional ByVal DebugOnly As Boolean = False)
         Dim fileReName As String = G_strMdbPath & "\DatasourceTracefile_" & Format(Now, "yyyyMMdd_hhmmss") & ".log"
         Dim fileName As String = G_strMdbPath & "\DatasourceTracefile.log"
         Dim info As New FileInfo(fileName)
@@ -27,9 +27,20 @@ Module MTrace
                 sw = info.CreateText()
             End If
 
-            sw.WriteLine(CONST_PREFIX & Format(Now, "yyyy-MM-dd hh:mm:ss") & " : " & Message)
+            If DebugOnly Then
+                If objProp.printDebugTrace Then
+                    sw.WriteLine(CONST_PREFIX & Format(Now, "yyyy-MM-dd hh:mm:ss") & " : " & Message)
+                End If
+            Else
+                sw.WriteLine(CONST_PREFIX & Format(Now, "yyyy-MM-dd hh:mm:ss") & " : " & Message)
+            End If
+
         Catch e As Exception
             Err.Clear()
+        Finally
+            If Not sw Is Nothing Then
+                sw.Close()
+            End If
         End Try
 
     End Sub

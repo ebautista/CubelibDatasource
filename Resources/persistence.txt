@@ -14,4 +14,4 @@ username=sa
 password=wack2
 
 # database path override when registry key is not found
-dbPath=C:\ClearingPoint\Data
+MdbPath=C:\ClearingPoint\Data

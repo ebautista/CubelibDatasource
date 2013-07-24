@@ -119,30 +119,99 @@ Public Class CDatasource
         Dim rstADO As New Recordset
         Dim conObjects() As Object
 
+        AddToTrace("Start of execute query: " & SQL, True)
+
         Try
             conObjects = getConnectionObjects(SQL, Database, UseDataShaping, True, Year)
 
-            If conObjects(2).Tables.Count > 0 AndAlso conObjects(2).Tables(0).Rows.Count > 0 Then
-                Dim fields As ADODB.Fields = rstADO.Fields
-                Dim columns As DataColumnCollection = conObjects(2).Tables(0).Columns
+            'If conObjects(2).Tables.Count > 0 AndAlso conObjects(2).Tables(0).Rows.Count > 0 Then
+            If Not UseDataShaping Then
+                If conObjects(2).Tables.Count > 0 Then
+                    Dim fields As ADODB.Fields = rstADO.Fields
+                    Dim columns As DataColumnCollection = conObjects(2).Tables(0).Columns
 
-                For Each column As DataColumn In columns
-                    fields.Append(column.ColumnName, _
-                                  TranslateType(column.DataType), _
-                                  column.MaxLength, _
-                                  IIf(column.AllowDBNull, FieldAttributeEnum.adFldIsNullable, FieldAttributeEnum.adFldUnspecified))
-                Next
-
-                rstADO.CursorLocation = CursorLocationEnum.adUseClient
-                rstADO.Open(System.Reflection.Missing.Value, System.Reflection.Missing.Value, CursorTypeEnum.adOpenKeyset, LockTypeEnum.adLockOptimistic, 0)
-
-                For Each row As DataRow In conObjects(2).Tables(0).Rows
-                    rstADO.AddNew(System.Reflection.Missing.Value, System.Reflection.Missing.Value)
-
-                    For colIdx As Integer = 0 To columns.Count - 1
-                        fields(colIdx).Value = row(colIdx)
+                    For Each column As DataColumn In columns
+                        fields.Append(column.ColumnName, _
+                                      TranslateType(column.DataType), _
+                                      column.MaxLength, _
+                                      IIf(column.AllowDBNull, FieldAttributeEnum.adFldIsNullable, FieldAttributeEnum.adFldUnspecified))
                     Next
-                Next
+
+                    rstADO.CursorLocation = CursorLocationEnum.adUseClient
+                    rstADO.Open(System.Reflection.Missing.Value, System.Reflection.Missing.Value, CursorTypeEnum.adOpenKeyset, LockTypeEnum.adLockOptimistic, 0)
+
+                    For Each row As DataRow In conObjects(2).Tables(0).Rows
+                        rstADO.AddNew(System.Reflection.Missing.Value, System.Reflection.Missing.Value)
+
+                        For colIdx As Integer = 0 To columns.Count - 1
+                            fields(colIdx).Value = row(colIdx)
+                        Next
+                    Next
+                End If
+            Else
+                If conObjects(2).Tables.Count > 0 Then
+                    Dim parentFields As ADODB.Fields = rstADO.Fields
+                    Dim rstADOChild As New ADODB.Recordset
+
+                    For Each table As DataTable In conObjects(2).Tables
+                        AddToTrace("Populating datashape recordset with table names as columns...")
+                        If table.TableName <> "Table" Then
+                            parentFields.Append(table.TableName.Replace("Table", vbNullString), DataTypeEnum.adVariant)
+                        Else
+                            parentFields.Append("MAIN", DataTypeEnum.adVariant)
+                        End If
+                    Next
+
+                    rstADO.CursorLocation = CursorLocationEnum.adUseClient
+                    rstADO.Open(System.Reflection.Missing.Value, System.Reflection.Missing.Value, CursorTypeEnum.adOpenKeyset, LockTypeEnum.adLockOptimistic, 0)
+                    rstADO.AddNew()
+
+                    For Each origTable As DataTable In conObjects(2).Tables
+                        Dim strColumns() As String = EliminateLastColumn(origTable)
+                        Dim table As DataTable = origTable.DefaultView.ToTable(True, strColumns)
+                        Dim subTableName As String = table.TableName
+
+                        Dim subT As DataColumn = table.Columns("DETAILTABLE")
+
+                        If subTableName = "Table" Then subTableName = "MAIN"
+
+                        subTableName = subTableName.Replace("Table", vbNullString)
+
+                        AddToTrace("Populating datashape child tables with data, TABLENAME: " & subTableName)
+
+                        rstADOChild = New Recordset
+
+                        Dim childFields As ADODB.Fields = rstADOChild.Fields
+                        Dim columns As DataColumnCollection = table.Columns
+
+                        For Each column As DataColumn In columns
+                            childFields.Append(column.ColumnName, _
+                                          TranslateType(column.DataType), _
+                                          column.MaxLength, _
+                                          IIf(column.AllowDBNull, FieldAttributeEnum.adFldIsNullable, FieldAttributeEnum.adFldUnspecified))
+                        Next
+
+                        rstADOChild.CursorLocation = CursorLocationEnum.adUseClient
+                        rstADOChild.Open(System.Reflection.Missing.Value, System.Reflection.Missing.Value, CursorTypeEnum.adOpenKeyset, LockTypeEnum.adLockOptimistic, 0)
+
+                        For Each row As DataRow In table.Rows
+                            'Debug.Print(table.TableName & " row count: " & table.Rows.Count)
+                            rstADOChild.AddNew(System.Reflection.Missing.Value, System.Reflection.Missing.Value)
+
+                            Dim strRow As String = vbNullString
+                            For colIdx As Integer = 0 To columns.Count - 1
+                                childFields(colIdx).Value = row(colIdx)
+                                strRow = strRow & columns(colIdx).ColumnName & ": " & row(colIdx) & ", "
+                            Next
+                            strRow = strRow & vbCrLf
+                            Debug.Print(strRow)
+                        Next
+
+                        If Not (rstADOChild.EOF And rstADOChild.BOF) Then rstADOChild.MoveFirst()
+                        rstADO.Fields(subTableName).Value = rstADOChild
+                        rstADO.Update()
+                    Next
+                End If
             End If
 
             conObjects(2).Dispose()
@@ -153,6 +222,9 @@ Public Class CDatasource
             AddToTrace("ExecuteQuery: " & ex.Message)
         End Try
 
+        AddToTrace("End of execute query: " & SQL, True)
+
+        If Not (rstADO.EOF And rstADO.BOF) Then rstADO.MoveFirst()
         Return rstADO
     End Function
 
@@ -178,6 +250,8 @@ Public Class CDatasource
             Case DatabaseType.ACCESS
                 conObjects.SetValue(conTemp, 0)
 
+                AddToTrace("Connecting To Access Database...", True)
+
                 If IsQuery Then
                     adapter = New OleDbDataAdapter(SQL, conTemp)
                     adapter.Fill(dsTemp)
@@ -191,6 +265,8 @@ Public Class CDatasource
 
             Case DatabaseType.SQLSERVER
                 conObjects.SetValue(conTemp, 0)
+
+                AddToTrace("Connecting To SQL Server...", True)
 
                 If IsQuery Then
                     adapter = New SqlClient.SqlDataAdapter(SQL, conTemp)
@@ -277,10 +353,6 @@ Public Class CDatasource
 
         Dim strDatabaseName As String = vbNullString
 
-        If Not Year Is Nothing AndAlso Year.Length <> 4 Then
-            Throw New InvalidDataException("Year supplied is of invalid format, right format is YYYY.")
-        End If
-
         'GET DB INSTANCE NAME
         Select Case DBInstanceType
             Case CDatasource.DBInstanceType.DATABASE_SADBEL
@@ -296,15 +368,23 @@ Public Class CDatasource
                 strDatabaseName = "mdb_scheduler"
 
             Case CDatasource.DBInstanceType.DATABASE_TEMPLATE
-                strDatabaseName = "CPTemplate"
+                strDatabaseName = "TemplateCP"
 
             Case CDatasource.DBInstanceType.DATABASE_TARIC
                 strDatabaseName = "mdb_taric"
 
             Case CDatasource.DBInstanceType.DATABASE_HISTORY
-                strDatabaseName = "mdb_history" + Year.Substring(2, 2)
+                If Year.Length <> 2 Then
+                    Throw New InvalidDataException("Year supplied is of invalid format, right format is YY.")
+                End If
+
+                strDatabaseName = "mdb_history" + Year
 
             Case CDatasource.DBInstanceType.DATABASE_REPERTORY
+                If Year.Length <> 4 Then
+                    Throw New InvalidDataException("Year supplied is of invalid format, right format is YYYY.")
+                End If
+
                 If Now.Year = Year Then
                     strDatabaseName = "mdb_repertory"
                 Else
@@ -312,7 +392,15 @@ Public Class CDatasource
                 End If
 
             Case CDatasource.DBInstanceType.DATABASE_EDI_HISTORY
-                strDatabaseName = "mdb_history" + Year.Substring(2, 2)
+                If Year.Length <> 2 Then
+                    Throw New InvalidDataException("Year supplied is of invalid format, right format is YY.")
+                End If
+
+                If Now.Year = Year Then
+                    strDatabaseName = "mdb_EDIhistory"
+                Else
+                    strDatabaseName = "mdb_EDIhistory" + Year
+                End If
 
             Case Else
                 Throw New NotSupportedException("Database instance not supported.")
@@ -371,6 +459,20 @@ Public Class CDatasource
             AddToTrace("Error in CDatasource.GetDatabaseInstanceType() - could not extract database name from connectionString = " & strConnection)
             Return Nothing
         End If
+    End Function
+
+    Private Function EliminateLastColumn(ByVal dt As DataTable) As String()
+        Dim strColumns(0) As String
+        Dim idx As Integer = 0
+        For Each scol As DataColumn In dt.Columns
+            If scol.ColumnName <> dt.TableName Then
+                ReDim Preserve strColumns(idx)
+                strColumns(idx) = scol.ColumnName
+                idx = idx + 1
+            End If
+        Next
+
+        Return strColumns
     End Function
 End Class
 

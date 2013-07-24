@@ -39,12 +39,20 @@ Public Class CDatabaseProperty
         If Not regKey Is Nothing Then
             strDBPath = regKey.GetValue("MdbPath")
         Else
-            strDBPath = m_objProp.getPropertyKey("dbPath")
+            strDBPath = m_objProp.getPropertyKey("MdbPath")
         End If
 
         G_strMdbPath = strDBPath
 
         Return strDBPath
+    End Function
+
+    Public Function printDebugTrace() As Boolean
+        If m_objProp.getPropertyKey("debug").ToUpper = "TRUE" Then
+            Return True
+        Else
+            Return False
+        End If
     End Function
 
     'Need to add a registry source for SQL UserName and SQL Data Source

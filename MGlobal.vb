@@ -65,4 +65,5 @@ Module MGlobal
         End Select
     End Function
 
+    Public objProp As New CDatabaseProperty
 End Module
