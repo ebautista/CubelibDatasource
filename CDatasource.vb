@@ -65,50 +65,131 @@ Public Class CDatasource
 
     End Function
 
-    Public Function Update(ByRef RecordsetToUpdate As ADODB.Recordset, _
-                           ByVal Bookmark As Double) As Integer
+    Public Function Update(ByRef RecordsetToUpdate As CRecordset, _
+                           ByVal Bookmark As Double,
+                           ByVal TableName As String) As Integer
 
         Dim conObjects() As Object
         Dim dbType As DBInstanceType
 
-        If RecordsetToUpdate Is Nothing AndAlso RecordsetToUpdate.Source Is Nothing Then
+        If RecordsetToUpdate Is Nothing AndAlso RecordsetToUpdate.Recordset.Source Is Nothing Then
             AddToTrace("Error in CDatasource.Update() - source recordset was not properly initialized.")
         End If
 
-        RecordsetToUpdate.Bookmark = Bookmark
+        RecordsetToUpdate.Recordset.Bookmark = Bookmark
 
         Try
-            dbType = GetDatabaseInstanceType(RecordsetToUpdate.ActiveConnection)
-            conObjects = getConnectionObjects(RecordsetToUpdate.Source, dbType, False, True)
+            dbType = GetDatabaseInstanceType(RecordsetToUpdate.Connection)
+            conObjects = getConnectionObjects(RecordsetToUpdate.Recordset.Source, dbType, False, True)
 
             Dim ds As DataSet = conObjects(2)
+            Dim adapter As DataAdapter = conObjects(1)
 
-            Debug.Print(ds.Tables.Count)
-            Debug.Print(ds.Tables(0).TableName)
-
-            If ds.Tables.Count > 0 AndAlso ds.Tables(0).Rows.Count > 0 AndAlso RecordsetToUpdate.RecordCount > 0 Then
+            If ds.Tables.Count > 0 AndAlso ds.Tables(0).Rows.Count > 0 AndAlso RecordsetToUpdate.Recordset.RecordCount > 0 Then
                 Dim table As DataTable = ds.Tables(0)
-                Dim tableToMerge As DataTable = table.Clone
-                Dim row As DataRow = tableToMerge.NewRow()
 
-                For Each Field As ADODB.Field In RecordsetToUpdate.Fields
-                    'If Field.OriginalValue <> Field.Value Then
-                    row(Field.Name) = Field.Value
+                Dim columns() As DataColumn = table.PrimaryKey
+                Dim pk() As Object
+
+                If columns.Length > 0 Then
+                    For index = 0 To columns.Length - 1
+                        ReDim Preserve pk(index)
+                        pk(index) = RecordsetToUpdate.Recordset.Fields(columns(index).ColumnName).Value
+                        Debug.Print(columns(index).ColumnName)
+                    Next
+
+                    FindAndUpdateTable(RecordsetToUpdate.Recordset, pk, TableName)
+
+                    'Dim findRow As DataRow = table.Rows.Find(pk)
+
+                    'If Not findRow Is Nothing Then
+                    '    findRow.BeginEdit()
+                    '    For Each Field As ADODB.Field In RecordsetToUpdate.Recordset.Fields
+                    '        findRow.SetField(Field.Name, Field.Value)
+                    '    Next
+                    '    findRow.EndEdit()
+
+                    '    UpdateTable(findRow, TableName)
+
+                    '    conObjects(2).Dispose()
+                    '    conObjects(1).Dispose()
+                    '    conObjects(0).Close()
+                    '    conObjects(0).Dispose()
+
+                    Return SUCCESS
+                    'Else
+                    '    AddToTrace("Error in CubelibDatasource.Update: No data found for : " & RecordsetToUpdate.Recordset.Source)
                     'End If
-                Next
-
-                tableToMerge.Rows().Add(row)
-                table.Merge(tableToMerge)
-                table.AcceptChanges()
-                table.Dispose()
+                Else
+                    AddToTrace("Error in CubelibDatasource.Update: No Primary Key define for : " & RecordsetToUpdate.Recordset.Source)
+                End If
             End If
         Catch ex As Exception
-            AddToTrace("ExecuteNonQuery: " & ex.Message)
-            Return FAILURE
+            AddToTrace("Error in CubelibDatasource.Update: " & ex.Message)
         End Try
 
-        Return SUCCESS
+        Return FAILURE
+    End Function
 
+    Public Function Insert(ByRef RecordsetToUpdate As CRecordset,
+                           ByVal TableName As String) As Integer
+
+        'Dim conObjects() As Object
+        'Dim dbType As DBInstanceType
+
+        'If RecordsetToUpdate Is Nothing AndAlso RecordsetToUpdate.Recordset.Source Is Nothing Then
+        '    AddToTrace("Error in CDatasource.Update() - source recordset was not properly initialized.")
+        'End If
+
+        'Try
+        '    dbType = GetDatabaseInstanceType(RecordsetToUpdate.Connection)
+        '    conObjects = getConnectionObjects(RecordsetToUpdate.Recordset.Source, dbType, False, True)
+
+        '    Dim ds As DataSet = conObjects(2)
+        '    Dim adapter As DataAdapter = conObjects(1)
+
+        '    If ds.Tables.Count > 0 AndAlso ds.Tables(0).Rows.Count > 0 AndAlso RecordsetToUpdate.Recordset.RecordCount > 0 Then
+        '        Dim table As DataTable = ds.Tables(0)
+
+        '        Dim columns() As DataColumn = table.PrimaryKey
+        '        Dim pk() As Object
+
+        '        If columns.Length > 0 Then
+        '            For index = 0 To columns.Length - 1
+        '                ReDim Preserve pk(index)
+        '                pk(index) = RecordsetToUpdate.Recordset.Fields(columns(index).ColumnName).Value
+        '                Debug.Print(columns(index).ColumnName)
+        '            Next
+
+        '            Dim findRow As DataRow = table.Rows.Find(pk)
+
+        '            If Not findRow Is Nothing Then
+        '                findRow.BeginEdit()
+        '                For Each Field As ADODB.Field In RecordsetToUpdate.Recordset.Fields
+        '                    findRow.SetField(Field.Name, Field.Value)
+        '                Next
+        '                findRow.EndEdit()
+
+        '                UpdateTable(findRow, TableName)
+
+        '                conObjects(2).Dispose()
+        '                conObjects(1).Dispose()
+        '                conObjects(0).Close()
+        '                conObjects(0).Dispose()
+
+        '                Return SUCCESS
+        '            Else
+        '                AddToTrace("Error in CubelibDatasource.Update: No data found for : " & RecordsetToUpdate.Recordset.Source)
+        '            End If
+        '        Else
+        '            AddToTrace("Error in CubelibDatasource.Update: No Primary Key define for : " & RecordsetToUpdate.Recordset.Source)
+        '        End If
+        '    End If
+        'Catch ex As Exception
+        '    AddToTrace("Error in CubelibDatasource.Update: " & ex.Message)
+        'End Try
+
+        Return FAILURE
     End Function
 
     Public Function ExecuteQuery(ByVal SQL As String, _
@@ -236,7 +317,6 @@ Public Class CDatasource
 
         Dim conObjects(IIf(IsQuery, 3, 2)) As Object
 
-        Dim objProp As New CDatabaseProperty
         Dim conTemp As DbConnection
         Dim adapter As DataAdapter
         Dim dsTemp As New DataSet
@@ -255,7 +335,8 @@ Public Class CDatasource
                 If IsQuery Then
                     adapter = New OleDbDataAdapter(SQL, conTemp)
                     adapter.Fill(dsTemp)
-                    adapter.FillSchema(dsTemp, SchemaType.Mapped)
+                    adapter.FillSchema(dsTemp, SchemaType.Source)
+
                     conObjects.SetValue(adapter, 1)
                     conObjects.SetValue(dsTemp, 2)
                 Else
@@ -415,10 +496,9 @@ Public Class CDatasource
         Return strDatabaseName
     End Function
 
-    Private Function GetDatabaseInstanceType(ByVal ConnectionString As ADODB.Connection) As DBInstanceType
-        Dim strConnection As String = ConnectionString.ConnectionString
+    Private Function GetDatabaseInstanceType(ByVal ConnectionString As String) As DBInstanceType
         Dim dbRegex As New Regex("Source=.*mdb")
-        Dim match As Match = dbRegex.Match(strConnection)
+        Dim match As Match = dbRegex.Match(ConnectionString)
 
         If match.Success Then
             Dim dbName As String = match.Value
@@ -451,12 +531,12 @@ Public Class CDatasource
                     Return DBInstanceType.DATABASE_REPERTORY
 
                 Case Else
-                    AddToTrace("Error in CDatasource.GetDatabaseInstanceType() - could not determine db type from connectionString = " & strConnection)
+                    AddToTrace("Error in CDatasource.GetDatabaseInstanceType() - could not determine db type from connectionString = " & ConnectionString)
                     Return Nothing
 
             End Select
         Else
-            AddToTrace("Error in CDatasource.GetDatabaseInstanceType() - could not extract database name from connectionString = " & strConnection)
+            AddToTrace("Error in CDatasource.GetDatabaseInstanceType() - could not extract database name from connectionString = " & ConnectionString)
             Return Nothing
         End If
     End Function
@@ -474,6 +554,78 @@ Public Class CDatasource
 
         Return strColumns
     End Function
+
+    'Private Sub SetUpdateCommand(ByRef adapter As DataAdapter,
+    '                             ByRef Source As ADODB.Recordset,
+    '                             ByVal TableName As String,
+    '                             ByRef pk() As DataColumn,
+    '                             ByRef ConTemp As DbConnection)
+
+    '    Dim sb As New StringBuilder
+    '    Dim index As Integer
+
+    '    sb.Append("UPDATE [" & TableName & "] ")
+    '    sb.Append("SET ")
+    '    For Each Field As ADODB.Field In Source.Fields
+    '        index = index + 1
+    '        sb.Append("[" & Field.Name & "] = @Field" & index & ", ")
+    '    Next
+    '    sb.Remove(sb.ToString.LastIndexOf(","), 2)
+    '    sb.Append(" WHERE ")
+    '    For index = 0 To pk.Length - 1
+    '        sb.Append("[" & pk(index).ColumnName & "] = @Clause" & index & " AND ")
+    '    Next
+    '    sb.Remove(sb.ToString.LastIndexOf(" AND "), 5)
+    '    Debug.Print(sb.ToString)
+
+    '    Select Case objProp.getDatabaseType
+    '        Case DatabaseType.ACCESS
+    '            Dim command As New OleDbCommand(sb.ToString, ConTemp)
+    '            Dim index2 As Integer
+
+    '            For Each Field As ADODB.Field In Source.Fields
+    '                index2 = index2 + 1
+    '                command.Parameters.Add("@Field" & index2, MapAdoToOle(Field.Type))
+    '            Next
+
+    '            For index2 = 0 To pk.Length - 1
+    '                command.Parameters.Add("@Field" & index2, MapSystemToOle(pk(index2).DataType))
+    '            Next
+
+    '            CType(adapter, OleDbDataAdapter).UpdateCommand = command
+
+    '        Case DatabaseType.SQLSERVER
+
+    '        Case Else
+    '            AddToTrace("Error in CDatasource.GetSQLUpdateCommand() - Unsupported Database Type.")
+    '    End Select
+    'End Sub
+
+    Private Sub FindAndUpdateTable(ByRef adoRow As ADODB.Recordset, ByRef pk() As Object, ByVal TableName As String)
+        Select Case TableName
+            Case "PLDA IMPORT HEADER"
+                Dim adapter As New Sadbel_DataSetTableAdapters.PLDA_IMPORT_HEADERTableAdapter
+                Dim table As Sadbel_DataSet.PLDA_IMPORT_HEADERDataTable = adapter.GetDataByCH(pk(0), pk(1))
+
+                If Not table.Rows Is Nothing AndAlso table.Rows.Count > 0 Then
+                    Dim rowToUpdate As DataRow = table.Rows(0)
+
+                    rowToUpdate.BeginEdit()
+                    For Each Field As ADODB.Field In adoRow.Fields
+                        rowToUpdate.SetField(Field.Name, Field.Value)
+                    Next
+                    rowToUpdate.EndEdit()
+
+                    adapter.Update(rowToUpdate)
+                Else
+                    AddToTrace("Error in CubelibDatasource.FindAndUpdateTable: No data found for : " & adoRow.Source)
+                End If
+
+            Case Else
+
+        End Select
+
+    End Sub
 End Class
 
 

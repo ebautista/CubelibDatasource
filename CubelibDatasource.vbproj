@@ -90,6 +90,14 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Sadbel_DataSet.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Sadbel_DataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Sadbel_DataSet.vb">
+      <DependentUpon>Sadbel_DataSet.xsd</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">
@@ -109,6 +117,17 @@
       <CustomToolNamespace>My</CustomToolNamespace>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
+    <None Include="Sadbel_DataSet.xsc">
+      <DependentUpon>Sadbel_DataSet.xsd</DependentUpon>
+    </None>
+    <None Include="Sadbel_DataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>Sadbel_DataSet.Designer.vb</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Sadbel_DataSet.xss">
+      <DependentUpon>Sadbel_DataSet.xsd</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="ADODB">
@@ -122,6 +141,9 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="mdb_sadbel.mdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\persistence.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />

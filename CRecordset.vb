@@ -11,6 +11,7 @@ Public Class CRecordset
 #End Region
 
     Private m_rstADO As ADODB.Recordset
+    Private m_strConnection As String
 
     ' A creatable COM class must have a Public Sub New() 
     ' with no parameters, otherwise, the class will not be 
@@ -21,49 +22,19 @@ Public Class CRecordset
     End Sub
 
     'Parameterized constructor
-    Public Sub New(ByRef rstADO As ADODB.Recordset)
+    Public Sub New(ByRef rstADO As ADODB.Recordset, ByVal ConnectionString As String)
         MyBase.New()
         m_rstADO = rstADO
+        m_strConnection = ConnectionString
     End Sub
 
-    'Wrapper for End Of File
-    Public Function EOF() As Boolean
-        Return IIf(m_rstADO Is Nothing, True, m_rstADO.EOF)
+    Public Function Recordset() As ADODB.Recordset
+        Return m_rstADO
     End Function
 
-    'Wrapper for Begin Of File
-    Public Function BOF() As Boolean
-        Return IIf(m_rstADO Is Nothing, True, m_rstADO.BOF)
+    Public Function Connection() As String
+        Return m_strConnection
     End Function
-
-    'Wrapper for MoveFirst
-    Public Sub MoveFirst()
-        m_rstADO.MoveFirst()
-    End Sub
-
-    'Wrapper for MoveLast
-    Public Sub MoveLast()
-        m_rstADO.MoveLast()
-    End Sub
-
-    'Wrapper for MoveNext
-    Public Sub MoveNext()
-        m_rstADO.MoveNext()
-    End Sub
-
-    'Wrapper for RecordCount
-    Public Function RecordCount() As Integer
-        Return m_rstADO.RecordCount
-    End Function
-
-    'Public Property Fields(ByVal Index As Integer)
-    '    Get
-    '        Return m_rstADO.Fields(Index).Value
-    '    End Get
-    '    Set(value)
-    '        m_rstADO.Fields(Index).Value = value
-    '    End Set
-    'End Property
 
 End Class
 

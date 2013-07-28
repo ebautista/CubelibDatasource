@@ -13,5 +13,8 @@ username=sa
 # password should not be here or this file should be encrypted
 password=wack2
 
+# set to TRUE if you want to print DEBUG Trace logs
+debug=TRUE
+
 # database path override when registry key is not found
 MdbPath=C:\ClearingPoint\Data
