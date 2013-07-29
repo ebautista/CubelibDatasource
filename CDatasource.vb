@@ -100,26 +100,12 @@ Public Class CDatasource
 
                     FindAndUpdateTable(RecordsetToUpdate.Recordset, pk, TableName)
 
-                    'Dim findRow As DataRow = table.Rows.Find(pk)
-
-                    'If Not findRow Is Nothing Then
-                    '    findRow.BeginEdit()
-                    '    For Each Field As ADODB.Field In RecordsetToUpdate.Recordset.Fields
-                    '        findRow.SetField(Field.Name, Field.Value)
-                    '    Next
-                    '    findRow.EndEdit()
-
-                    '    UpdateTable(findRow, TableName)
-
-                    '    conObjects(2).Dispose()
-                    '    conObjects(1).Dispose()
-                    '    conObjects(0).Close()
-                    '    conObjects(0).Dispose()
+                    conObjects(2).Dispose()
+                    conObjects(1).Dispose()
+                    conObjects(0).Close()
+                    conObjects(0).Dispose()
 
                     Return SUCCESS
-                    'Else
-                    '    AddToTrace("Error in CubelibDatasource.Update: No data found for : " & RecordsetToUpdate.Recordset.Source)
-                    'End If
                 Else
                     AddToTrace("Error in CubelibDatasource.Update: No Primary Key define for : " & RecordsetToUpdate.Recordset.Source)
                 End If
