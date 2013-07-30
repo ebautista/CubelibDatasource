@@ -541,57 +541,11 @@ Public Class CDatasource
         Return strColumns
     End Function
 
-    'Private Sub SetUpdateCommand(ByRef adapter As DataAdapter,
-    '                             ByRef Source As ADODB.Recordset,
-    '                             ByVal TableName As String,
-    '                             ByRef pk() As DataColumn,
-    '                             ByRef ConTemp As DbConnection)
-
-    '    Dim sb As New StringBuilder
-    '    Dim index As Integer
-
-    '    sb.Append("UPDATE [" & TableName & "] ")
-    '    sb.Append("SET ")
-    '    For Each Field As ADODB.Field In Source.Fields
-    '        index = index + 1
-    '        sb.Append("[" & Field.Name & "] = @Field" & index & ", ")
-    '    Next
-    '    sb.Remove(sb.ToString.LastIndexOf(","), 2)
-    '    sb.Append(" WHERE ")
-    '    For index = 0 To pk.Length - 1
-    '        sb.Append("[" & pk(index).ColumnName & "] = @Clause" & index & " AND ")
-    '    Next
-    '    sb.Remove(sb.ToString.LastIndexOf(" AND "), 5)
-    '    Debug.Print(sb.ToString)
-
-    '    Select Case objProp.getDatabaseType
-    '        Case DatabaseType.ACCESS
-    '            Dim command As New OleDbCommand(sb.ToString, ConTemp)
-    '            Dim index2 As Integer
-
-    '            For Each Field As ADODB.Field In Source.Fields
-    '                index2 = index2 + 1
-    '                command.Parameters.Add("@Field" & index2, MapAdoToOle(Field.Type))
-    '            Next
-
-    '            For index2 = 0 To pk.Length - 1
-    '                command.Parameters.Add("@Field" & index2, MapSystemToOle(pk(index2).DataType))
-    '            Next
-
-    '            CType(adapter, OleDbDataAdapter).UpdateCommand = command
-
-    '        Case DatabaseType.SQLSERVER
-
-    '        Case Else
-    '            AddToTrace("Error in CDatasource.GetSQLUpdateCommand() - Unsupported Database Type.")
-    '    End Select
-    'End Sub
-
     Private Sub FindAndUpdateTable(ByRef adoRow As ADODB.Recordset, ByRef pk() As Object, ByVal TableName As String)
         Select Case TableName
             Case "PLDA IMPORT HEADER"
-                Dim adapter As New Sadbel_DataSetTableAdapters.PLDA_IMPORT_HEADERTableAdapter
-                Dim table As Sadbel_DataSet.PLDA_IMPORT_HEADERDataTable = adapter.GetDataByCH(pk(0), pk(1))
+                Dim adapter As New SadbelTableAdapters.PLDA_IMPORT_HEADERTableAdapter
+                Dim table As Sadbel.PLDA_IMPORT_HEADERDataTable = adapter.GetDataByCH(pk(0), pk(1))
 
                 If Not table.Rows Is Nothing AndAlso table.Rows.Count > 0 Then
                     Dim rowToUpdate As DataRow = table.Rows(0)

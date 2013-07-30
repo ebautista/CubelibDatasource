@@ -20,9 +20,9 @@ Option Explicit On
  Global.System.ComponentModel.DesignerCategoryAttribute("code"),  _
  Global.System.ComponentModel.ToolboxItem(true),  _
  Global.System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedDataSetSchema"),  _
- Global.System.Xml.Serialization.XmlRootAttribute("Sadbel_DataSet"),  _
+ Global.System.Xml.Serialization.XmlRootAttribute("Sadbel"),  _
  Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.DataSet")>  _
-Partial Public Class Sadbel_DataSet
+Partial Public Class Sadbel
     Inherits Global.System.Data.DataSet
     
     Private tablePLDA_IMPORT_DETAIL As PLDA_IMPORT_DETAILDataTable
@@ -143,7 +143,7 @@ Partial Public Class Sadbel_DataSet
     <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
      Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
     Public Overrides Function Clone() As Global.System.Data.DataSet
-        Dim cln As Sadbel_DataSet = CType(MyBase.Clone,Sadbel_DataSet)
+        Dim cln As Sadbel = CType(MyBase.Clone,Sadbel)
         cln.InitVars
         cln.SchemaSerializationMode = Me.SchemaSerializationMode
         Return cln
@@ -223,9 +223,9 @@ Partial Public Class Sadbel_DataSet
     <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
      Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
     Private Sub InitClass()
-        Me.DataSetName = "Sadbel_DataSet"
+        Me.DataSetName = "Sadbel"
         Me.Prefix = ""
-        Me.Namespace = "http://tempuri.org/Sadbel_DataSet.xsd"
+        Me.Namespace = "http://tempuri.org/Sadbel.xsd"
         Me.EnforceConstraints = true
         Me.SchemaSerializationMode = Global.System.Data.SchemaSerializationMode.IncludeSchema
         Me.tablePLDA_IMPORT_DETAIL = New PLDA_IMPORT_DETAILDataTable()
@@ -257,7 +257,7 @@ Partial Public Class Sadbel_DataSet
     <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
      Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
     Public Shared Function GetTypedDataSetSchema(ByVal xs As Global.System.Xml.Schema.XmlSchemaSet) As Global.System.Xml.Schema.XmlSchemaComplexType
-        Dim ds As Sadbel_DataSet = New Sadbel_DataSet()
+        Dim ds As Sadbel = New Sadbel()
         Dim type As Global.System.Xml.Schema.XmlSchemaComplexType = New Global.System.Xml.Schema.XmlSchemaComplexType()
         Dim sequence As Global.System.Xml.Schema.XmlSchemaSequence = New Global.System.Xml.Schema.XmlSchemaSequence()
         Dim any As Global.System.Xml.Schema.XmlSchemaAny = New Global.System.Xml.Schema.XmlSchemaAny()
@@ -607,7 +607,7 @@ Partial Public Class Sadbel_DataSet
         Public Shared Function GetTypedTableSchema(ByVal xs As Global.System.Xml.Schema.XmlSchemaSet) As Global.System.Xml.Schema.XmlSchemaComplexType
             Dim type As Global.System.Xml.Schema.XmlSchemaComplexType = New Global.System.Xml.Schema.XmlSchemaComplexType()
             Dim sequence As Global.System.Xml.Schema.XmlSchemaSequence = New Global.System.Xml.Schema.XmlSchemaSequence()
-            Dim ds As Sadbel_DataSet = New Sadbel_DataSet()
+            Dim ds As Sadbel = New Sadbel()
             Dim any1 As Global.System.Xml.Schema.XmlSchemaAny = New Global.System.Xml.Schema.XmlSchemaAny()
             any1.Namespace = "http://www.w3.org/2001/XMLSchema"
             any1.MinOccurs = New Decimal(0)
@@ -952,7 +952,7 @@ Partial Public Class Sadbel_DataSet
         Public Shared Function GetTypedTableSchema(ByVal xs As Global.System.Xml.Schema.XmlSchemaSet) As Global.System.Xml.Schema.XmlSchemaComplexType
             Dim type As Global.System.Xml.Schema.XmlSchemaComplexType = New Global.System.Xml.Schema.XmlSchemaComplexType()
             Dim sequence As Global.System.Xml.Schema.XmlSchemaSequence = New Global.System.Xml.Schema.XmlSchemaSequence()
-            Dim ds As Sadbel_DataSet = New Sadbel_DataSet()
+            Dim ds As Sadbel = New Sadbel()
             Dim any1 As Global.System.Xml.Schema.XmlSchemaAny = New Global.System.Xml.Schema.XmlSchemaAny()
             any1.Namespace = "http://www.w3.org/2001/XMLSchema"
             any1.MinOccurs = New Decimal(0)
@@ -1444,7 +1444,7 @@ Partial Public Class Sadbel_DataSet
     End Class
 End Class
 
-Namespace Sadbel_DataSetTableAdapters
+Namespace SadbelTableAdapters
     
     '''<summary>
     '''Represents the connection and commands used to retrieve and save data.
@@ -1651,8 +1651,7 @@ Namespace Sadbel_DataSetTableAdapters
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitConnection()
             Me._connection = New Global.System.Data.OleDb.OleDbConnection()
-            Me._connection.ConnectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=|DataDirectory|\mdb_sadbel.mdb;Persi"& _ 
-                "st Security Info=True;Jet OLEDB:Database Password=wack2"
+            Me._connection.ConnectionString = Global.CubelibDatasource.My.MySettings.Default.SadbelConnectionString
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -1669,7 +1668,7 @@ Namespace Sadbel_DataSetTableAdapters
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Fill, true)>  _
-        Public Overloads Overridable Function Fill(ByVal dataTable As Sadbel_DataSet.PLDA_IMPORT_DETAILDataTable) As Integer
+        Public Overloads Overridable Function Fill(ByVal dataTable As Sadbel.PLDA_IMPORT_DETAILDataTable) As Integer
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
             If (Me.ClearBeforeFill = true) Then
                 dataTable.Clear
@@ -1682,9 +1681,9 @@ Namespace Sadbel_DataSetTableAdapters
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
-        Public Overloads Overridable Function GetData() As Sadbel_DataSet.PLDA_IMPORT_DETAILDataTable
+        Public Overloads Overridable Function GetData() As Sadbel.PLDA_IMPORT_DETAILDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
-            Dim dataTable As Sadbel_DataSet.PLDA_IMPORT_DETAILDataTable = New Sadbel_DataSet.PLDA_IMPORT_DETAILDataTable()
+            Dim dataTable As Sadbel.PLDA_IMPORT_DETAILDataTable = New Sadbel.PLDA_IMPORT_DETAILDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
         End Function
@@ -1692,14 +1691,14 @@ Namespace Sadbel_DataSetTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")>  _
-        Public Overloads Overridable Function Update(ByVal dataTable As Sadbel_DataSet.PLDA_IMPORT_DETAILDataTable) As Integer
+        Public Overloads Overridable Function Update(ByVal dataTable As Sadbel.PLDA_IMPORT_DETAILDataTable) As Integer
             Return Me.Adapter.Update(dataTable)
         End Function
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")>  _
-        Public Overloads Overridable Function Update(ByVal dataSet As Sadbel_DataSet) As Integer
+        Public Overloads Overridable Function Update(ByVal dataSet As Sadbel) As Integer
             Return Me.Adapter.Update(dataSet, "PLDA IMPORT DETAIL")
         End Function
         
@@ -2149,8 +2148,7 @@ Namespace Sadbel_DataSetTableAdapters
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitConnection()
             Me._connection = New Global.System.Data.OleDb.OleDbConnection()
-            Me._connection.ConnectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=|DataDirectory|\mdb_sadbel.mdb;Persi"& _ 
-                "st Security Info=True;Jet OLEDB:Database Password=wack2"
+            Me._connection.ConnectionString = Global.CubelibDatasource.My.MySettings.Default.SadbelConnectionString
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -2163,8 +2161,8 @@ Namespace Sadbel_DataSetTableAdapters
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
             Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(1).Connection = Me.Connection
-            Me._commandCollection(1).CommandText = "SELECT Code, Header, A1, A2, A3, A4, A5 " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "FROM [PLDA IMPORT HEADER]" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "WHERE [CODE]" & _
-                " = ?" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "AND [HEADER] = ? "
+            Me._commandCollection(1).CommandText = "SELECT Code, Header, A1, A2, A3, A4, A5 FROM [PLDA IMPORT HEADER] WHERE Code = ? " & _
+                "AND Header = ?"
             Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
             Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("Code", Global.System.Data.OleDb.OleDbType.WChar, 21, Global.System.Data.ParameterDirection.Input, CType(0, Byte), CType(0, Byte), "Code", Global.System.Data.DataRowVersion.Current, False, Nothing))
             Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("Header", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0, Byte), CType(0, Byte), "Header", Global.System.Data.DataRowVersion.Current, False, Nothing))
@@ -2174,7 +2172,7 @@ Namespace Sadbel_DataSetTableAdapters
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"), _
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"), _
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Fill, True)> _
-        Public Overridable Overloads Function Fill(ByVal dataTable As Sadbel_DataSet.PLDA_IMPORT_HEADERDataTable) As Integer
+        Public Overridable Overloads Function Fill(ByVal dataTable As Sadbel.PLDA_IMPORT_HEADERDataTable) As Integer
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
             If (Me.ClearBeforeFill = True) Then
                 dataTable.Clear()
@@ -2187,9 +2185,9 @@ Namespace Sadbel_DataSetTableAdapters
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"), _
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"), _
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], True)> _
-        Public Overridable Overloads Function GetData() As Sadbel_DataSet.PLDA_IMPORT_HEADERDataTable
+        Public Overridable Overloads Function GetData() As Sadbel.PLDA_IMPORT_HEADERDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
-            Dim dataTable As Sadbel_DataSet.PLDA_IMPORT_HEADERDataTable = New Sadbel_DataSet.PLDA_IMPORT_HEADERDataTable()
+            Dim dataTable As Sadbel.PLDA_IMPORT_HEADERDataTable = New Sadbel.PLDA_IMPORT_HEADERDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
         End Function
@@ -2198,7 +2196,7 @@ Namespace Sadbel_DataSetTableAdapters
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"), _
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"), _
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], False)> _
-        Public Overridable Overloads Function GetDataByCH(ByVal Code As String, ByVal Header As Integer) As Sadbel_DataSet.PLDA_IMPORT_HEADERDataTable
+        Public Overridable Overloads Function GetDataByCH(ByVal Code As String, ByVal Header As Integer) As Sadbel.PLDA_IMPORT_HEADERDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(1)
             If (Code Is Nothing) Then
                 Throw New Global.System.ArgumentNullException("Code")
@@ -2206,7 +2204,7 @@ Namespace Sadbel_DataSetTableAdapters
                 Me.Adapter.SelectCommand.Parameters(0).Value = CType(Code, String)
             End If
             Me.Adapter.SelectCommand.Parameters(1).Value = CType(Header, Integer)
-            Dim dataTable As Sadbel_DataSet.PLDA_IMPORT_HEADERDataTable = New Sadbel_DataSet.PLDA_IMPORT_HEADERDataTable()
+            Dim dataTable As Sadbel.PLDA_IMPORT_HEADERDataTable = New Sadbel.PLDA_IMPORT_HEADERDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
         End Function
@@ -2214,240 +2212,240 @@ Namespace Sadbel_DataSetTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(), _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"), _
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")> _
-        Public Overridable Overloads Function Update(ByVal dataTable As Sadbel_DataSet.PLDA_IMPORT_HEADERDataTable) As Integer
+        Public Overridable Overloads Function Update(ByVal dataTable As Sadbel.PLDA_IMPORT_HEADERDataTable) As Integer
             Return Me.Adapter.Update(dataTable)
         End Function
-
-        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(), _
-         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"), _
-         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")> _
-        Public Overridable Overloads Function Update(ByVal dataSet As Sadbel_DataSet) As Integer
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")>  _
+        Public Overloads Overridable Function Update(ByVal dataSet As Sadbel) As Integer
             Return Me.Adapter.Update(dataSet, "PLDA IMPORT HEADER")
         End Function
-
-        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(), _
-         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"), _
-         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")> _
-        Public Overridable Overloads Function Update(ByVal dataRow As Global.System.Data.DataRow) As Integer
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")>  _
+        Public Overloads Overridable Function Update(ByVal dataRow As Global.System.Data.DataRow) As Integer
             Return Me.Adapter.Update(New Global.System.Data.DataRow() {dataRow})
         End Function
-
-        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(), _
-         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"), _
-         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")> _
-        Public Overridable Overloads Function Update(ByVal dataRows() As Global.System.Data.DataRow) As Integer
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")>  _
+        Public Overloads Overridable Function Update(ByVal dataRows() As Global.System.Data.DataRow) As Integer
             Return Me.Adapter.Update(dataRows)
         End Function
-
-        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(), _
-         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"), _
-         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"), _
-         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Delete, True)> _
-        Public Overridable Overloads Function Delete(ByVal Original_Code As String, ByVal Original_Header As Integer, ByVal Original_A1 As String, ByVal Original_A2 As String, ByVal Original_A3 As String, ByVal Original_A4 As String, ByVal Original_A5 As String) As Integer
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Delete, true)>  _
+        Public Overloads Overridable Function Delete(ByVal Original_Code As String, ByVal Original_Header As Integer, ByVal Original_A1 As String, ByVal Original_A2 As String, ByVal Original_A3 As String, ByVal Original_A4 As String, ByVal Original_A5 As String) As Integer
             If (Original_Code Is Nothing) Then
                 Throw New Global.System.ArgumentNullException("Original_Code")
             Else
-                Me.Adapter.DeleteCommand.Parameters(0).Value = CType(Original_Code, String)
+                Me.Adapter.DeleteCommand.Parameters(0).Value = CType(Original_Code,String)
             End If
-            Me.Adapter.DeleteCommand.Parameters(1).Value = CType(Original_Header, Integer)
+            Me.Adapter.DeleteCommand.Parameters(1).Value = CType(Original_Header,Integer)
             If (Original_A1 Is Nothing) Then
-                Me.Adapter.DeleteCommand.Parameters(2).Value = CType(1, Object)
+                Me.Adapter.DeleteCommand.Parameters(2).Value = CType(1,Object)
                 Me.Adapter.DeleteCommand.Parameters(3).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.DeleteCommand.Parameters(2).Value = CType(0, Object)
-                Me.Adapter.DeleteCommand.Parameters(3).Value = CType(Original_A1, String)
+                Me.Adapter.DeleteCommand.Parameters(2).Value = CType(0,Object)
+                Me.Adapter.DeleteCommand.Parameters(3).Value = CType(Original_A1,String)
             End If
             If (Original_A2 Is Nothing) Then
-                Me.Adapter.DeleteCommand.Parameters(4).Value = CType(1, Object)
+                Me.Adapter.DeleteCommand.Parameters(4).Value = CType(1,Object)
                 Me.Adapter.DeleteCommand.Parameters(5).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.DeleteCommand.Parameters(4).Value = CType(0, Object)
-                Me.Adapter.DeleteCommand.Parameters(5).Value = CType(Original_A2, String)
+                Me.Adapter.DeleteCommand.Parameters(4).Value = CType(0,Object)
+                Me.Adapter.DeleteCommand.Parameters(5).Value = CType(Original_A2,String)
             End If
             If (Original_A3 Is Nothing) Then
-                Me.Adapter.DeleteCommand.Parameters(6).Value = CType(1, Object)
+                Me.Adapter.DeleteCommand.Parameters(6).Value = CType(1,Object)
                 Me.Adapter.DeleteCommand.Parameters(7).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.DeleteCommand.Parameters(6).Value = CType(0, Object)
-                Me.Adapter.DeleteCommand.Parameters(7).Value = CType(Original_A3, String)
+                Me.Adapter.DeleteCommand.Parameters(6).Value = CType(0,Object)
+                Me.Adapter.DeleteCommand.Parameters(7).Value = CType(Original_A3,String)
             End If
             If (Original_A4 Is Nothing) Then
-                Me.Adapter.DeleteCommand.Parameters(8).Value = CType(1, Object)
+                Me.Adapter.DeleteCommand.Parameters(8).Value = CType(1,Object)
                 Me.Adapter.DeleteCommand.Parameters(9).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.DeleteCommand.Parameters(8).Value = CType(0, Object)
-                Me.Adapter.DeleteCommand.Parameters(9).Value = CType(Original_A4, String)
+                Me.Adapter.DeleteCommand.Parameters(8).Value = CType(0,Object)
+                Me.Adapter.DeleteCommand.Parameters(9).Value = CType(Original_A4,String)
             End If
             If (Original_A5 Is Nothing) Then
-                Me.Adapter.DeleteCommand.Parameters(10).Value = CType(1, Object)
+                Me.Adapter.DeleteCommand.Parameters(10).Value = CType(1,Object)
                 Me.Adapter.DeleteCommand.Parameters(11).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.DeleteCommand.Parameters(10).Value = CType(0, Object)
-                Me.Adapter.DeleteCommand.Parameters(11).Value = CType(Original_A5, String)
+                Me.Adapter.DeleteCommand.Parameters(10).Value = CType(0,Object)
+                Me.Adapter.DeleteCommand.Parameters(11).Value = CType(Original_A5,String)
             End If
             Dim previousConnectionState As Global.System.Data.ConnectionState = Me.Adapter.DeleteCommand.Connection.State
-            If ((Me.Adapter.DeleteCommand.Connection.State And Global.System.Data.ConnectionState.Open) _
+            If ((Me.Adapter.DeleteCommand.Connection.State And Global.System.Data.ConnectionState.Open)  _
                         <> Global.System.Data.ConnectionState.Open) Then
-                Me.Adapter.DeleteCommand.Connection.Open()
+                Me.Adapter.DeleteCommand.Connection.Open
             End If
-            Try
+            Try 
                 Dim returnValue As Integer = Me.Adapter.DeleteCommand.ExecuteNonQuery
                 Return returnValue
             Finally
                 If (previousConnectionState = Global.System.Data.ConnectionState.Closed) Then
-                    Me.Adapter.DeleteCommand.Connection.Close()
+                    Me.Adapter.DeleteCommand.Connection.Close
                 End If
             End Try
         End Function
-
-        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(), _
-         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"), _
-         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"), _
-         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Insert, True)> _
-        Public Overridable Overloads Function Insert(ByVal Code As String, ByVal Header As Integer, ByVal A1 As String, ByVal A2 As String, ByVal A3 As String, ByVal A4 As String, ByVal A5 As String) As Integer
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Insert, true)>  _
+        Public Overloads Overridable Function Insert(ByVal Code As String, ByVal Header As Integer, ByVal A1 As String, ByVal A2 As String, ByVal A3 As String, ByVal A4 As String, ByVal A5 As String) As Integer
             If (Code Is Nothing) Then
                 Throw New Global.System.ArgumentNullException("Code")
             Else
-                Me.Adapter.InsertCommand.Parameters(0).Value = CType(Code, String)
+                Me.Adapter.InsertCommand.Parameters(0).Value = CType(Code,String)
             End If
-            Me.Adapter.InsertCommand.Parameters(1).Value = CType(Header, Integer)
+            Me.Adapter.InsertCommand.Parameters(1).Value = CType(Header,Integer)
             If (A1 Is Nothing) Then
                 Me.Adapter.InsertCommand.Parameters(2).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.InsertCommand.Parameters(2).Value = CType(A1, String)
+                Me.Adapter.InsertCommand.Parameters(2).Value = CType(A1,String)
             End If
             If (A2 Is Nothing) Then
                 Me.Adapter.InsertCommand.Parameters(3).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.InsertCommand.Parameters(3).Value = CType(A2, String)
+                Me.Adapter.InsertCommand.Parameters(3).Value = CType(A2,String)
             End If
             If (A3 Is Nothing) Then
                 Me.Adapter.InsertCommand.Parameters(4).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.InsertCommand.Parameters(4).Value = CType(A3, String)
+                Me.Adapter.InsertCommand.Parameters(4).Value = CType(A3,String)
             End If
             If (A4 Is Nothing) Then
                 Me.Adapter.InsertCommand.Parameters(5).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.InsertCommand.Parameters(5).Value = CType(A4, String)
+                Me.Adapter.InsertCommand.Parameters(5).Value = CType(A4,String)
             End If
             If (A5 Is Nothing) Then
                 Me.Adapter.InsertCommand.Parameters(6).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.InsertCommand.Parameters(6).Value = CType(A5, String)
+                Me.Adapter.InsertCommand.Parameters(6).Value = CType(A5,String)
             End If
             Dim previousConnectionState As Global.System.Data.ConnectionState = Me.Adapter.InsertCommand.Connection.State
-            If ((Me.Adapter.InsertCommand.Connection.State And Global.System.Data.ConnectionState.Open) _
+            If ((Me.Adapter.InsertCommand.Connection.State And Global.System.Data.ConnectionState.Open)  _
                         <> Global.System.Data.ConnectionState.Open) Then
-                Me.Adapter.InsertCommand.Connection.Open()
+                Me.Adapter.InsertCommand.Connection.Open
             End If
-            Try
+            Try 
                 Dim returnValue As Integer = Me.Adapter.InsertCommand.ExecuteNonQuery
                 Return returnValue
             Finally
                 If (previousConnectionState = Global.System.Data.ConnectionState.Closed) Then
-                    Me.Adapter.InsertCommand.Connection.Close()
+                    Me.Adapter.InsertCommand.Connection.Close
                 End If
             End Try
         End Function
-
-        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(), _
-         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"), _
-         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"), _
-         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Update, True)> _
-        Public Overridable Overloads Function Update(ByVal Code As String, ByVal Header As Integer, ByVal A1 As String, ByVal A2 As String, ByVal A3 As String, ByVal A4 As String, ByVal A5 As String, ByVal Original_Code As String, ByVal Original_Header As Integer, ByVal Original_A1 As String, ByVal Original_A2 As String, ByVal Original_A3 As String, ByVal Original_A4 As String, ByVal Original_A5 As String) As Integer
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Update, true)>  _
+        Public Overloads Overridable Function Update(ByVal Code As String, ByVal Header As Integer, ByVal A1 As String, ByVal A2 As String, ByVal A3 As String, ByVal A4 As String, ByVal A5 As String, ByVal Original_Code As String, ByVal Original_Header As Integer, ByVal Original_A1 As String, ByVal Original_A2 As String, ByVal Original_A3 As String, ByVal Original_A4 As String, ByVal Original_A5 As String) As Integer
             If (Code Is Nothing) Then
                 Throw New Global.System.ArgumentNullException("Code")
             Else
-                Me.Adapter.UpdateCommand.Parameters(0).Value = CType(Code, String)
+                Me.Adapter.UpdateCommand.Parameters(0).Value = CType(Code,String)
             End If
-            Me.Adapter.UpdateCommand.Parameters(1).Value = CType(Header, Integer)
+            Me.Adapter.UpdateCommand.Parameters(1).Value = CType(Header,Integer)
             If (A1 Is Nothing) Then
                 Me.Adapter.UpdateCommand.Parameters(2).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.UpdateCommand.Parameters(2).Value = CType(A1, String)
+                Me.Adapter.UpdateCommand.Parameters(2).Value = CType(A1,String)
             End If
             If (A2 Is Nothing) Then
                 Me.Adapter.UpdateCommand.Parameters(3).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.UpdateCommand.Parameters(3).Value = CType(A2, String)
+                Me.Adapter.UpdateCommand.Parameters(3).Value = CType(A2,String)
             End If
             If (A3 Is Nothing) Then
                 Me.Adapter.UpdateCommand.Parameters(4).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.UpdateCommand.Parameters(4).Value = CType(A3, String)
+                Me.Adapter.UpdateCommand.Parameters(4).Value = CType(A3,String)
             End If
             If (A4 Is Nothing) Then
                 Me.Adapter.UpdateCommand.Parameters(5).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.UpdateCommand.Parameters(5).Value = CType(A4, String)
+                Me.Adapter.UpdateCommand.Parameters(5).Value = CType(A4,String)
             End If
             If (A5 Is Nothing) Then
                 Me.Adapter.UpdateCommand.Parameters(6).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.UpdateCommand.Parameters(6).Value = CType(A5, String)
+                Me.Adapter.UpdateCommand.Parameters(6).Value = CType(A5,String)
             End If
             If (Original_Code Is Nothing) Then
                 Throw New Global.System.ArgumentNullException("Original_Code")
             Else
-                Me.Adapter.UpdateCommand.Parameters(7).Value = CType(Original_Code, String)
+                Me.Adapter.UpdateCommand.Parameters(7).Value = CType(Original_Code,String)
             End If
-            Me.Adapter.UpdateCommand.Parameters(8).Value = CType(Original_Header, Integer)
+            Me.Adapter.UpdateCommand.Parameters(8).Value = CType(Original_Header,Integer)
             If (Original_A1 Is Nothing) Then
-                Me.Adapter.UpdateCommand.Parameters(9).Value = CType(1, Object)
+                Me.Adapter.UpdateCommand.Parameters(9).Value = CType(1,Object)
                 Me.Adapter.UpdateCommand.Parameters(10).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.UpdateCommand.Parameters(9).Value = CType(0, Object)
-                Me.Adapter.UpdateCommand.Parameters(10).Value = CType(Original_A1, String)
+                Me.Adapter.UpdateCommand.Parameters(9).Value = CType(0,Object)
+                Me.Adapter.UpdateCommand.Parameters(10).Value = CType(Original_A1,String)
             End If
             If (Original_A2 Is Nothing) Then
-                Me.Adapter.UpdateCommand.Parameters(11).Value = CType(1, Object)
+                Me.Adapter.UpdateCommand.Parameters(11).Value = CType(1,Object)
                 Me.Adapter.UpdateCommand.Parameters(12).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.UpdateCommand.Parameters(11).Value = CType(0, Object)
-                Me.Adapter.UpdateCommand.Parameters(12).Value = CType(Original_A2, String)
+                Me.Adapter.UpdateCommand.Parameters(11).Value = CType(0,Object)
+                Me.Adapter.UpdateCommand.Parameters(12).Value = CType(Original_A2,String)
             End If
             If (Original_A3 Is Nothing) Then
-                Me.Adapter.UpdateCommand.Parameters(13).Value = CType(1, Object)
+                Me.Adapter.UpdateCommand.Parameters(13).Value = CType(1,Object)
                 Me.Adapter.UpdateCommand.Parameters(14).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.UpdateCommand.Parameters(13).Value = CType(0, Object)
-                Me.Adapter.UpdateCommand.Parameters(14).Value = CType(Original_A3, String)
+                Me.Adapter.UpdateCommand.Parameters(13).Value = CType(0,Object)
+                Me.Adapter.UpdateCommand.Parameters(14).Value = CType(Original_A3,String)
             End If
             If (Original_A4 Is Nothing) Then
-                Me.Adapter.UpdateCommand.Parameters(15).Value = CType(1, Object)
+                Me.Adapter.UpdateCommand.Parameters(15).Value = CType(1,Object)
                 Me.Adapter.UpdateCommand.Parameters(16).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.UpdateCommand.Parameters(15).Value = CType(0, Object)
-                Me.Adapter.UpdateCommand.Parameters(16).Value = CType(Original_A4, String)
+                Me.Adapter.UpdateCommand.Parameters(15).Value = CType(0,Object)
+                Me.Adapter.UpdateCommand.Parameters(16).Value = CType(Original_A4,String)
             End If
             If (Original_A5 Is Nothing) Then
-                Me.Adapter.UpdateCommand.Parameters(17).Value = CType(1, Object)
+                Me.Adapter.UpdateCommand.Parameters(17).Value = CType(1,Object)
                 Me.Adapter.UpdateCommand.Parameters(18).Value = Global.System.DBNull.Value
             Else
-                Me.Adapter.UpdateCommand.Parameters(17).Value = CType(0, Object)
-                Me.Adapter.UpdateCommand.Parameters(18).Value = CType(Original_A5, String)
+                Me.Adapter.UpdateCommand.Parameters(17).Value = CType(0,Object)
+                Me.Adapter.UpdateCommand.Parameters(18).Value = CType(Original_A5,String)
             End If
             Dim previousConnectionState As Global.System.Data.ConnectionState = Me.Adapter.UpdateCommand.Connection.State
-            If ((Me.Adapter.UpdateCommand.Connection.State And Global.System.Data.ConnectionState.Open) _
+            If ((Me.Adapter.UpdateCommand.Connection.State And Global.System.Data.ConnectionState.Open)  _
                         <> Global.System.Data.ConnectionState.Open) Then
-                Me.Adapter.UpdateCommand.Connection.Open()
+                Me.Adapter.UpdateCommand.Connection.Open
             End If
-            Try
+            Try 
                 Dim returnValue As Integer = Me.Adapter.UpdateCommand.ExecuteNonQuery
                 Return returnValue
             Finally
                 If (previousConnectionState = Global.System.Data.ConnectionState.Closed) Then
-                    Me.Adapter.UpdateCommand.Connection.Close()
+                    Me.Adapter.UpdateCommand.Connection.Close
                 End If
             End Try
         End Function
-
-        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(), _
-         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"), _
-         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"), _
-         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Update, True)> _
-        Public Overridable Overloads Function Update(ByVal A1 As String, ByVal A2 As String, ByVal A3 As String, ByVal A4 As String, ByVal A5 As String, ByVal Original_Code As String, ByVal Original_Header As Integer, ByVal Original_A1 As String, ByVal Original_A2 As String, ByVal Original_A3 As String, ByVal Original_A4 As String, ByVal Original_A5 As String) As Integer
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Update, true)>  _
+        Public Overloads Overridable Function Update(ByVal A1 As String, ByVal A2 As String, ByVal A3 As String, ByVal A4 As String, ByVal A5 As String, ByVal Original_Code As String, ByVal Original_Header As Integer, ByVal Original_A1 As String, ByVal Original_A2 As String, ByVal Original_A3 As String, ByVal Original_A4 As String, ByVal Original_A5 As String) As Integer
             Return Me.Update(Original_Code, Original_Header, A1, A2, A3, A4, A5, Original_Code, Original_Header, Original_A1, Original_A2, Original_A3, Original_A4, Original_A5)
         End Function
     End Class
@@ -2567,7 +2565,7 @@ Namespace Sadbel_DataSetTableAdapters
         '''</summary>
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
-        Private Function UpdateUpdatedRows(ByVal dataSet As Sadbel_DataSet, ByVal allChangedRows As Global.System.Collections.Generic.List(Of Global.System.Data.DataRow), ByVal allAddedRows As Global.System.Collections.Generic.List(Of Global.System.Data.DataRow)) As Integer
+        Private Function UpdateUpdatedRows(ByVal dataSet As Sadbel, ByVal allChangedRows As Global.System.Collections.Generic.List(Of Global.System.Data.DataRow), ByVal allAddedRows As Global.System.Collections.Generic.List(Of Global.System.Data.DataRow)) As Integer
             Dim result As Integer = 0
             If (Not (Me._pLDA_IMPORT_DETAILTableAdapter) Is Nothing) Then
                 Dim updatedRows() As Global.System.Data.DataRow = dataSet.PLDA_IMPORT_DETAIL.Select(Nothing, Nothing, Global.System.Data.DataViewRowState.ModifiedCurrent)
@@ -2595,7 +2593,7 @@ Namespace Sadbel_DataSetTableAdapters
         '''</summary>
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
-        Private Function UpdateInsertedRows(ByVal dataSet As Sadbel_DataSet, ByVal allAddedRows As Global.System.Collections.Generic.List(Of Global.System.Data.DataRow)) As Integer
+        Private Function UpdateInsertedRows(ByVal dataSet As Sadbel, ByVal allAddedRows As Global.System.Collections.Generic.List(Of Global.System.Data.DataRow)) As Integer
             Dim result As Integer = 0
             If (Not (Me._pLDA_IMPORT_DETAILTableAdapter) Is Nothing) Then
                 Dim addedRows() As Global.System.Data.DataRow = dataSet.PLDA_IMPORT_DETAIL.Select(Nothing, Nothing, Global.System.Data.DataViewRowState.Added)
@@ -2621,7 +2619,7 @@ Namespace Sadbel_DataSetTableAdapters
         '''</summary>
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
-        Private Function UpdateDeletedRows(ByVal dataSet As Sadbel_DataSet, ByVal allChangedRows As Global.System.Collections.Generic.List(Of Global.System.Data.DataRow)) As Integer
+        Private Function UpdateDeletedRows(ByVal dataSet As Sadbel, ByVal allChangedRows As Global.System.Collections.Generic.List(Of Global.System.Data.DataRow)) As Integer
             Dim result As Integer = 0
             If (Not (Me._pLDA_IMPORT_HEADERTableAdapter) Is Nothing) Then
                 Dim deletedRows() As Global.System.Data.DataRow = dataSet.PLDA_IMPORT_HEADER.Select(Nothing, Nothing, Global.System.Data.DataViewRowState.Deleted)
@@ -2673,7 +2671,7 @@ Namespace Sadbel_DataSetTableAdapters
         '''</summary>
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
-        Public Overridable Function UpdateAll(ByVal dataSet As Sadbel_DataSet) As Integer
+        Public Overridable Function UpdateAll(ByVal dataSet As Sadbel) As Integer
             If (dataSet Is Nothing) Then
                 Throw New Global.System.ArgumentNullException("dataSet")
             End If
