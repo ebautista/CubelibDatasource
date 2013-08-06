@@ -40,6 +40,152 @@ Public Class CDatasource
         DATABASE_EDI_HISTORY
     End Enum
 
+    Public Enum SadbelTableType
+        AUTHORIZED_PARTIES
+        BOX_DEFAULT_COMBINED_NCTS_ADMIN
+        BOX_DEFAULT_EDI_NCTS_ADMIN
+        BOX_DEFAULT_EDI_NCTS_IE141_ADMIN
+        BOX_DEFAULT_EDI_NCTS_IE44_ADMIN
+        BOX_DEFAULT_EDI_NCTS2_ADMIN
+        BOX_DEFAULT_COMBINED_ADMIN
+        BOX_DEFAULT_IMPORT_ADMIN
+        BOX_DEFAULT_PLDA_COMBINED_ADMIN
+        BOX_DEFAULT_PLDA_COMBINED_CHILDREN_ADMIN
+        BOX_DEFAULT_PLDA_IMPORT_ADMIN
+        BOX_DEFAULT_PLDA_IMPORT_CHILDREN_ADMIN
+        BOX_DEFAULT_TRANSIT_ADMIN
+        BOX_DEFAULT_TRANSIT_NCTS_ADMIN
+        BOX_DEFAULT_VALUE_COMBINED_NCTS
+        BOX_DEFAULT_VALUE_EDI_NCTS
+        BOX_DEFAULT_VALUE_EDI_NCTS_IE44
+        BOX_DEFAULT_VALUE_EDI_NCTS2
+        BOX_DEFAULT_VALUE_EXPORT
+        BOX_DEFAULT_VALUE_IMPORT
+        BOX_DEFAULT_VALUE_PLDA_COMBINED
+        BOX_DEFAULT_VALUE_PLDA_IMPORT
+        BOX_DEFAULT_VALUE_TRANSIT
+        BOX_DEFAULT_VALUE_TRANSIT_NCTS
+        BRANCHES
+        COLUMNS
+        COMBINED_NCTS
+        COMBINED_NCTS_DETAIL
+        COMBINED_NCTS_DETAIL_BIJZONDERE
+        COMBINED_NCTS_DETAIL_COLLI
+        COMBINED_NCTS_DETAIL_CONTAINER
+        COMBINED_NCTS_DETAIL_DOCUMENTEN
+        COMBINED_NCTS_DETAIL_GEVOELIGE
+        COMBINED_NCTS_DETAIL_GOEDEREN
+        COMBINED_NCTS_HEADER
+        COMBINED_NCTS_HEADER_ZEKERHEID
+        CONSIGN_CTRY
+        CONSIGNEE
+        CONSIGNOR
+        CONSIGNOR_CONSIGNEE
+        COUNTRIES
+        DBPROPERTIES
+        DEFAULT_COLUMNS
+        DEFAULT_USER_COMBINED_NCTS
+        DEFAULT_USER_EDI_NCTS
+        DEFAULT_USER_EDI_NCTS_IE44
+        DEFAULT_USER_EDI_NCTS2
+        DEFAULT_USER_EXPORT
+        DEFAULT_USER_IMPORT
+        DEFAULT_USER_PLDA_COMBINED
+        DEFAULT_USER_PLDA_IMPORT
+        DEFAULT_USER_TRANSIT
+        DEFAULT_USER_TRANSIT_NCTS
+        DIGISIGN_PLDA_COMBINED
+        DIGISIGN_PLDA_IMPORT
+        ENTREPOT_PROPERTIES
+        ENTREPOTS
+        ERROR_DUTCH
+        ERROR_ENGLISH
+        ERROR_FRENCH
+        EUR1_PROPERTIES
+        EXPORT
+        EXPORT_DETAIL
+        EXPORT_HEADER
+        FIELD_GROUPING
+        GROUPS
+        GUARANTEE
+        IMPORT
+        IMPORT_DETAIL
+        IMPORT_HEADER
+        INBOUND_DOCS
+        INBOUNDS
+        LICENSEE
+        LOGICAL_ID
+        LRN
+        MAIL_BOX
+        MAIL_GROUPS
+        MAIL_RECIPIENTS
+        MAIL_SETTINGS
+        NCTS
+        NCTS_DETAIL
+        NCTS_DETAIL_BIJZONDERE
+        NCTS_DETAIL_COLLI
+        NCTS_DETAIL_CONTAINER
+        NCTS_DETAIL_DOCUMENTEN
+        NCTS_HEADER
+        NCTS_HEADER_ZEKERHEID
+        OPERATORS
+        ORPHANED_MESSAGES
+        OUTBOUND_DOCS
+        OUTBOUNDS
+        PDF_OUT_SETTINGS
+        PIKCLIST_DEFINITION
+        PIKCLIST_MAINTENANCE_DUTCH
+        PIKCLIST_MAINTENANCE_ENGLISH
+        PIKCLIST_MAINTENANCE_FRENCH
+        PLDA_COMBINED
+        PLDA_COMBINED_DETAIL
+        PLDA_COMBINED_BIJZONDERE
+        PLDA_COMBINED_CONTAINER
+        PLDA_COMBINED_DOCUMENTEN
+        PLDA_COMBINED_HANDELAARS
+        PLDA_COMBINED_SENSITIVE_GOODS
+        PLDA_COMBINED_HEADER
+        PLDA_COMBINED_HEADER_HANDELAARS
+        PLDA_COMBINED_HEADER_TRANSIT_OFFICES
+        PLDA_COMBINED_HEADER_ZEGELS
+        PLDA_COMBINED_HEADER_ZEKERHEID
+        PLDA_ERROR_CODE
+        PLDA_IMPORT
+        PLDA_IMPORT_DETAIL
+        PLDA_IMPORT_DETAIL_BEREKENINGS_EENHEDEN
+        PLDA_IMPORT_DETAIL_BIJZONDERE
+        PLDA_IMPORT_DETAIL_CONTAINER
+        PLDA_IMPORT_DETAIL_DOCUMENTEN
+        PLDA_IMPORT_DETAIL_HANDELAARS
+        PLDA_IMPORT_DETAIL_ZELF
+        PLDA_IMPORT_HEADER
+        PLDA_IMPORT_HEADER_HANDELAARS
+        PLDA_IMPORT_HEADER_ZEGELS
+        PLDA_LRN
+        PLDA_MESSAGES
+        PRINTDOCTYPES
+        PRODUCTS
+        QUEUE_PROPERTIES
+        REMARKS
+        REMOTE_PRINTERS
+        REMOTE_DOCTYPE
+        REPRESENTATIVE
+        SETUP
+        SHEET_PROPERTIES
+        SKIP
+        STOCK_CARDS
+        SYSLINK_COMPATIBILITY
+        SYSLINK_PROPERTIES
+        TAB_ORDER
+        TRANSIT
+        TRANSIT_DETAIL
+        TRANSIT_HEADER
+        TREE
+        USER_LOGICAL_ID
+        USER_PRINTERS
+        VALIDATION_RULES
+    End Enum
+
     Private Const FAILURE As Integer = -1
     Private Const SUCCESS As Integer = 0
 
@@ -67,7 +213,7 @@ Public Class CDatasource
 
     Public Function Update(ByRef RecordsetToUpdate As CRecordset, _
                            ByVal Bookmark As Double,
-                           ByVal TableName As String) As Integer
+                           ByVal TableName As IConvertible) As Integer
 
         Dim conObjects() As Object
         Dim dbType As DBInstanceType
@@ -98,7 +244,7 @@ Public Class CDatasource
                         Debug.Print(columns(index).ColumnName)
                     Next
 
-                    FindAndUpdateTable(RecordsetToUpdate.Recordset, pk, TableName)
+                    FindAndUpdateTableSADBEL(RecordsetToUpdate.Recordset, pk, TableName)
 
                     conObjects(2).Dispose()
                     conObjects(1).Dispose()
@@ -541,31 +687,6 @@ Public Class CDatasource
         Return strColumns
     End Function
 
-    Private Sub FindAndUpdateTable(ByRef adoRow As ADODB.Recordset, ByRef pk() As Object, ByVal TableName As String)
-        Select Case TableName
-            Case "PLDA IMPORT HEADER"
-                Dim adapter As New SadbelTableAdapters.PLDA_IMPORT_HEADERTableAdapter
-                Dim table As Sadbel.PLDA_IMPORT_HEADERDataTable = adapter.GetDataByCH(pk(0), pk(1))
-
-                If Not table.Rows Is Nothing AndAlso table.Rows.Count > 0 Then
-                    Dim rowToUpdate As DataRow = table.Rows(0)
-
-                    rowToUpdate.BeginEdit()
-                    For Each Field As ADODB.Field In adoRow.Fields
-                        rowToUpdate.SetField(Field.Name, Field.Value)
-                    Next
-                    rowToUpdate.EndEdit()
-
-                    adapter.Update(rowToUpdate)
-                Else
-                    AddToTrace("Error in CubelibDatasource.FindAndUpdateTable: No data found for : " & adoRow.Source)
-                End If
-
-            Case Else
-
-        End Select
-
-    End Sub
 End Class
 
 
