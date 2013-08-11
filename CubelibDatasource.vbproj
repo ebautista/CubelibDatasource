@@ -73,7 +73,8 @@
     <Compile Include="ConvertToRs.vb" />
     <Compile Include="CProperty.vb" />
     <Compile Include="CRecordset.vb" />
-    <Compile Include="MCRUD.vb" />
+    <Compile Include="ITableAdapter.vb" />
+    <Compile Include="MSadbel.vb" />
     <Compile Include="MGlobal.vb" />
     <Compile Include="MTrace.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
@@ -91,13 +92,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Sadbel.Designer.vb">
+    <Compile Include="SadbelDataSet.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Sadbel.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="Sadbel.vb">
-      <DependentUpon>Sadbel.xsd</DependentUpon>
+      <DependentUpon>SadbelDataSet.xsd</DependentUpon>
     </Compile>
     <Compile Include="Settings.vb" />
   </ItemGroup>
@@ -120,16 +118,16 @@
       <CustomToolNamespace>My</CustomToolNamespace>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
-    <None Include="Sadbel.xsc">
-      <DependentUpon>Sadbel.xsd</DependentUpon>
+    <None Include="SadbelDataSet.xsc">
+      <DependentUpon>SadbelDataSet.xsd</DependentUpon>
     </None>
-    <None Include="Sadbel.xsd">
+    <None Include="SadbelDataSet.xsd">
       <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>Sadbel.Designer.vb</LastGenOutput>
+      <LastGenOutput>SadbelDataSet.Designer.vb</LastGenOutput>
       <SubType>Designer</SubType>
     </None>
-    <None Include="Sadbel.xss">
-      <DependentUpon>Sadbel.xsd</DependentUpon>
+    <None Include="SadbelDataSet.xss">
+      <DependentUpon>SadbelDataSet.xsd</DependentUpon>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -10,7 +10,7 @@ Module MTrace
         Dim fileReName As String = G_strMdbPath & "\DatasourceTracefile_" & Format(Now, "yyyyMMdd_hhmmss") & ".log"
         Dim fileName As String = G_strMdbPath & "\DatasourceTracefile.log"
         Dim info As New FileInfo(fileName)
-        Dim sw As StreamWriter
+        Dim sw As StreamWriter = Nothing
 
         Try
             If (info.Exists) Then

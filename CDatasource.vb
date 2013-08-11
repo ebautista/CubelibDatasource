@@ -139,11 +139,11 @@ Public Class CDatasource
         PIKCLIST_MAINTENANCE_FRENCH
         PLDA_COMBINED
         PLDA_COMBINED_DETAIL
-        PLDA_COMBINED_BIJZONDERE
-        PLDA_COMBINED_CONTAINER
-        PLDA_COMBINED_DOCUMENTEN
-        PLDA_COMBINED_HANDELAARS
-        PLDA_COMBINED_SENSITIVE_GOODS
+        PLDA_COMBINED_DETAIL_BIJZONDERE
+        PLDA_COMBINED_DETAIL_CONTAINER
+        PLDA_COMBINED_DETAIL_DOCUMENTEN
+        PLDA_COMBINED_DETAIL_HANDELAARS
+        PLDA_COMBINED_DETAIL_SENSITIVE_GOODS
         PLDA_COMBINED_HEADER
         PLDA_COMBINED_HEADER_HANDELAARS
         PLDA_COMBINED_HEADER_TRANSIT_OFFICES
@@ -215,9 +215,6 @@ Public Class CDatasource
                            ByVal Bookmark As Double,
                            ByVal TableName As IConvertible) As Integer
 
-        Dim conObjects() As Object
-        Dim dbType As DBInstanceType
-
         If RecordsetToUpdate Is Nothing AndAlso RecordsetToUpdate.Recordset.Source Is Nothing Then
             AddToTrace("Error in CDatasource.Update() - source recordset was not properly initialized.")
         End If
@@ -225,37 +222,8 @@ Public Class CDatasource
         RecordsetToUpdate.Recordset.Bookmark = Bookmark
 
         Try
-            dbType = GetDatabaseInstanceType(RecordsetToUpdate.Connection)
-            conObjects = getConnectionObjects(RecordsetToUpdate.Recordset.Source, dbType, False, True)
-
-            Dim ds As DataSet = conObjects(2)
-            Dim adapter As DataAdapter = conObjects(1)
-
-            If ds.Tables.Count > 0 AndAlso ds.Tables(0).Rows.Count > 0 AndAlso RecordsetToUpdate.Recordset.RecordCount > 0 Then
-                Dim table As DataTable = ds.Tables(0)
-
-                Dim columns() As DataColumn = table.PrimaryKey
-                Dim pk() As Object
-
-                If columns.Length > 0 Then
-                    For index = 0 To columns.Length - 1
-                        ReDim Preserve pk(index)
-                        pk(index) = RecordsetToUpdate.Recordset.Fields(columns(index).ColumnName).Value
-                        Debug.Print(columns(index).ColumnName)
-                    Next
-
-                    FindAndUpdateTableSADBEL(RecordsetToUpdate.Recordset, pk, TableName)
-
-                    conObjects(2).Dispose()
-                    conObjects(1).Dispose()
-                    conObjects(0).Close()
-                    conObjects(0).Dispose()
-
-                    Return SUCCESS
-                Else
-                    AddToTrace("Error in CubelibDatasource.Update: No Primary Key define for : " & RecordsetToUpdate.Recordset.Source)
-                End If
-            End If
+            DelegateUpdate(RecordsetToUpdate.Recordset, TableName)
+            Return SUCCESS
         Catch ex As Exception
             AddToTrace("Error in CubelibDatasource.Update: " & ex.Message)
         End Try
@@ -263,63 +231,74 @@ Public Class CDatasource
         Return FAILURE
     End Function
 
+    'Public Function Update(ByRef RecordsetToUpdate As CRecordset, _
+    '                       ByVal Bookmark As Double,
+    '                       ByVal TableName As IConvertible) As Integer
+
+    '    Dim conObjects() As Object
+    '    Dim dbType As DBInstanceType
+
+    '    If RecordsetToUpdate Is Nothing AndAlso RecordsetToUpdate.Recordset.Source Is Nothing Then
+    '        AddToTrace("Error in CDatasource.Update() - source recordset was not properly initialized.")
+    '    End If
+
+    '    RecordsetToUpdate.Recordset.Bookmark = Bookmark
+
+    '    Try
+    '        dbType = GetDatabaseInstanceType(RecordsetToUpdate.Connection)
+    '        conObjects = getConnectionObjects(RecordsetToUpdate.Recordset.Source, dbType, False, True)
+
+    '        Dim ds As DataSet = conObjects(2)
+    '        Dim adapter As DataAdapter = conObjects(1)
+
+    '        If ds.Tables.Count > 0 AndAlso ds.Tables(0).Rows.Count > 0 AndAlso RecordsetToUpdate.Recordset.RecordCount > 0 Then
+    '            Dim table As DataTable = ds.Tables(0)
+
+    '            Dim columns() As DataColumn = table.PrimaryKey
+    '            Dim pk() As Object
+
+    '            If columns.Length > 0 Then
+    '                For index = 0 To columns.Length - 1
+    '                    ReDim Preserve pk(index)
+    '                    pk(index) = RecordsetToUpdate.Recordset.Fields(columns(index).ColumnName).Value
+    '                    Debug.Print(columns(index).ColumnName)
+    '                Next
+
+    '                DelegateUpdate(RecordsetToUpdate.Recordset, pk, TableName)
+
+    '                conObjects(2).Dispose()
+    '                conObjects(1).Dispose()
+    '                conObjects(0).Close()
+    '                conObjects(0).Dispose()
+
+    '                Return SUCCESS
+    '            Else
+    '                AddToTrace("Error in CubelibDatasource.Update: No Primary Key define for : " & RecordsetToUpdate.Recordset.Source)
+    '            End If
+    '        End If
+    '    Catch ex As Exception
+    '        AddToTrace("Error in CubelibDatasource.Update: " & ex.Message)
+    '    End Try
+
+    '    Return FAILURE
+    'End Function
+
     Public Function Insert(ByRef RecordsetToUpdate As CRecordset,
+                           ByVal Bookmark As Double,
                            ByVal TableName As String) As Integer
 
-        'Dim conObjects() As Object
-        'Dim dbType As DBInstanceType
+        If RecordsetToUpdate Is Nothing AndAlso RecordsetToUpdate.Recordset.Source Is Nothing Then
+            AddToTrace("Error in CDatasource.Insert() - source recordset was not properly initialized.")
+        End If
 
-        'If RecordsetToUpdate Is Nothing AndAlso RecordsetToUpdate.Recordset.Source Is Nothing Then
-        '    AddToTrace("Error in CDatasource.Update() - source recordset was not properly initialized.")
-        'End If
+        RecordsetToUpdate.Recordset.Bookmark = Bookmark
 
-        'Try
-        '    dbType = GetDatabaseInstanceType(RecordsetToUpdate.Connection)
-        '    conObjects = getConnectionObjects(RecordsetToUpdate.Recordset.Source, dbType, False, True)
-
-        '    Dim ds As DataSet = conObjects(2)
-        '    Dim adapter As DataAdapter = conObjects(1)
-
-        '    If ds.Tables.Count > 0 AndAlso ds.Tables(0).Rows.Count > 0 AndAlso RecordsetToUpdate.Recordset.RecordCount > 0 Then
-        '        Dim table As DataTable = ds.Tables(0)
-
-        '        Dim columns() As DataColumn = table.PrimaryKey
-        '        Dim pk() As Object
-
-        '        If columns.Length > 0 Then
-        '            For index = 0 To columns.Length - 1
-        '                ReDim Preserve pk(index)
-        '                pk(index) = RecordsetToUpdate.Recordset.Fields(columns(index).ColumnName).Value
-        '                Debug.Print(columns(index).ColumnName)
-        '            Next
-
-        '            Dim findRow As DataRow = table.Rows.Find(pk)
-
-        '            If Not findRow Is Nothing Then
-        '                findRow.BeginEdit()
-        '                For Each Field As ADODB.Field In RecordsetToUpdate.Recordset.Fields
-        '                    findRow.SetField(Field.Name, Field.Value)
-        '                Next
-        '                findRow.EndEdit()
-
-        '                UpdateTable(findRow, TableName)
-
-        '                conObjects(2).Dispose()
-        '                conObjects(1).Dispose()
-        '                conObjects(0).Close()
-        '                conObjects(0).Dispose()
-
-        '                Return SUCCESS
-        '            Else
-        '                AddToTrace("Error in CubelibDatasource.Update: No data found for : " & RecordsetToUpdate.Recordset.Source)
-        '            End If
-        '        Else
-        '            AddToTrace("Error in CubelibDatasource.Update: No Primary Key define for : " & RecordsetToUpdate.Recordset.Source)
-        '        End If
-        '    End If
-        'Catch ex As Exception
-        '    AddToTrace("Error in CubelibDatasource.Update: " & ex.Message)
-        'End Try
+        Try
+            DelegateInsert(RecordsetToUpdate.Recordset, TableName)
+            Return SUCCESS
+        Catch ex As Exception
+            AddToTrace("Error in CubelibDatasource.Insert: " & ex.Message)
+        End Try
 
         Return FAILURE
     End Function
@@ -687,6 +666,23 @@ Public Class CDatasource
         Return strColumns
     End Function
 
+    Private Sub DelegateUpdate(ByRef adoRow As ADODB.Recordset, ByRef TableName As IConvertible)
+        Dim type As Type = CType(TableName, Object).GetType
+
+        If type.Equals(GetType(SadbelTableType)) Then
+            FindAndUpdateRowSADBEL(adoRow, TableName)
+        End If
+        'TODO: put all CP Database cases in here
+    End Sub
+
+    Private Sub DelegateInsert(ByRef adoRow As ADODB.Recordset, ByRef TableName As IConvertible)
+        Dim type As Type = CType(TableName, Object).GetType
+
+        If type.Equals(GetType(SadbelTableType)) Then
+            InsertRowSADBEL(adoRow, TableName)
+        End If
+        'TODO: put all CP Database cases in here
+    End Sub
 End Class
 
 
