@@ -285,7 +285,7 @@ Public Class CDatasource
 
     Public Function Insert(ByRef RecordsetToUpdate As CRecordset,
                            ByVal Bookmark As Double,
-                           ByVal TableName As String) As Integer
+                           ByVal TableName As IConvertible) As Integer
 
         If RecordsetToUpdate Is Nothing AndAlso RecordsetToUpdate.Recordset.Source Is Nothing Then
             AddToTrace("Error in CDatasource.Insert() - source recordset was not properly initialized.")

@@ -97,6 +97,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SadbelDataSet.xsd</DependentUpon>
     </Compile>
+    <Compile Include="SadbelDataSet.vb">
+      <DependentUpon>SadbelDataSet.xsd</DependentUpon>
+    </Compile>
     <Compile Include="Settings.vb" />
   </ItemGroup>
   <ItemGroup>

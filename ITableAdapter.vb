@@ -3,10 +3,7 @@
 Public Interface ITableAdapter(Of TDataTable As DataTable)
     Inherits IDisposable
 
-    'Sub AttachTransaction(_transaction As IDbTransaction)
-    'Function CreateTransaction() As IDbTransaction
-
-    Function GetByPK(ByRef pk() As Object) As TDataTable
-    Function UpdateRow(row As DataRow) As Integer
-    'Function InsertRow(row As DataRow) As Integer
+    Function RowUpdate(row As DataRow) As Integer
+    Function TableUpdate(table As DataTable) As Integer
+    Function GetByPK(ParamArray pk() As Object) As TDataTable
 End Interface

@@ -4,7 +4,8 @@ Module MSadbel
 
     Public Sub FindAndUpdateRowSADBEL(ByRef adoRow As ADODB.Recordset, ByVal TableName As SadbelTableType)
 
-        'Dim table As DataTable = Nothing
+        Dim table As DataTable = Nothing
+        Dim adapter As ITableAdapter(Of DataTable) = Nothing
 
         Select Case TableName
             Case SadbelTableType.AUTHORIZED_PARTIES
@@ -128,20 +129,8 @@ Module MSadbel
             Case SadbelTableType.PLDA_IMPORT_DETAIL_HANDELAARS
             Case SadbelTableType.PLDA_IMPORT_DETAIL_ZELF
             Case SadbelTableType.PLDA_IMPORT_HEADER
-                Dim adapter As New SadbelDataSetTableAdapters.PLDA_IMPORT_HEADERTableAdapter
-                Dim table As DataTable = adapter.GetDataByPK(adoRow.Fields("CODE").Value, Convert.ToDouble(adoRow.Fields("HEADER").Value))
-
-                If Not table Is Nothing AndAlso Not table.Rows Is Nothing AndAlso table.Rows.Count > 0 Then
-                    Dim rowToUpdate As DataRow = table.Rows(0)
-
-                    rowToUpdate.BeginEdit()
-                    For Each Field As ADODB.Field In adoRow.Fields
-                        rowToUpdate.SetField(Field.Name, Field.Value)
-                    Next
-                    rowToUpdate.EndEdit()
-
-                    adapter.Update(rowToUpdate)
-                End If
+                adapter = New SadbelDataSetTableAdapters.PLDA_IMPORT_HEADERTableAdapter
+                table = adapter.GetByPK(adoRow.Fields("CODE").Value, Convert.ToDouble(adoRow.Fields("HEADER").Value))
 
             Case SadbelTableType.PLDA_IMPORT_HEADER_HANDELAARS
             Case SadbelTableType.PLDA_IMPORT_HEADER_ZEGELS
@@ -172,12 +161,23 @@ Module MSadbel
                 Throw New NotSupportedException("Error in FindAndUpdateTableSADBEL: Unsupported enum encountered: " + TableName.GetType.Name)
         End Select
 
-        
+        If Not table Is Nothing AndAlso Not table.Rows Is Nothing AndAlso table.Rows.Count > 0 Then
+            Dim rowToUpdate As DataRow = table.Rows(0)
+
+            rowToUpdate.BeginEdit()
+            For Each Field As ADODB.Field In adoRow.Fields
+                rowToUpdate.SetField(Field.Name, Field.Value)
+            Next
+            rowToUpdate.EndEdit()
+
+            adapter.RowUpdate(rowToUpdate)
+        End If
     End Sub
 
     Public Sub InsertRowSADBEL(ByRef adoRow As ADODB.Recordset, ByVal TableName As SadbelTableType)
         Dim adapter As ITableAdapter(Of DataTable) = Nothing
-        Dim table As SadbelDataSet.PLDA_IMPORT_HEADERDataTable = Nothing
+        Dim table As DataTable = Nothing
+        Dim rowToInsert As DataRow = Nothing
 
         Select Case TableName
             Case SadbelTableType.AUTHORIZED_PARTIES
@@ -299,6 +299,9 @@ Module MSadbel
             Case SadbelTableType.PLDA_IMPORT_DETAIL_HANDELAARS
             Case SadbelTableType.PLDA_IMPORT_DETAIL_ZELF
             Case SadbelTableType.PLDA_IMPORT_HEADER
+                adapter = New SadbelDataSetTableAdapters.PLDA_IMPORT_HEADERTableAdapter
+                table = New SadbelDataSet.PLDA_IMPORT_HEADERDataTable
+
             Case SadbelTableType.PLDA_IMPORT_HEADER_HANDELAARS
             Case SadbelTableType.PLDA_IMPORT_HEADER_ZEGELS
             Case SadbelTableType.PLDA_LRN
@@ -328,17 +331,16 @@ Module MSadbel
                 Throw New NotSupportedException("Error in FindAndUpdateTableSADBEL: Unsupported enum encountered: " + TableName.GetType.Name)
         End Select
 
-        If Not table Is Nothing AndAlso Not table.Rows Is Nothing AndAlso table.Rows.Count > 0 Then
-            Dim rowToInsert As DataRow = table.NewRow
+        rowToInsert = table.NewRow
+        rowToInsert.BeginEdit()
+        For Each Field As ADODB.Field In adoRow.Fields
+            rowToInsert.SetField(Field.Name, Field.Value)
+        Next
+        rowToInsert.EndEdit()
 
-            rowToInsert.BeginEdit()
-            For Each Field As ADODB.Field In adoRow.Fields
-                rowToInsert.SetField(Field.Name, Field.Value)
-            Next
-            rowToInsert.EndEdit()
-
-            'adapter.InsertRow(rowToInsert)
-        End If
+        table.Rows.Add(rowToInsert)
+        adapter.TableUpdate(table)
+        table.AcceptChanges()
     End Sub
 End Module
 
