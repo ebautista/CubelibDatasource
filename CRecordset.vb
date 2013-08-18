@@ -36,6 +36,11 @@ Public Class CRecordset
         Return m_strConnection
     End Function
 
+    Public Sub InitializeClass(ByRef rstADO As ADODB.Recordset, ByVal ConnectionString As String)
+        m_rstADO = rstADO
+        m_strConnection = ConnectionString
+    End Sub
+
 End Class
 
 

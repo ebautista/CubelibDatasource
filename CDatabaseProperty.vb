@@ -3,7 +3,7 @@
 Public Class CDatabaseProperty
     Private Const PROPERTY_FILE As String = "persistence.txt"
     Private Const REGKEY_CLEARINGPOINT_SETTINGS As String = "Software\Wow6432Node\Cubepoint\Clearingpoint\Settings"
-
+    Private Const REGKEY_CLEARINGPOINT_SETTINGS_XP As String = "Software\Cubepoint\ClearingPoint\Settings"
     Private m_objProp As New CProperty(AppDomain.CurrentDomain.BaseDirectory, PROPERTY_FILE)
 
     Public Enum DatabaseType
@@ -42,8 +42,6 @@ Public Class CDatabaseProperty
             strDBPath = m_objProp.getPropertyKey("MdbPath")
         End If
 
-        G_strMdbPath = strDBPath
-
         Return strDBPath
     End Function
 
@@ -62,6 +60,11 @@ Public Class CDatabaseProperty
 
         regKey = Registry.LocalMachine.OpenSubKey(REGKEY_CLEARINGPOINT_SETTINGS, False)
         strDBPath = regKey.GetValue(Key)
+
+        If strDBPath Is Nothing AndAlso Len(strDBPath) < 0 Then
+            regKey = Registry.LocalMachine.OpenSubKey(REGKEY_CLEARINGPOINT_SETTINGS_XP, False)
+            strDBPath = regKey.GetValue(Key)
+        End If
 
         Return strDBPath
     End Function

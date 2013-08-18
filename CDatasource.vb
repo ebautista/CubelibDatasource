@@ -211,7 +211,14 @@ Public Class CDatasource
 
     End Function
 
-    Public Function Update(ByRef RecordsetToUpdate As CRecordset, _
+    Public Function UpdateSadbel(ByRef RecordsetToUpdate As CRecordset, _
+                                 ByVal Bookmark As Double,
+                                 ByVal TableName As Integer) As Integer
+
+        Return Update(RecordsetToUpdate, Bookmark, CType(TableName, SadbelTableType))
+    End Function
+
+    Private Function Update(ByRef RecordsetToUpdate As CRecordset, _
                            ByVal Bookmark As Double,
                            ByVal TableName As IConvertible) As Integer
 
