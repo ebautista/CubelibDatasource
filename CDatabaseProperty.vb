@@ -60,10 +60,11 @@ Public Class CDatabaseProperty
 
         regKey = Registry.LocalMachine.OpenSubKey(REGKEY_CLEARINGPOINT_SETTINGS, False)
         strDBPath = regKey.GetValue(Key)
-
+        AddToTrace("RegKey: " & REGKEY_CLEARINGPOINT_SETTINGS & " DBPath: " & strDBPath)
         If strDBPath Is Nothing AndAlso Len(strDBPath) < 0 Then
             regKey = Registry.LocalMachine.OpenSubKey(REGKEY_CLEARINGPOINT_SETTINGS_XP, False)
             strDBPath = regKey.GetValue(Key)
+            AddToTrace("RegKey: " & REGKEY_CLEARINGPOINT_SETTINGS_XP & " DBPath: " & strDBPath)
         End If
 
         Return strDBPath

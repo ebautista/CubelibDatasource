@@ -215,7 +215,9 @@ Public Class CDatasource
                                  ByVal Bookmark As Double,
                                  ByVal TableName As Integer) As Integer
 
+        AddToTrace("Start update function...")
         Return Update(RecordsetToUpdate, Bookmark, CType(TableName, SadbelTableType))
+        AddToTrace("End update function...")
     End Function
 
     Private Function Update(ByRef RecordsetToUpdate As CRecordset, _
@@ -229,7 +231,9 @@ Public Class CDatasource
         RecordsetToUpdate.Recordset.Bookmark = Bookmark
 
         Try
+            AddToTrace("Start DelegateUpdate function...")
             DelegateUpdate(RecordsetToUpdate.Recordset, TableName)
+            AddToTrace("End DelegateUpdate function...")
             Return SUCCESS
         Catch ex As Exception
             AddToTrace("Error in CubelibDatasource.Update: " & ex.Message)
@@ -677,7 +681,9 @@ Public Class CDatasource
         Dim type As Type = CType(TableName, Object).GetType
 
         If type.Equals(GetType(SadbelTableType)) Then
+            AddToTrace("Start FindAndUpdateRowSADBEL function...")
             FindAndUpdateRowSADBEL(adoRow, TableName)
+            AddToTrace("End FindAndUpdateRowSADBEL function...")
         End If
         'TODO: put all CP Database cases in here
     End Sub

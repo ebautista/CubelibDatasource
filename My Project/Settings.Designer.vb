@@ -54,16 +54,18 @@ Namespace My
             End Get
         End Property
         
-        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.SpecialSettingAttribute(Global.System.Configuration.SpecialSetting.ConnectionString),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=.\mdb_sadbel.mdb;Persist Security In"& _ 
-            "fo=True;Encrypt Password=False;Mask Password=False;Jet OLEDB:Database Password=w"& _ 
-            "ack2")>  _
-        Public ReadOnly Property SadbelConnectionString() As String
+        <Global.System.Configuration.UserScopedSettingAttribute(), _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(), _
+         Global.System.Configuration.DefaultSettingValueAttribute("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=.\mdb_sadbel.mdb;Persist Security In" & _
+            "fo=True;Encrypt Password=False;Mask Password=False;Jet OLEDB:Database Password=w" & _
+            "ack2")> _
+        Public Property SadbelConnectionString() As String
             Get
-                Return CType(Me("SadbelConnectionString"),String)
+                Return CType(Me("SadbelConnectionString"), String)
             End Get
+            Set(value As String)
+                Me("SadbelConnectionString") = value
+            End Set
         End Property
     End Class
 End Namespace
