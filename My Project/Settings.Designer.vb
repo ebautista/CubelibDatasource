@@ -54,18 +54,103 @@ Namespace My
             End Get
         End Property
         
-        <Global.System.Configuration.UserScopedSettingAttribute(), _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(), _
-         Global.System.Configuration.DefaultSettingValueAttribute("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=.\mdb_sadbel.mdb;Persist Security In" & _
-            "fo=True;Encrypt Password=False;Mask Password=False;Jet OLEDB:Database Password=w" & _
-            "ack2")> _
-        Public Property SadbelConnectionString() As String
+        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.SpecialSettingAttribute(Global.System.Configuration.SpecialSetting.ConnectionString),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\Edwin\Documents\GitHub\Reso"& _ 
+            "urces\mdb_sadbel.mdb;Persist Security Info=True")>  _
+        Public ReadOnly Property SadbelConnectionString() As String
             Get
-                Return CType(Me("SadbelConnectionString"), String)
+                Return CType(Me("SadbelConnectionString"),String)
             End Get
-            Set(value As String)
-                Me("SadbelConnectionString") = value
-            End Set
+        End Property
+        
+        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.SpecialSettingAttribute(Global.System.Configuration.SpecialSetting.ConnectionString),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\Edwin\Documents\GitHub\Reso"& _ 
+            "urces\edifact.mdb;Persist Security Info=True")>  _
+        Public ReadOnly Property EdifactConnectionString() As String
+            Get
+                Return CType(Me("EdifactConnectionString"),String)
+            End Get
+        End Property
+        
+        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.SpecialSettingAttribute(Global.System.Configuration.SpecialSetting.ConnectionString),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\Edwin\Documents\GitHub\Reso"& _ 
+            "urces\mdb_data.mdb;Persist Security Info=True")>  _
+        Public ReadOnly Property DataConnectionString() As String
+            Get
+                Return CType(Me("DataConnectionString"),String)
+            End Get
+        End Property
+        
+        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.SpecialSettingAttribute(Global.System.Configuration.SpecialSetting.ConnectionString),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\Edwin\Documents\GitHub\Reso"& _ 
+            "urces\mdb_EDIhistory.mdb;Persist Security Info=True")>  _
+        Public ReadOnly Property EDIhistoryConnectionString() As String
+            Get
+                Return CType(Me("EDIhistoryConnectionString"),String)
+            End Get
+        End Property
+        
+        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.SpecialSettingAttribute(Global.System.Configuration.SpecialSetting.ConnectionString),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\Edwin\Documents\GitHub\Reso"& _ 
+            "urces\mdb_history13.mdb;Persist Security Info=True")>  _
+        Public ReadOnly Property SadbelHistoryConnectionString() As String
+            Get
+                Return CType(Me("SadbelHistoryConnectionString"),String)
+            End Get
+        End Property
+        
+        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.SpecialSettingAttribute(Global.System.Configuration.SpecialSetting.ConnectionString),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\Edwin\Documents\GitHub\Reso"& _ 
+            "urces\mdb_repertory.mdb;Persist Security Info=True")>  _
+        Public ReadOnly Property RepertoryConnectionString() As String
+            Get
+                Return CType(Me("RepertoryConnectionString"),String)
+            End Get
+        End Property
+        
+        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.SpecialSettingAttribute(Global.System.Configuration.SpecialSetting.ConnectionString),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\Edwin\Documents\GitHub\Reso"& _ 
+            "urces\mdb_scheduler.mdb;Persist Security Info=True")>  _
+        Public ReadOnly Property SchedulerConnectionString() As String
+            Get
+                Return CType(Me("SchedulerConnectionString"),String)
+            End Get
+        End Property
+        
+        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.SpecialSettingAttribute(Global.System.Configuration.SpecialSetting.ConnectionString),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\Edwin\Documents\GitHub\Reso"& _ 
+            "urces\mdb_taric.mdb;Persist Security Info=True")>  _
+        Public ReadOnly Property TaricConnectionString() As String
+            Get
+                Return CType(Me("TaricConnectionString"),String)
+            End Get
+        End Property
+        
+        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.SpecialSettingAttribute(Global.System.Configuration.SpecialSetting.ConnectionString),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\Edwin\Documents\GitHub\Reso"& _ 
+            "urces\TemplateCP.mdb;Persist Security Info=True")>  _
+        Public ReadOnly Property TemplateCPConnectionString() As String
+            Get
+                Return CType(Me("TemplateCPConnectionString"),String)
+            End Get
         End Property
     End Class
 End Namespace

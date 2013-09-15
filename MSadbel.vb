@@ -130,7 +130,7 @@ Module MSadbel
             Case SadbelTableType.PLDA_IMPORT_DETAIL_ZELF
             Case SadbelTableType.PLDA_IMPORT_HEADER
                 AddToTrace("Start of SadbelTableType.PLDA_IMPORT_HEADER...")
-                adapter = New SadbelDataSetTableAdapters.PLDA_IMPORT_HEADERTableAdapter
+                adapter = New SADBELTableAdapters.PLDA_IMPORT_HEADERTableAdapter
                 table = adapter.GetByPK(adoRow.Fields("CODE").Value, Convert.ToDouble(adoRow.Fields("HEADER").Value))
 
             Case SadbelTableType.PLDA_IMPORT_HEADER_HANDELAARS
@@ -300,8 +300,8 @@ Module MSadbel
             Case SadbelTableType.PLDA_IMPORT_DETAIL_HANDELAARS
             Case SadbelTableType.PLDA_IMPORT_DETAIL_ZELF
             Case SadbelTableType.PLDA_IMPORT_HEADER
-                adapter = New SadbelDataSetTableAdapters.PLDA_IMPORT_HEADERTableAdapter
-                table = New SadbelDataSet.PLDA_IMPORT_HEADERDataTable
+                adapter = New SADBELTableAdapters.PLDA_IMPORT_HEADERTableAdapter
+                table = New SADBEL.PLDA_IMPORT_HEADERDataTable
 
             Case SadbelTableType.PLDA_IMPORT_HEADER_HANDELAARS
             Case SadbelTableType.PLDA_IMPORT_HEADER_ZEGELS
