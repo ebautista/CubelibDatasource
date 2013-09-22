@@ -186,6 +186,354 @@ Public Class CDatasource
         VALIDATION_RULES
     End Enum
 
+    Public Enum EdifactTableType
+        BOX_SEARCH_MAP
+        DATA_NCTS
+        DATA_NCTS_BERICHT
+        DATA_NCTS_BERICHT_DOUANEKANTOOR
+        DATA_NCTS_BERICHT_HANDELAAR
+        DATA_NCTS_BERICHT_HOOFDING
+        DATA_NCTS_BERICHT_VERVOER
+        DATA_NCTS_BERICHT_VERVOER_CONTROLE
+        DATA_NCTS_BERICHT_VERVOER_INCIDENT
+        DATA_NCTS_BERICHT_VERVOER_OVERLADING
+        DATA_NCTS_BERICHT_VERVOER_OVERLADING_CONTAINER
+        DATA_NCTS_BERICHT_VERVOER_VERZEGELING_INFO
+        DATA_NCTS_BERICHT_VERVOER_VERZEGELING_INFO_ID
+        DATA_NCTS_BGM
+        DATA_NCTS_CNT
+        DATA_NCTS_CST
+        DATA_NCTS_DETAIL
+        DATA_NCTS_DETAIL_BIJZONDERE
+        DATA_NCTS_DETAIL_COLLI
+        DATA_NCTS_DETAIL_CONTAINER
+        DATA_NCTS_DETAIL_DOCUMENTEN
+        DATA_NCTS_DETAIL_RESULTATEN
+        DATA_NCTS_DOC
+        DATA_NCTS_DTM
+        DATA_NCTS_FTX
+        DATA_NCTS_GIR
+        DATA_NCTS_GIS
+        DATA_NCTS_HEADER
+        DATA_NCTS_HEADER_RESULTATEN
+        DATA_NCTS_HEADER_ZEKERHEID
+        DATA_NCTS_LOC
+        DATA_NCTS_MEA
+        DATA_NCTS_MESSAGES
+        DATA_NCTS_NAD
+        DATA_NCTS_PAC
+        DATA_NCTS_PCI
+        DATA_NCTS_RFF
+        DATA_NCTS_SEL
+        DATA_NCTS_TDT
+        DATA_NCTS_TOD
+        DATA_NCTS_TPL
+        DATA_NCTS_UNB
+        DATA_NCTS_UNH
+        DATA_NCTS_UNS
+        DATA_NCTS_UNT
+        DATA_NCTS_UNZ
+        DBProperties
+        EDI_TMS
+        EDI_TMS_CORE
+        EDI_TMS_GROUPS
+        EDI_TMS_ITEMS
+        EDI_TMS_SEGMENTS
+        NCTS_DEPARTURE_FOLLOW_UP_REQUEST
+        NCTS_IEM
+        NCTS_IEM_MAP
+        NCTS_IEM_MAP_CONDITIONS
+        NCTS_IEM_TMS
+        NCTS_ITM_BGM
+        NCTS_ITM_CNT
+        NCTS_ITM_CST
+        NCTS_ITM_DOC
+        NCTS_ITM_DTM
+        NCTS_ITM_FTX
+        NCTS_ITM_GIR
+        NCTS_ITM_GIS
+        NCTS_ITM_LOC
+        NCTS_ITM_MEA
+        NCTS_ITM_NAD
+        NCTS_ITM_PAC
+        NCTS_ITM_PCI
+        NCTS_ITM_RFF
+        NCTS_ITM_SEL
+        NCTS_ITM_TDT
+        NCTS_ITM_TOD
+        NCTS_ITM_TPL
+        NCTS_ITM_UNB
+        NCTS_ITM_UNH
+        NCTS_ITM_UNS
+        NCTS_ITM_UNT
+        NCTS_ITM_UNZ
+        OUTPUT_FILE_FIELDS
+        OUTPUT_FILE_GROUPS
+    End Enum
+
+    Public Enum DataTableType
+        DBProperties
+        MASTER
+        MASTEREDINCTS
+        MASTEREDINCTS2
+        MASTEREDINCTSIE44
+        MASTERNCTS
+        MASTERPLDA
+        OUTBOX
+        REMARKS
+        TEMPLATETREELINKS
+        TEMPLATETREELINKS2003
+        USERDEFINEDTEMPLATES
+    End Enum
+
+    Public Enum EdiHistoryTableType
+        BOX_SEARCH_MAP
+        DATA_NCTS
+        DATA_NCTS_BERICHT
+        DATA_NCTS_BERICHT_DOUANEKANTOOR
+        DATA_NCTS_BERICHT_HANDELAAR
+        DATA_NCTS_BERICHT_HOOFDING
+        DATA_NCTS_BERICHT_VERVOER
+        DATA_NCTS_BERICHT_VERVOER_CONTROLE
+        DATA_NCTS_BERICHT_VERVOER_INCIDENT
+        DATA_NCTS_BERICHT_VERVOER_OVERLADING
+        DATA_NCTS_BERICHT_VERVOER_OVERLADING_CONTAINER
+        DATA_NCTS_BERICHT_VERVOER_VERZEGELING_INFO
+        DATA_NCTS_BERICHT_VERVOER_VERZEGELING_INFO_ID
+        DATA_NCTS_BGM
+        DATA_NCTS_CNT
+        DATA_NCTS_CST
+        DATA_NCTS_DETAIL
+        DATA_NCTS_DETAIL_BIJZONDERE
+        DATA_NCTS_DETAIL_COLLI
+        DATA_NCTS_DETAIL_CONTAINER
+        DATA_NCTS_DETAIL_DOCUMENTEN
+        DATA_NCTS_DETAIL_RESULTATEN
+        DATA_NCTS_DOC
+        DATA_NCTS_DTM
+        DATA_NCTS_FTX
+        DATA_NCTS_GIR
+        DATA_NCTS_GIS
+        DATA_NCTS_HEADER
+        DATA_NCTS_HEADER_RESULTATEN
+        DATA_NCTS_HEADER_ZEKERHEID
+        DATA_NCTS_LOC
+        DATA_NCTS_MEA
+        DATA_NCTS_MESSAGES
+        DATA_NCTS_NAD
+        DATA_NCTS_PAC
+        DATA_NCTS_PCI
+        DATA_NCTS_RFF
+        DATA_NCTS_SEL
+        DATA_NCTS_TDT
+        DATA_NCTS_TOD
+        DATA_NCTS_TPL
+        DATA_NCTS_UNB
+        DATA_NCTS_UNH
+        DATA_NCTS_UNS
+        DATA_NCTS_UNT
+        DATA_NCTS_UNZ
+        DBProperties
+        EDI_TMS
+        EDI_TMS_CORE
+        EDI_TMS_GROUPS
+        EDI_TMS_ITEMS
+        EDI_TMS_SEGMENTS
+        MASTEREDINCTS
+        MASTEREDINCTS2
+        MASTEREDINCTSIE44
+        NCTS_IEM
+        NCTS_IEM_MAP
+        NCTS_IEM_MAP_CONDITIONS
+        NCTS_IEM_TMS
+        NCTS_ITM_BGM
+        NCTS_ITM_CNT
+        NCTS_ITM_CST
+        NCTS_ITM_DOC
+        NCTS_ITM_DTM
+        NCTS_ITM_FTX
+        NCTS_ITM_GIR
+        NCTS_ITM_GIS
+        NCTS_ITM_LOC
+        NCTS_ITM_MEA
+        NCTS_ITM_NAD
+        NCTS_ITM_PAC
+        NCTS_ITM_PCI
+        NCTS_ITM_RFF
+        NCTS_ITM_SEL
+        NCTS_ITM_TDT
+        NCTS_ITM_TOD
+        NCTS_ITM_TPL
+        NCTS_ITM_UNB
+        NCTS_ITM_UNH
+        NCTS_ITM_UNS
+        NCTS_ITM_UNT
+        NCTS_ITM_UNZ
+        OUTPUT_FILE_FIELDS
+        OUTPUT_FILE_GROUPS
+    End Enum
+
+    Public Enum SadbelHistoryTableType
+        COMBINED_NCTS
+        COMBINED_NCTS_DETAIL
+        COMBINED_NCTS_DETAIL_BIJZONDERE
+        COMBINED_NCTS_DETAIL_COLLI
+        COMBINED_NCTS_DETAIL_CONTAINER
+        COMBINED_NCTS_DETAIL_DOCUMENTEN
+        COMBINED_NCTS_DETAIL_GEVOELIGE
+        COMBINED_NCTS_DETAIL_GOEDEREN
+        COMBINED_NCTS_HEADER
+        COMBINED_NCTS_HEADER_ZEKERHEID
+        DBProperties
+        EXPORT
+        EXPORT_DETAIL
+        EXPORT_HEADER
+        IMPORT
+        IMPORT_DETAIL
+        IMPORT_HEADER
+        InBoundDocs
+        Inbounds
+        MASTER
+        MASTERNCTS
+        MASTERPLDA
+        NCTS
+        NCTS_DETAIL
+        NCTS_DETAIL_BIJZONDERE
+        NCTS_DETAIL_COLLI
+        NCTS_DETAIL_CONTAINER
+        NCTS_DETAIL_DOCUMENTEN
+        NCTS_HEADER
+        NCTS_HEADER_ZEKERHEID
+        OutboundDocs
+        Outbounds
+        PLDA_COMBINED
+        PLDA_COMBINED_DETAIL
+        PLDA_COMBINED_DETAIL_BIJZONDERE
+        PLDA_COMBINED_DETAIL_CONTAINER
+        PLDA_COMBINED_DETAIL_DOCUMENTEN
+        PLDA_COMBINED_DETAIL_HANDELAARS
+        PLDA_COMBINED_DETAIL_SENSITIVE_GOODS
+        PLDA_COMBINED_HEADER
+        PLDA_COMBINED_HEADER_HANDELAARS
+        PLDA_COMBINED_HEADER_TRANSIT_OFFICES
+        PLDA_COMBINED_HEADER_ZEGELS
+        PLDA_COMBINED_HEADER_ZEKERHEID
+        PLDA_IMPORT
+        PLDA_IMPORT_DETAIL
+        PLDA_IMPORT_DETAIL_BEREKENINGS_EENHEDEN
+        PLDA_IMPORT_DETAIL_BIJZONDERE
+        PLDA_IMPORT_DETAIL_CONTAINER
+        PLDA_IMPORT_DETAIL_DOCUMENTEN
+        PLDA_IMPORT_DETAIL_HANDELAARS
+        PLDA_IMPORT_DETAIL_ZELF
+        PLDA_IMPORT_HEADER
+        PLDA_IMPORT_HEADER_HANDELAARS
+        PLDA_IMPORT_HEADER_ZEGELS
+        PLDA_MESSAGES
+        REMARKS
+        TRANSIT
+        TRANSIT_DETAIL
+        TRANSIT_HEADER
+    End Enum
+
+    Public Enum RepertoryTableType
+        Code_Translation
+        Columns
+        DBProperties
+        Export
+        Fields
+        Import
+        PLDA_COMBINED
+        PLDA_IMPORT
+        Repertory_Properties
+        Selection_Criteria
+        Setup
+        Transit
+        Tree
+    End Enum
+
+    Public Enum SchedulerTableType
+        Archiver_Properties
+        DBProperties
+        EDIProperties
+        Error_Code_Maintenance
+        Error_Reports_Pending
+        LOGID_SCHEDULE
+        MAINTENANCE_PROC_SETTINGS
+        PLDA_Archiver_Properties
+        PLDA_MESSAGES_QUEUE
+        PLDAProperties
+        PRINTBOXES
+        PRINTDATA
+        PRINTER_DEFINITION
+        ReceivingCycles
+        REMOTEFILE
+        SEGMENT
+        SENDITEMS
+        SETUP
+        TASK_SCHEDULE
+    End Enum
+
+    Public Enum TaricTableType
+        CLIENTS
+        CN
+        COMMON
+        DBProperties
+        EXPORT
+        IMPORT
+        PROPERTIES
+        SUPP_UNITS
+    End Enum
+
+    Public Enum TemplateCPTableType
+        Allow_Move
+        ButtonGroups
+        ButtonGroups2003
+        Buttons
+        Buttons2003
+        ButtonTreeSettings
+        ButtonTreeSettings2003
+        CPUpgradeTracker
+        Databases
+        DBProperties
+        DBProps
+        DBUpgradeTracker
+        DefaultViewColumns
+        DefaultViewColumns2003
+        DELETEITEM_LOG
+        Developer_Settings
+        Features
+        Filter
+        FindViewColumns
+        GroupNodes
+        Licensee
+        LinkedTables
+        MainSettings
+        Nodes
+        Nodes2003
+        PermDeletedArchivedDocs
+        PrintBacklogTable
+        PrintDocTypes
+        TemplateTreeLinks
+        Trees
+        Trees2003
+        TreeSettings
+        TreeSettings2003
+        TreeTypeGroups
+        TreeTypes
+        TreeViews
+        TreeViews2003
+        TVQueryDefs
+        TVQueryDefs2003
+        Users
+        UserViewColumns
+        UserViewColumns2003
+        UVCFormatCondition
+        UVCFormatCondition2003
+        Views
+        WindowSettings
+    End Enum
+
     Private Const FAILURE As Integer = -1
     Private Const SUCCESS As Integer = 0
 
@@ -215,9 +563,52 @@ Public Class CDatasource
                                  ByVal Bookmark As Double,
                                  ByVal TableName As Integer) As Integer
 
-        AddToTrace("Start update function...")
         Return Update(RecordsetToUpdate, Bookmark, CType(TableName, SadbelTableType))
-        AddToTrace("End update function...")
+    End Function
+
+    Public Function UpdateEdifact(ByRef RecordsetToUpdate As CRecordset, _
+                                  ByVal Bookmark As Double,
+                                  ByVal TableName As Integer) As Integer
+
+        Return Update(RecordsetToUpdate, Bookmark, CType(TableName, EdifactTableType))
+    End Function
+
+    Public Function UpdateData(ByRef RecordsetToUpdate As CRecordset, _
+                               ByVal Bookmark As Double,
+                               ByVal TableName As Integer) As Integer
+
+        Return Update(RecordsetToUpdate, Bookmark, CType(TableName, DataTableType))
+    End Function
+
+    Public Function UpdateEdifactHistory(ByRef RecordsetToUpdate As CRecordset, _
+                                         ByVal Bookmark As Double,
+                                         ByVal TableName As Integer,
+                                         ByVal Year As Integer) As Integer
+        'TODO: How to add year
+        Return Update(RecordsetToUpdate, Bookmark, CType(TableName, EdiHistoryTableType))
+    End Function
+
+    Public Function UpdateSadbelHistory(ByRef RecordsetToUpdate As CRecordset, _
+                                        ByVal Bookmark As Double,
+                                        ByVal TableName As Integer,
+                                        ByVal Year As Integer) As Integer
+        'TODO: How to add year
+        Return Update(RecordsetToUpdate, Bookmark, CType(TableName, SadbelHistoryTableType))
+    End Function
+
+    Public Function UpdateRepertory(ByRef RecordsetToUpdate As CRecordset, _
+                                    ByVal Bookmark As Double,
+                                    ByVal TableName As Integer,
+                                    Year As Integer) As Integer
+        'TODO: How to add year
+        Return Update(RecordsetToUpdate, Bookmark, CType(TableName, RepertoryTableType))
+    End Function
+
+    Public Function UpdateTemplateCP(ByRef RecordsetToUpdate As CRecordset, _
+                                     ByVal Bookmark As Double,
+                                     ByVal TableName As Integer) As Integer
+
+        Return Update(RecordsetToUpdate, Bookmark, CType(TableName, TemplateCPTableType))
     End Function
 
     Private Function Update(ByRef RecordsetToUpdate As CRecordset, _
@@ -231,9 +622,7 @@ Public Class CDatasource
         RecordsetToUpdate.Recordset.Bookmark = Bookmark
 
         Try
-            AddToTrace("Start DelegateUpdate function...")
             DelegateUpdate(RecordsetToUpdate.Recordset, TableName)
-            AddToTrace("End DelegateUpdate function...")
             Return SUCCESS
         Catch ex As Exception
             AddToTrace("Error in CubelibDatasource.Update: " & ex.Message)
@@ -681,11 +1070,23 @@ Public Class CDatasource
         Dim type As Type = CType(TableName, Object).GetType
 
         If type.Equals(GetType(SadbelTableType)) Then
-            AddToTrace("Start FindAndUpdateRowSADBEL function...")
             FindAndUpdateRowSADBEL(adoRow, TableName)
-            AddToTrace("End FindAndUpdateRowSADBEL function...")
+        ElseIf type.Equals(GetType(EdifactTableType)) Then
+            FindAndUpdateRowEdifact(adoRow, TableName)
+        ElseIf type.Equals(GetType(DataTableType)) Then
+            FindAndUpdateRowData(adoRow, TableName)
+        ElseIf type.Equals(GetType(EdiHistoryTableType)) Then
+            FindAndUpdateRowEdifactHistory(adoRow, TableName)
+        ElseIf type.Equals(GetType(SadbelHistoryTableType)) Then
+            FindAndUpdateRowSadbelHistory(adoRow, TableName)
+        ElseIf type.Equals(GetType(SchedulerTableType)) Then
+            FindAndUpdateRowScheduler(adoRow, TableName)
+        ElseIf type.Equals(GetType(RepertoryTableType)) Then
+            FindAndUpdateRowRepertory(adoRow, TableName)
+        ElseIf type.Equals(GetType(TemplateCPTableType)) Then
+            FindAndUpdateRowTemplateCP(adoRow, TableName)
         End If
-        'TODO: put all CP Database cases in here
+
     End Sub
 
     Private Sub DelegateInsert(ByRef adoRow As ADODB.Recordset, ByRef TableName As IConvertible)
@@ -693,8 +1094,21 @@ Public Class CDatasource
 
         If type.Equals(GetType(SadbelTableType)) Then
             InsertRowSADBEL(adoRow, TableName)
+        ElseIf type.Equals(GetType(EdifactTableType)) Then
+            InsertRowEdifact(adoRow, TableName)
+        ElseIf type.Equals(GetType(DataTableType)) Then
+            InsertRowData(adoRow, TableName)
+        ElseIf type.Equals(GetType(EdiHistoryTableType)) Then
+            InsertRowEdifactHistory(adoRow, TableName)
+        ElseIf type.Equals(GetType(SadbelHistoryTableType)) Then
+            InsertRowSadbelHistory(adoRow, TableName)
+        ElseIf type.Equals(GetType(SchedulerTableType)) Then
+            InsertRowScheduler(adoRow, TableName)
+        ElseIf type.Equals(GetType(RepertoryTableType)) Then
+            InsertRowRepertory(adoRow, TableName)
+        ElseIf type.Equals(GetType(TemplateCPTableType)) Then
+            InsertRowTemplateCP(adoRow, TableName)
         End If
-        'TODO: put all CP Database cases in here
     End Sub
 End Class
 

@@ -343,5 +343,6 @@ Module MSadbel
         adapter.TableUpdate(table)
         table.AcceptChanges()
     End Sub
+
 End Module
 

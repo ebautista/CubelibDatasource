@@ -95,8 +95,15 @@
       <DependentUpon>EDI_HISTORY.xsd</DependentUpon>
     </Compile>
     <Compile Include="ITableAdapter.vb" />
+    <Compile Include="MData.vb" />
+    <Compile Include="MEdifact.vb" />
+    <Compile Include="MEdifactHistory.vb" />
+    <Compile Include="MRepertory.vb" />
     <Compile Include="MSadbel.vb" />
     <Compile Include="MGlobal.vb" />
+    <Compile Include="MSadbelHistory.vb" />
+    <Compile Include="MScheduler.vb" />
+    <Compile Include="MTemplateCP.vb" />
     <Compile Include="MTrace.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
