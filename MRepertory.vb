@@ -9,6 +9,19 @@ Module MRepertory
 
         Select Case TableName
             Case RepertoryTableType.Code_Translation
+            Case RepertoryTableType.Columns
+            Case RepertoryTableType.DBProperties
+            Case RepertoryTableType.Export
+            Case RepertoryTableType.Fields
+            Case RepertoryTableType.Import
+            Case RepertoryTableType.PLDA_COMBINED
+            Case RepertoryTableType.PLDA_IMPORT
+            Case RepertoryTableType.Repertory_Properties
+            Case RepertoryTableType.Selection_Criteria
+            Case RepertoryTableType.Setup
+            Case RepertoryTableType.Transit
+            Case RepertoryTableType.Tree
+
 
             Case Else
                 Throw New NotSupportedException("Error in FindAndUpdateRowRepertory: Unsupported enum encountered: " + TableName.GetType.Name)
@@ -34,6 +47,18 @@ Module MRepertory
 
         Select Case TableName
             Case RepertoryTableType.Code_Translation
+            Case RepertoryTableType.Columns
+            Case RepertoryTableType.DBProperties
+            Case RepertoryTableType.Export
+            Case RepertoryTableType.Fields
+            Case RepertoryTableType.Import
+            Case RepertoryTableType.PLDA_COMBINED
+            Case RepertoryTableType.PLDA_IMPORT
+            Case RepertoryTableType.Repertory_Properties
+            Case RepertoryTableType.Selection_Criteria
+            Case RepertoryTableType.Setup
+            Case RepertoryTableType.Transit
+            Case RepertoryTableType.Tree
 
             Case Else
                 Throw New NotSupportedException("Error in InsertRowRepertory: Unsupported enum encountered: " + TableName.GetType.Name)

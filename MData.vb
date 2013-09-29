@@ -8,7 +8,18 @@ Module MData
         Dim adapter As ITableAdapter(Of DataTable) = Nothing
 
         Select Case TableName
+            Case DataTableType.DBProperties
             Case DataTableType.MASTER
+            Case DataTableType.MASTEREDINCTS
+            Case DataTableType.MASTEREDINCTS2
+            Case DataTableType.MASTEREDINCTSIE44
+            Case DataTableType.MASTERNCTS
+            Case DataTableType.MASTERPLDA
+            Case DataTableType.OUTBOX
+            Case DataTableType.REMARKS
+            Case DataTableType.TEMPLATETREELINKS
+            Case DataTableType.TEMPLATETREELINKS2003
+            Case DataTableType.USERDEFINEDTEMPLATES
 
             Case Else
                 Throw New NotSupportedException("Error in FindAndUpdateRowData: Unsupported enum encountered: " + TableName.GetType.Name)
@@ -33,7 +44,18 @@ Module MData
         Dim rowToInsert As DataRow = Nothing
 
         Select Case TableName
+            Case DataTableType.DBProperties
             Case DataTableType.MASTER
+            Case DataTableType.MASTEREDINCTS
+            Case DataTableType.MASTEREDINCTS2
+            Case DataTableType.MASTEREDINCTSIE44
+            Case DataTableType.MASTERNCTS
+            Case DataTableType.MASTERPLDA
+            Case DataTableType.OUTBOX
+            Case DataTableType.REMARKS
+            Case DataTableType.TEMPLATETREELINKS
+            Case DataTableType.TEMPLATETREELINKS2003
+            Case DataTableType.USERDEFINEDTEMPLATES
 
             Case Else
                 Throw New NotSupportedException("Error in InsertRowData: Unsupported enum encountered: " + TableName.GetType.Name)

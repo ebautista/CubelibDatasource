@@ -103,6 +103,7 @@
     <Compile Include="MGlobal.vb" />
     <Compile Include="MSadbelHistory.vb" />
     <Compile Include="MScheduler.vb" />
+    <Compile Include="MTaric.vb" />
     <Compile Include="MTemplateCP.vb" />
     <Compile Include="MTrace.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
@@ -141,6 +142,9 @@
     <Compile Include="SCHEDULER.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+      <DependentUpon>SCHEDULER.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="SCHEDULER.vb">
       <DependentUpon>SCHEDULER.xsd</DependentUpon>
     </Compile>
     <Compile Include="Settings.vb" />
