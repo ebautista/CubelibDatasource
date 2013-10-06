@@ -84,6 +84,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DATA.xsd</DependentUpon>
     </Compile>
+    <Compile Include="DATA.vb">
+      <DependentUpon>DATA.xsd</DependentUpon>
+    </Compile>
     <Compile Include="EDIFACT.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -153,9 +156,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>TARIC.xsd</DependentUpon>
     </Compile>
+    <Compile Include="TARIC.vb">
+      <DependentUpon>TARIC.xsd</DependentUpon>
+    </Compile>
     <Compile Include="TEMPLATECP.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+      <DependentUpon>TEMPLATECP.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="TEMPLATECP.vb">
       <DependentUpon>TEMPLATECP.xsd</DependentUpon>
     </Compile>
   </ItemGroup>

@@ -5888,8 +5888,8 @@ Partial Public Class TEMPLATECP
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
-        Public Function FindByDVC_ID(ByVal DVC_ID As Integer) As DefaultViewColumnsRow
-            Return CType(Me.Rows.Find(New Object() {DVC_ID}),DefaultViewColumnsRow)
+        Public Function FindByDVC_IDTView_ID(ByVal DVC_ID As Integer, ByVal TView_ID As Integer) As DefaultViewColumnsRow
+            Return CType(Me.Rows.Find(New Object() {DVC_ID, TView_ID}),DefaultViewColumnsRow)
         End Function
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -5959,12 +5959,12 @@ Partial Public Class TEMPLATECP
             MyBase.Columns.Add(Me.columnDVC_IDOld)
             Me.columnDVC_HeaderIcon = New Global.System.Data.DataColumn("DVC_HeaderIcon", GetType(Byte()), Nothing, Global.System.Data.MappingType.Element)
             MyBase.Columns.Add(Me.columnDVC_HeaderIcon)
-            Me.Constraints.Add(New Global.System.Data.UniqueConstraint("Constraint1", New Global.System.Data.DataColumn() {Me.columnDVC_ID}, true))
+            Me.Constraints.Add(New Global.System.Data.UniqueConstraint("Constraint1", New Global.System.Data.DataColumn() {Me.columnDVC_ID, Me.columnTView_ID}, true))
             Me.columnDVC_ID.AutoIncrement = true
             Me.columnDVC_ID.AutoIncrementSeed = -1
             Me.columnDVC_ID.AutoIncrementStep = -1
             Me.columnDVC_ID.AllowDBNull = false
-            Me.columnDVC_ID.Unique = true
+            Me.columnTView_ID.AllowDBNull = false
             Me.columnDVC_FieldSource.MaxLength = 255
             Me.columnDVC_FieldAlias.MaxLength = 50
             Me.columnDVC_Alignment.MaxLength = 50
@@ -20741,11 +20741,7 @@ Partial Public Class TEMPLATECP
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Public Property TView_ID() As Integer
             Get
-                Try 
-                    Return CType(Me(Me.tableDefaultViewColumns.TView_IDColumn),Integer)
-                Catch e As Global.System.InvalidCastException
-                    Throw New Global.System.Data.StrongTypingException("The value for column 'TView_ID' in table 'DefaultViewColumns' is DBNull.", e)
-                End Try
+                Return CType(Me(Me.tableDefaultViewColumns.TView_IDColumn),Integer)
             End Get
             Set
                 Me(Me.tableDefaultViewColumns.TView_IDColumn) = value
@@ -20947,18 +20943,6 @@ Partial Public Class TEMPLATECP
                 Me(Me.tableDefaultViewColumns.DVC_HeaderIconColumn) = value
             End Set
         End Property
-        
-        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
-        Public Function IsTView_IDNull() As Boolean
-            Return Me.IsNull(Me.tableDefaultViewColumns.TView_IDColumn)
-        End Function
-        
-        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
-        Public Sub SetTView_IDNull()
-            Me(Me.tableDefaultViewColumns.TView_IDColumn) = Global.System.Convert.DBNull
-        End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
@@ -32147,12 +32131,18 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT Allow_ID, Allow_From, Allow_From_Tag, Allow_To, Allow_To_Tag FROM Allow_Mo"& _ 
                 "ve"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT Allow_ID, Allow_From, Allow_From_Tag, Allow_To, Allow_To_Tag FROM Allow_Mo"& _ 
+                "ve WHERE Allow_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("Allow_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "Allow_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -32174,6 +32164,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.Allow_MoveDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.Allow_MoveDataTable = New TEMPLATECP.Allow_MoveDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal Allow_ID As Integer) As TEMPLATECP.Allow_MoveDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(Allow_ID,Integer)
             Dim dataTable As TEMPLATECP.Allow_MoveDataTable = New TEMPLATECP.Allow_MoveDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -32586,12 +32588,18 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT BGroup_ID, User_ID, Tree_ID, BGroup_SelectedNodeID, BGroup_Caption, BGroup"& _ 
                 "_TopNode, BGroup_Default, Feature_ID FROM ButtonGroups"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT BGroup_ID, User_ID, Tree_ID, BGroup_SelectedNodeID, BGroup_Caption, BGroup"& _ 
+                "_TopNode, BGroup_Default, Feature_ID FROM ButtonGroups WHERE BGroup_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("BGroup_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "BGroup_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -32613,6 +32621,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.ButtonGroupsDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.ButtonGroupsDataTable = New TEMPLATECP.ButtonGroupsDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal BGroup_ID As Integer) As TEMPLATECP.ButtonGroupsDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(BGroup_ID,Integer)
             Dim dataTable As TEMPLATECP.ButtonGroupsDataTable = New TEMPLATECP.ButtonGroupsDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -33041,11 +33061,17 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT BGroup_ID, User_ID, BGroup_Caption, Button_ID FROM ButtonGroups2003"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT BGroup_ID, User_ID, BGroup_Caption, Button_ID FROM ButtonGroups2003 WHERE "& _ 
+                "BGroup_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("BGroup_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "BGroup_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -33067,6 +33093,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.ButtonGroups2003DataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.ButtonGroups2003DataTable = New TEMPLATECP.ButtonGroups2003DataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal BGroup_ID As Integer) As TEMPLATECP.ButtonGroups2003DataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(BGroup_ID,Integer)
             Dim dataTable As TEMPLATECP.ButtonGroups2003DataTable = New TEMPLATECP.ButtonGroups2003DataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -33469,12 +33507,19 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT Button_ID, BGroup_ID, Button_Caption, Tree_ID, Button_IconName, Button_Def"& _ 
                 "ault, Node_ID, Button_IDOld, Button_Deleted, Button_Order FROM Buttons"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT Button_ID, BGroup_ID, Button_Caption, Tree_ID, Button_IconName, Button_Def"& _ 
+                "ault, Node_ID, Button_IDOld, Button_Deleted, Button_Order FROM Buttons WHERE But"& _ 
+                "ton_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("Button_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "Button_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -33496,6 +33541,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.ButtonsDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.ButtonsDataTable = New TEMPLATECP.ButtonsDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal Button_ID As Integer) As TEMPLATECP.ButtonsDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(Button_ID,Integer)
             Dim dataTable As TEMPLATECP.ButtonsDataTable = New TEMPLATECP.ButtonsDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -33991,12 +34048,18 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT Button_ID, BGroup_ID, Button_Caption, Tree_ID, Button_IconName, Button_Def"& _ 
                 "ault FROM Buttons2003"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT Button_ID, BGroup_ID, Button_Caption, Tree_ID, Button_IconName, Button_Def"& _ 
+                "ault FROM Buttons2003 WHERE Button_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("Button_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "Button_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -34018,6 +34081,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.Buttons2003DataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.Buttons2003DataTable = New TEMPLATECP.Buttons2003DataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal Button_ID As Integer) As TEMPLATECP.Buttons2003DataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(Button_ID,Integer)
             Dim dataTable As TEMPLATECP.Buttons2003DataTable = New TEMPLATECP.Buttons2003DataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -34376,12 +34451,18 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT BTS_ID, User_ID, Button_ID, BTS_TopNode, BTS_SelectedNode, Button_IDOld FR"& _ 
                 "OM ButtonTreeSettings"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT BTS_ID, User_ID, Button_ID, BTS_TopNode, BTS_SelectedNode, Button_IDOld FR"& _ 
+                "OM ButtonTreeSettings WHERE BTS_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("BTS_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "BTS_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -34403,6 +34484,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.ButtonTreeSettingsDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.ButtonTreeSettingsDataTable = New TEMPLATECP.ButtonTreeSettingsDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal BTS_ID As Integer) As TEMPLATECP.ButtonTreeSettingsDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(BTS_ID,Integer)
             Dim dataTable As TEMPLATECP.ButtonTreeSettingsDataTable = New TEMPLATECP.ButtonTreeSettingsDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -34738,12 +34831,18 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT BTS_ID, User_ID, Button_ID, BTS_TopNode, BTS_SelectedNode FROM ButtonTreeS"& _ 
                 "ettings2003"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT BTS_ID, User_ID, Button_ID, BTS_TopNode, BTS_SelectedNode FROM ButtonTreeS"& _ 
+                "ettings2003 WHERE BTS_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("BTS_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "BTS_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -34765,6 +34864,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.ButtonTreeSettings2003DataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.ButtonTreeSettings2003DataTable = New TEMPLATECP.ButtonTreeSettings2003DataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal BTS_ID As Integer) As TEMPLATECP.ButtonTreeSettings2003DataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(BTS_ID,Integer)
             Dim dataTable As TEMPLATECP.ButtonTreeSettings2003DataTable = New TEMPLATECP.ButtonTreeSettings2003DataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -35082,12 +35193,19 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT CPUpgradeTrack_ID, CPUpgradeTrack_Version, CPUpgradeTrack_Date, CPUpgradeT"& _ 
                 "rack_Exe_Date, CPUpgradeTrack_PerformUpdates_Completed FROM CPUpgradeTracker"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT CPUpgradeTrack_ID, CPUpgradeTrack_Version, CPUpgradeTrack_Date, CPUpgradeT"& _ 
+                "rack_Exe_Date, CPUpgradeTrack_PerformUpdates_Completed FROM CPUpgradeTracker WHE"& _ 
+                "RE CPUpgradeTrack_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("CPUpgradeTrack_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "CPUpgradeTrack_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -35109,6 +35227,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.CPUpgradeTrackerDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.CPUpgradeTrackerDataTable = New TEMPLATECP.CPUpgradeTrackerDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal CPUpgradeTrack_ID As Integer) As TEMPLATECP.CPUpgradeTrackerDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(CPUpgradeTrack_ID,Integer)
             Dim dataTable As TEMPLATECP.CPUpgradeTrackerDataTable = New TEMPLATECP.CPUpgradeTrackerDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -35460,11 +35590,16 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT DB_ID, DB_Name, DB_Location, DB_Password FROM Databases"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT DB_ID, DB_Name, DB_Location, DB_Password FROM Databases WHERE DB_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("DB_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "DB_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -35486,6 +35621,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.DatabasesDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.DatabasesDataTable = New TEMPLATECP.DatabasesDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal DB_ID As Integer) As TEMPLATECP.DatabasesDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(DB_ID,Integer)
             Dim dataTable As TEMPLATECP.DatabasesDataTable = New TEMPLATECP.DatabasesDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -36301,12 +36448,19 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT DBUpgradeTrack_ID, DBUpgradeTrack_Name, DBUpgradeTrack_Version, DBUpgradeT"& _ 
                 "rack_Date, DBUpgradeTrack_PerformUpdates_Completed FROM DBUpgradeTracker"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT DBUpgradeTrack_ID, DBUpgradeTrack_Name, DBUpgradeTrack_Version, DBUpgradeT"& _ 
+                "rack_Date, DBUpgradeTrack_PerformUpdates_Completed FROM DBUpgradeTracker WHERE D"& _ 
+                "BUpgradeTrack_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("DBUpgradeTrack_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "DBUpgradeTrack_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -36328,6 +36482,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.DBUpgradeTrackerDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.DBUpgradeTrackerDataTable = New TEMPLATECP.DBUpgradeTrackerDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal DBUpgradeTrack_ID As Integer) As TEMPLATECP.DBUpgradeTrackerDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(DBUpgradeTrack_ID,Integer)
             Dim dataTable As TEMPLATECP.DBUpgradeTrackerDataTable = New TEMPLATECP.DBUpgradeTrackerDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -36768,13 +36934,22 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT DVC_ID, TView_ID, DVC_FieldSource, DVC_FieldAlias, DVC_Position, DVC_Defau"& _ 
                 "lt, DVC_Alignment, DVC_Width, DVC_Requirement, DVC_GroupHeaderLevel, DVC_DataTyp"& _ 
                 "e, DVC_FCIDs, DVC_Format, DVC_IDOld, DVC_HeaderIcon FROM DefaultViewColumns"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT DVC_ID, TView_ID, DVC_FieldSource, DVC_FieldAlias, DVC_Position, DVC_Defau"& _ 
+                "lt, DVC_Alignment, DVC_Width, DVC_Requirement, DVC_GroupHeaderLevel, DVC_DataTyp"& _ 
+                "e, DVC_FCIDs, DVC_Format, DVC_IDOld, DVC_HeaderIcon FROM DefaultViewColumns WHER"& _ 
+                "E DVC_ID = ? AND TView_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("DVC_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "DVC_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("TView_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "TView_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -36796,6 +36971,23 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.DefaultViewColumnsDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.DefaultViewColumnsDataTable = New TEMPLATECP.DefaultViewColumnsDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal DVC_ID As Integer, ByVal TView_ID As Global.System.Nullable(Of Integer)) As TEMPLATECP.DefaultViewColumnsDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(DVC_ID,Integer)
+            If (TView_ID.HasValue = true) Then
+                Me.Adapter.SelectCommand.Parameters(1).Value = CType(TView_ID.Value,Integer)
+            Else
+                Me.Adapter.SelectCommand.Parameters(1).Value = Global.System.DBNull.Value
+            End If
             Dim dataTable As TEMPLATECP.DefaultViewColumnsDataTable = New TEMPLATECP.DefaultViewColumnsDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -36833,15 +37025,10 @@ Namespace TEMPLATECPTableAdapters
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Delete, true)>  _
-        Public Overloads Overridable Function Delete(ByVal Original_DVC_ID As Integer, ByVal Original_TView_ID As Global.System.Nullable(Of Integer), ByVal Original_DVC_FieldSource As String, ByVal Original_DVC_FieldAlias As String, ByVal Original_DVC_Position As Global.System.Nullable(Of Integer), ByVal Original_DVC_Default As Boolean, ByVal Original_DVC_Alignment As String, ByVal Original_DVC_Width As Global.System.Nullable(Of Double), ByVal Original_DVC_Requirement As Global.System.Nullable(Of Integer), ByVal Original_DVC_GroupHeaderLevel As Global.System.Nullable(Of Integer), ByVal Original_DVC_DataType As String, ByVal Original_DVC_IDOld As Global.System.Nullable(Of Integer)) As Integer
+        Public Overloads Overridable Function Delete(ByVal Original_DVC_ID As Integer, ByVal Original_TView_ID As Integer, ByVal Original_DVC_FieldSource As String, ByVal Original_DVC_FieldAlias As String, ByVal Original_DVC_Position As Global.System.Nullable(Of Integer), ByVal Original_DVC_Default As Boolean, ByVal Original_DVC_Alignment As String, ByVal Original_DVC_Width As Global.System.Nullable(Of Double), ByVal Original_DVC_Requirement As Global.System.Nullable(Of Integer), ByVal Original_DVC_GroupHeaderLevel As Global.System.Nullable(Of Integer), ByVal Original_DVC_DataType As String, ByVal Original_DVC_IDOld As Global.System.Nullable(Of Integer)) As Integer
             Me.Adapter.DeleteCommand.Parameters(0).Value = CType(Original_DVC_ID,Integer)
-            If (Original_TView_ID.HasValue = true) Then
-                Me.Adapter.DeleteCommand.Parameters(1).Value = CType(0,Object)
-                Me.Adapter.DeleteCommand.Parameters(2).Value = CType(Original_TView_ID.Value,Integer)
-            Else
-                Me.Adapter.DeleteCommand.Parameters(1).Value = CType(1,Object)
-                Me.Adapter.DeleteCommand.Parameters(2).Value = Global.System.DBNull.Value
-            End If
+            Me.Adapter.DeleteCommand.Parameters(1).Value = CType(0,Object)
+            Me.Adapter.DeleteCommand.Parameters(2).Value = CType(Original_TView_ID,Integer)
             If (Original_DVC_FieldSource Is Nothing) Then
                 Me.Adapter.DeleteCommand.Parameters(3).Value = CType(1,Object)
                 Me.Adapter.DeleteCommand.Parameters(4).Value = Global.System.DBNull.Value
@@ -36926,12 +37113,8 @@ Namespace TEMPLATECPTableAdapters
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Insert, true)>  _
-        Public Overloads Overridable Function Insert(ByVal TView_ID As Global.System.Nullable(Of Integer), ByVal DVC_FieldSource As String, ByVal DVC_FieldAlias As String, ByVal DVC_Position As Global.System.Nullable(Of Integer), ByVal DVC_Default As Boolean, ByVal DVC_Alignment As String, ByVal DVC_Width As Global.System.Nullable(Of Double), ByVal DVC_Requirement As Global.System.Nullable(Of Integer), ByVal DVC_GroupHeaderLevel As Global.System.Nullable(Of Integer), ByVal DVC_DataType As String, ByVal DVC_FCIDs As String, ByVal DVC_Format As String, ByVal DVC_IDOld As Global.System.Nullable(Of Integer), ByVal DVC_HeaderIcon() As Byte) As Integer
-            If (TView_ID.HasValue = true) Then
-                Me.Adapter.InsertCommand.Parameters(0).Value = CType(TView_ID.Value,Integer)
-            Else
-                Me.Adapter.InsertCommand.Parameters(0).Value = Global.System.DBNull.Value
-            End If
+        Public Overloads Overridable Function Insert(ByVal TView_ID As Integer, ByVal DVC_FieldSource As String, ByVal DVC_FieldAlias As String, ByVal DVC_Position As Global.System.Nullable(Of Integer), ByVal DVC_Default As Boolean, ByVal DVC_Alignment As String, ByVal DVC_Width As Global.System.Nullable(Of Double), ByVal DVC_Requirement As Global.System.Nullable(Of Integer), ByVal DVC_GroupHeaderLevel As Global.System.Nullable(Of Integer), ByVal DVC_DataType As String, ByVal DVC_FCIDs As String, ByVal DVC_Format As String, ByVal DVC_IDOld As Global.System.Nullable(Of Integer), ByVal DVC_HeaderIcon() As Byte) As Integer
+            Me.Adapter.InsertCommand.Parameters(0).Value = CType(TView_ID,Integer)
             If (DVC_FieldSource Is Nothing) Then
                 Me.Adapter.InsertCommand.Parameters(1).Value = Global.System.DBNull.Value
             Else
@@ -37013,7 +37196,7 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Update, true)>  _
         Public Overloads Overridable Function Update( _
-                    ByVal TView_ID As Global.System.Nullable(Of Integer),  _
+                    ByVal TView_ID As Integer,  _
                     ByVal DVC_FieldSource As String,  _
                     ByVal DVC_FieldAlias As String,  _
                     ByVal DVC_Position As Global.System.Nullable(Of Integer),  _
@@ -37028,7 +37211,7 @@ Namespace TEMPLATECPTableAdapters
                     ByVal DVC_IDOld As Global.System.Nullable(Of Integer),  _
                     ByVal DVC_HeaderIcon() As Byte,  _
                     ByVal Original_DVC_ID As Integer,  _
-                    ByVal Original_TView_ID As Global.System.Nullable(Of Integer),  _
+                    ByVal Original_TView_ID As Integer,  _
                     ByVal Original_DVC_FieldSource As String,  _
                     ByVal Original_DVC_FieldAlias As String,  _
                     ByVal Original_DVC_Position As Global.System.Nullable(Of Integer),  _
@@ -37039,11 +37222,7 @@ Namespace TEMPLATECPTableAdapters
                     ByVal Original_DVC_GroupHeaderLevel As Global.System.Nullable(Of Integer),  _
                     ByVal Original_DVC_DataType As String,  _
                     ByVal Original_DVC_IDOld As Global.System.Nullable(Of Integer)) As Integer
-            If (TView_ID.HasValue = true) Then
-                Me.Adapter.UpdateCommand.Parameters(0).Value = CType(TView_ID.Value,Integer)
-            Else
-                Me.Adapter.UpdateCommand.Parameters(0).Value = Global.System.DBNull.Value
-            End If
+            Me.Adapter.UpdateCommand.Parameters(0).Value = CType(TView_ID,Integer)
             If (DVC_FieldSource Is Nothing) Then
                 Me.Adapter.UpdateCommand.Parameters(1).Value = Global.System.DBNull.Value
             Else
@@ -37106,13 +37285,8 @@ Namespace TEMPLATECPTableAdapters
                 Me.Adapter.UpdateCommand.Parameters(13).Value = CType(DVC_HeaderIcon,Byte())
             End If
             Me.Adapter.UpdateCommand.Parameters(14).Value = CType(Original_DVC_ID,Integer)
-            If (Original_TView_ID.HasValue = true) Then
-                Me.Adapter.UpdateCommand.Parameters(15).Value = CType(0,Object)
-                Me.Adapter.UpdateCommand.Parameters(16).Value = CType(Original_TView_ID.Value,Integer)
-            Else
-                Me.Adapter.UpdateCommand.Parameters(15).Value = CType(1,Object)
-                Me.Adapter.UpdateCommand.Parameters(16).Value = Global.System.DBNull.Value
-            End If
+            Me.Adapter.UpdateCommand.Parameters(15).Value = CType(0,Object)
+            Me.Adapter.UpdateCommand.Parameters(16).Value = CType(Original_TView_ID,Integer)
             If (Original_DVC_FieldSource Is Nothing) Then
                 Me.Adapter.UpdateCommand.Parameters(17).Value = CType(1,Object)
                 Me.Adapter.UpdateCommand.Parameters(18).Value = Global.System.DBNull.Value
@@ -37191,6 +37365,39 @@ Namespace TEMPLATECPTableAdapters
                     Me.Adapter.UpdateCommand.Connection.Close
                 End If
             End Try
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.Update, true)>  _
+        Public Overloads Overridable Function Update( _
+                    ByVal DVC_FieldSource As String,  _
+                    ByVal DVC_FieldAlias As String,  _
+                    ByVal DVC_Position As Global.System.Nullable(Of Integer),  _
+                    ByVal DVC_Default As Boolean,  _
+                    ByVal DVC_Alignment As String,  _
+                    ByVal DVC_Width As Global.System.Nullable(Of Double),  _
+                    ByVal DVC_Requirement As Global.System.Nullable(Of Integer),  _
+                    ByVal DVC_GroupHeaderLevel As Global.System.Nullable(Of Integer),  _
+                    ByVal DVC_DataType As String,  _
+                    ByVal DVC_FCIDs As String,  _
+                    ByVal DVC_Format As String,  _
+                    ByVal DVC_IDOld As Global.System.Nullable(Of Integer),  _
+                    ByVal DVC_HeaderIcon() As Byte,  _
+                    ByVal Original_DVC_ID As Integer,  _
+                    ByVal Original_TView_ID As Integer,  _
+                    ByVal Original_DVC_FieldSource As String,  _
+                    ByVal Original_DVC_FieldAlias As String,  _
+                    ByVal Original_DVC_Position As Global.System.Nullable(Of Integer),  _
+                    ByVal Original_DVC_Default As Boolean,  _
+                    ByVal Original_DVC_Alignment As String,  _
+                    ByVal Original_DVC_Width As Global.System.Nullable(Of Double),  _
+                    ByVal Original_DVC_Requirement As Global.System.Nullable(Of Integer),  _
+                    ByVal Original_DVC_GroupHeaderLevel As Global.System.Nullable(Of Integer),  _
+                    ByVal Original_DVC_DataType As String,  _
+                    ByVal Original_DVC_IDOld As Global.System.Nullable(Of Integer)) As Integer
+            Return Me.Update(Original_TView_ID, DVC_FieldSource, DVC_FieldAlias, DVC_Position, DVC_Default, DVC_Alignment, DVC_Width, DVC_Requirement, DVC_GroupHeaderLevel, DVC_DataType, DVC_FCIDs, DVC_Format, DVC_IDOld, DVC_HeaderIcon, Original_DVC_ID, Original_TView_ID, Original_DVC_FieldSource, Original_DVC_FieldAlias, Original_DVC_Position, Original_DVC_Default, Original_DVC_Alignment, Original_DVC_Width, Original_DVC_Requirement, Original_DVC_GroupHeaderLevel, Original_DVC_DataType, Original_DVC_IDOld)
         End Function
     End Class
     
@@ -37445,13 +37652,22 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT DVC_ID, TView_ID, DVC_FieldSource, DVC_FieldAlias, DVC_Position, DVC_Defau"& _ 
                 "lt, DVC_Alignment, DVC_Width, DVC_Requirement, DVC_GroupHeaderLevel, DVC_DataTyp"& _ 
                 "e, DVC_FCIDs, DVC_Format FROM DefaultViewColumns2003"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT DVC_ID, TView_ID, DVC_FieldSource, DVC_FieldAlias, DVC_Position, DVC_Defau"& _ 
+                "lt, DVC_Alignment, DVC_Width, DVC_Requirement, DVC_GroupHeaderLevel, DVC_DataTyp"& _ 
+                "e, DVC_FCIDs, DVC_Format FROM DefaultViewColumns2003 WHERE DVC_ID = ? AND TView_"& _ 
+                "ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("DVC_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "DVC_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("TView_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "TView_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -37473,6 +37689,19 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.DefaultViewColumns2003DataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.DefaultViewColumns2003DataTable = New TEMPLATECP.DefaultViewColumns2003DataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal DVC_ID As Integer, ByVal TView_ID As Integer) As TEMPLATECP.DefaultViewColumns2003DataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(DVC_ID,Integer)
+            Me.Adapter.SelectCommand.Parameters(1).Value = CType(TView_ID,Integer)
             Dim dataTable As TEMPLATECP.DefaultViewColumns2003DataTable = New TEMPLATECP.DefaultViewColumns2003DataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -38024,12 +38253,18 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT CODE, LRN, MRN, USERNAME, [DATE DELETED], [ORIGINAL TREE ID] FROM [DELETEI"& _ 
                 "TEM LOG]"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT CODE, LRN, MRN, USERNAME, [DATE DELETED], [ORIGINAL TREE ID] FROM [DELETEI"& _ 
+                "TEM LOG] WHERE CODE = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("CODE", Global.System.Data.OleDb.OleDbType.WChar, 50, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "CODE", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -38051,6 +38286,22 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.DELETEITEM_LOGDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.DELETEITEM_LOGDataTable = New TEMPLATECP.DELETEITEM_LOGDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal CODE As String) As TEMPLATECP.DELETEITEM_LOGDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            If (CODE Is Nothing) Then
+                Me.Adapter.SelectCommand.Parameters(0).Value = Global.System.DBNull.Value
+            Else
+                Me.Adapter.SelectCommand.Parameters(0).Value = CType(CODE,String)
+            End If
             Dim dataTable As TEMPLATECP.DELETEITEM_LOGDataTable = New TEMPLATECP.DELETEITEM_LOGDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -38703,11 +38954,17 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT Feature_ID, Feature_Code, Feature_Name, Feature_Activated FROM Features"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT Feature_ID, Feature_Code, Feature_Name, Feature_Activated FROM Features WH"& _ 
+                "ERE Feature_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("Feature_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "Feature_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -38729,6 +38986,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.FeaturesDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.FeaturesDataTable = New TEMPLATECP.FeaturesDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal Feature_ID As Integer) As TEMPLATECP.FeaturesDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(Feature_ID,Integer)
             Dim dataTable As TEMPLATECP.FeaturesDataTable = New TEMPLATECP.FeaturesDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -39088,12 +39357,18 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT Filter_ID, UVC_ID, Filter_Field, Filter_Operator, Filter_Value, Filter_Typ"& _ 
                 "e, Filter_DataType FROM Filter"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT Filter_ID, UVC_ID, Filter_Field, Filter_Operator, Filter_Value, Filter_Typ"& _ 
+                "e, Filter_DataType FROM Filter WHERE Filter_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("Filter_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "Filter_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -39115,6 +39390,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.FilterDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.FilterDataTable = New TEMPLATECP.FilterDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal Filter_ID As Integer) As TEMPLATECP.FilterDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(Filter_ID,Integer)
             Dim dataTable As TEMPLATECP.FilterDataTable = New TEMPLATECP.FilterDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -39560,13 +39847,20 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT FVC_ID, User_ID, FVC_ColumnAlignments, FVC_ColumnWidths, FVC_GroupHeaders,"& _ 
                 " FVC_Sort, FVC_CardsView, FVC_ColumnFormat, FVC_DocumentType FROM FindViewColumn"& _ 
                 "s"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT FVC_ID, User_ID, FVC_ColumnAlignments, FVC_ColumnWidths, FVC_GroupHeaders,"& _ 
+                " FVC_Sort, FVC_CardsView, FVC_ColumnFormat, FVC_DocumentType FROM FindViewColumn"& _ 
+                "s WHERE FVC_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("FVC_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "FVC_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -39588,6 +39882,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.FindViewColumnsDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.FindViewColumnsDataTable = New TEMPLATECP.FindViewColumnsDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal FVC_ID As Integer) As TEMPLATECP.FindViewColumnsDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(FVC_ID,Integer)
             Dim dataTable As TEMPLATECP.FindViewColumnsDataTable = New TEMPLATECP.FindViewColumnsDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -40040,13 +40346,20 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT GNode_ID, GNode_RecordsKey, GNode_Level, GNode_Text, GNode_ParentID, GNode"& _ 
                 "_Image, GNode_SelectedImage, GNode_Default, TTGroup_ID, TView_ID FROM GroupNodes"& _ 
                 ""
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT GNode_ID, GNode_RecordsKey, GNode_Level, GNode_Text, GNode_ParentID, GNode"& _ 
+                "_Image, GNode_SelectedImage, GNode_Default, TTGroup_ID, TView_ID FROM GroupNodes"& _ 
+                " WHERE GNode_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("GNode_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "GNode_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -40068,6 +40381,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.GroupNodesDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.GroupNodesDataTable = New TEMPLATECP.GroupNodesDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal GNode_ID As Integer) As TEMPLATECP.GroupNodesDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(GNode_ID,Integer)
             Dim dataTable As TEMPLATECP.GroupNodesDataTable = New TEMPLATECP.GroupNodesDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -40628,7 +40953,7 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT Lic_ID, Lic_Name, Lic_Address, Lic_City, Lic_PostalCode, Lic_Country, Lic_"& _ 
@@ -40636,6 +40961,15 @@ Namespace TEMPLATECPTableAdapters
                 "CTID, Lic_Language, Lic_Logo, Lic_Logosize, Lic_LogoProperties, Lic_Website, Lic"& _ 
                 "_Key, Lic_User, Lic_SerialNumber, Lic_DutchURL, Lic_FrenchURL FROM Licensee"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT Lic_ID, Lic_Name, Lic_Address, Lic_City, Lic_PostalCode, Lic_Country, Lic_"& _ 
+                "Phone, Lic_Fax, Lic_Email, Lic_LegalInfo, Lic_Currency, Lic_Database, Lic_UseEXA"& _ 
+                "CTID, Lic_Language, Lic_Logo, Lic_Logosize, Lic_LogoProperties, Lic_Website, Lic"& _ 
+                "_Key, Lic_User, Lic_SerialNumber, Lic_DutchURL, Lic_FrenchURL FROM Licensee WHER"& _ 
+                "E Lic_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("Lic_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "Lic_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -40657,6 +40991,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.LicenseeDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.LicenseeDataTable = New TEMPLATECP.LicenseeDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal Lic_ID As Integer) As TEMPLATECP.LicenseeDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(Lic_ID,Integer)
             Dim dataTable As TEMPLATECP.LicenseeDataTable = New TEMPLATECP.LicenseeDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -41504,11 +41850,17 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT Table_ID, Table_NewName, Table_SourceName, DB_ID FROM LinkedTables"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT Table_ID, Table_NewName, Table_SourceName, DB_ID FROM LinkedTables WHERE T"& _ 
+                "able_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("Table_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "Table_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -41530,6 +41882,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.LinkedTablesDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.LinkedTablesDataTable = New TEMPLATECP.LinkedTablesDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal Table_ID As Integer) As TEMPLATECP.LinkedTablesDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(Table_ID,Integer)
             Dim dataTable As TEMPLATECP.LinkedTablesDataTable = New TEMPLATECP.LinkedTablesDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -41991,7 +42355,7 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT Setting_ID, User_ID, Setting_Navigation, Setting_FindBox, Setting_StatusBa"& _ 
@@ -42000,6 +42364,15 @@ Namespace TEMPLATECPTableAdapters
                 "tions, Setting_CommandBar, Setting_CommandBarVersion, Setting_CustomFind FROM Ma"& _ 
                 "inSettings"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT Setting_ID, User_ID, Setting_Navigation, Setting_FindBox, Setting_StatusBa"& _ 
+                "r, Setting_ReadingPanePos, Setting_NavigationWidth, Setting_GridWidth, Setting_G"& _ 
+                "ridHeight, Setting_ExpandedButtons, Tree_ID, Setting_FindBoxType, Setting_ViewOp"& _ 
+                "tions, Setting_CommandBar, Setting_CommandBarVersion, Setting_CustomFind FROM Ma"& _ 
+                "inSettings WHERE Setting_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("Setting_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "Setting_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -42021,6 +42394,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.MainSettingsDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.MainSettingsDataTable = New TEMPLATECP.MainSettingsDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal Setting_ID As Integer) As TEMPLATECP.MainSettingsDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(Setting_ID,Integer)
             Dim dataTable As TEMPLATECP.MainSettingsDataTable = New TEMPLATECP.MainSettingsDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -42684,13 +43069,20 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT Node_ID, Node_RecordsKey, Node_Level, Node_Text, Node_ParentID, Node_Image"& _ 
                 ", Node_SelectedImage, Node_Default, Tree_ID, TView_ID, Node_SelectedView, Node_R"& _ 
                 "emarks, TVQ_ID, Feature_ID, Node_IDOld FROM Nodes"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT Node_ID, Node_RecordsKey, Node_Level, Node_Text, Node_ParentID, Node_Image"& _ 
+                ", Node_SelectedImage, Node_Default, Tree_ID, TView_ID, Node_SelectedView, Node_R"& _ 
+                "emarks, TVQ_ID, Feature_ID, Node_IDOld FROM Nodes WHERE Node_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("Node_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "Node_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -42712,6 +43104,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.NodesDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.NodesDataTable = New TEMPLATECP.NodesDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal Node_ID As Integer) As TEMPLATECP.NodesDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(Node_ID,Integer)
             Dim dataTable As TEMPLATECP.NodesDataTable = New TEMPLATECP.NodesDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -43409,13 +43813,20 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT Node_ID, Node_RecordsKey, Node_Level, Node_Text, Node_ParentID, Node_Image"& _ 
                 ", Node_SelectedImage, Node_Default, Tree_ID, TView_ID, Node_Remarks, TVQ_ID FROM"& _ 
                 " Nodes2003"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT Node_ID, Node_RecordsKey, Node_Level, Node_Text, Node_ParentID, Node_Image"& _ 
+                ", Node_SelectedImage, Node_Default, Tree_ID, TView_ID, Node_Remarks, TVQ_ID FROM"& _ 
+                " Nodes2003 WHERE Node_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("Node_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "Node_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -43437,6 +43848,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.Nodes2003DataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.Nodes2003DataTable = New TEMPLATECP.Nodes2003DataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal Node_ID As Integer) As TEMPLATECP.Nodes2003DataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(Node_ID,Integer)
             Dim dataTable As TEMPLATECP.Nodes2003DataTable = New TEMPLATECP.Nodes2003DataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -44140,12 +44563,18 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT PrintBacklogTable_ID, PrintBacklogTable_CommandLine, PrintBacklogTable_Las"& _ 
                 "tPrintCommandDate FROM PrintBacklogTable"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT PrintBacklogTable_ID, PrintBacklogTable_CommandLine, PrintBacklogTable_Las"& _ 
+                "tPrintCommandDate FROM PrintBacklogTable WHERE PrintBacklogTable_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("PrintBacklogTable_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "PrintBacklogTable_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -44167,6 +44596,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.PrintBacklogTableDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.PrintBacklogTableDataTable = New TEMPLATECP.PrintBacklogTableDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal PrintBacklogTable_ID As Integer) As TEMPLATECP.PrintBacklogTableDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(PrintBacklogTable_ID,Integer)
             Dim dataTable As TEMPLATECP.PrintBacklogTableDataTable = New TEMPLATECP.PrintBacklogTableDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -44519,13 +44960,20 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT PrintDoc_ID, User_ID, PrintDoc_Declaration, PrintDoc_DV1, PrintDoc_NCTS, P"& _ 
                 "rintDoc_PrePrintedForm, PrintDoc_Repertory, PrintDoc_SummaryReports FROM PrintDo"& _ 
                 "cTypes"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT PrintDoc_ID, User_ID, PrintDoc_Declaration, PrintDoc_DV1, PrintDoc_NCTS, P"& _ 
+                "rintDoc_PrePrintedForm, PrintDoc_Repertory, PrintDoc_SummaryReports FROM PrintDo"& _ 
+                "cTypes WHERE PrintDoc_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("PrintDoc_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "PrintDoc_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -44547,6 +44995,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.PrintDocTypesDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.PrintDocTypesDataTable = New TEMPLATECP.PrintDocTypesDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal PrintDoc_ID As Integer) As TEMPLATECP.PrintDocTypesDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(PrintDoc_ID,Integer)
             Dim dataTable As TEMPLATECP.PrintDocTypesDataTable = New TEMPLATECP.PrintDocTypesDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -44975,11 +45435,17 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT [TREE ID], Node_ID1, Node_ID2, TreeLink_ID FROM TemplateTreeLinks"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT [TREE ID], Node_ID1, Node_ID2, TreeLink_ID FROM TemplateTreeLinks WHERE Tr"& _ 
+                "eeLink_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("TreeLink_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "TreeLink_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -45001,6 +45467,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.TemplateTreeLinksDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.TemplateTreeLinksDataTable = New TEMPLATECP.TemplateTreeLinksDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal TreeLink_ID As Integer) As TEMPLATECP.TemplateTreeLinksDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(TreeLink_ID,Integer)
             Dim dataTable As TEMPLATECP.TemplateTreeLinksDataTable = New TEMPLATECP.TemplateTreeLinksDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -45342,11 +45820,16 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT Tree_ID, TreeType_ID, Tree_Description FROM Trees"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT Tree_ID, TreeType_ID, Tree_Description FROM Trees WHERE Tree_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("Tree_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "Tree_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -45368,6 +45851,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.TreesDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.TreesDataTable = New TEMPLATECP.TreesDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal Tree_ID As Integer) As TEMPLATECP.TreesDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(Tree_ID,Integer)
             Dim dataTable As TEMPLATECP.TreesDataTable = New TEMPLATECP.TreesDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -45665,11 +46160,16 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT Tree_ID, TreeType_ID, Tree_Remarks FROM Trees2003"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT Tree_ID, TreeType_ID, Tree_Remarks FROM Trees2003 WHERE Tree_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("Tree_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "Tree_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -45691,6 +46191,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.Trees2003DataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.Trees2003DataTable = New TEMPLATECP.Trees2003DataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal Tree_ID As Integer) As TEMPLATECP.Trees2003DataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(Tree_ID,Integer)
             Dim dataTable As TEMPLATECP.Trees2003DataTable = New TEMPLATECP.Trees2003DataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -46012,12 +46524,18 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT TreeSet_ID, User_ID, Tree_ID, TreeSet_NodeCount, TreeSet_ExpandedNodes, Tr"& _ 
                 "eeSet_IDOld FROM TreeSettings"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT TreeSet_ID, User_ID, Tree_ID, TreeSet_NodeCount, TreeSet_ExpandedNodes, Tr"& _ 
+                "eeSet_IDOld FROM TreeSettings WHERE TreeSet_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("TreeSet_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "TreeSet_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -46039,6 +46557,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.TreeSettingsDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.TreeSettingsDataTable = New TEMPLATECP.TreeSettingsDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal TreeSet_ID As Integer) As TEMPLATECP.TreeSettingsDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(TreeSet_ID,Integer)
             Dim dataTable As TEMPLATECP.TreeSettingsDataTable = New TEMPLATECP.TreeSettingsDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -46410,12 +46940,18 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT TreeSet_ID, User_ID, Tree_ID, TreeSet_NodeCount, TreeSet_ExpandedNodes FRO"& _ 
                 "M TreeSettings2003"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT TreeSet_ID, User_ID, Tree_ID, TreeSet_NodeCount, TreeSet_ExpandedNodes FRO"& _ 
+                "M TreeSettings2003 WHERE TreeSet_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("TreeSet_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "TreeSet_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -46437,6 +46973,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.TreeSettings2003DataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.TreeSettings2003DataTable = New TEMPLATECP.TreeSettings2003DataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal TreeSet_ID As Integer) As TEMPLATECP.TreeSettings2003DataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(TreeSet_ID,Integer)
             Dim dataTable As TEMPLATECP.TreeSettings2003DataTable = New TEMPLATECP.TreeSettings2003DataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -46736,11 +47284,17 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT TTGroup_ID, TreeType_ID, TTGroup_Description FROM TreeTypeGroups"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT TTGroup_ID, TreeType_ID, TTGroup_Description FROM TreeTypeGroups WHERE TTG"& _ 
+                "roup_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("TTGroup_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "TTGroup_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -46762,6 +47316,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.TreeTypeGroupsDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.TreeTypeGroupsDataTable = New TEMPLATECP.TreeTypeGroupsDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal TTGroup_ID As Integer) As TEMPLATECP.TreeTypeGroupsDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(TTGroup_ID,Integer)
             Dim dataTable As TEMPLATECP.TreeTypeGroupsDataTable = New TEMPLATECP.TreeTypeGroupsDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -47052,11 +47618,16 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT TreeType_ID, TreeType_Description FROM TreeTypes"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT TreeType_ID, TreeType_Description FROM TreeTypes WHERE TreeType_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("TreeType_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "TreeType_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -47078,6 +47649,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.TreeTypesDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.TreeTypesDataTable = New TEMPLATECP.TreeTypesDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal TreeType_ID As Integer) As TEMPLATECP.TreeTypesDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(TreeType_ID,Integer)
             Dim dataTable As TEMPLATECP.TreeTypesDataTable = New TEMPLATECP.TreeTypesDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -47390,12 +47973,19 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT TView_ID, TView_SQLFrom, TView_SQLWhere, TView_SQLOrderBy, TView_SQLGroupB"& _ 
                 "y, TVIew_SQLHaving, TView_Description, TView_IDOld FROM TreeViews"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT TView_ID, TView_SQLFrom, TView_SQLWhere, TView_SQLOrderBy, TView_SQLGroupB"& _ 
+                "y, TVIew_SQLHaving, TView_Description, TView_IDOld FROM TreeViews WHERE TView_ID"& _ 
+                " = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("TView_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "TView_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -47417,6 +48007,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.TreeViewsDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.TreeViewsDataTable = New TEMPLATECP.TreeViewsDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal TView_ID As Integer) As TEMPLATECP.TreeViewsDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(TView_ID,Integer)
             Dim dataTable As TEMPLATECP.TreeViewsDataTable = New TEMPLATECP.TreeViewsDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -47794,12 +48396,18 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT TView_ID, TView_SQLFrom, TView_SQLWhere, TView_SQLOrderBy, TView_SQLGroupB"& _ 
                 "y, TVIew_SQLHaving, TView_Description FROM TreeViews2003"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT TView_ID, TView_SQLFrom, TView_SQLWhere, TView_SQLOrderBy, TView_SQLGroupB"& _ 
+                "y, TVIew_SQLHaving, TView_Description FROM TreeViews2003 WHERE TView_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("TView_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "TView_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -47821,6 +48429,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.TreeViews2003DataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.TreeViews2003DataTable = New TEMPLATECP.TreeViews2003DataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal TView_ID As Integer) As TEMPLATECP.TreeViews2003DataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(TView_ID,Integer)
             Dim dataTable As TEMPLATECP.TreeViews2003DataTable = New TEMPLATECP.TreeViews2003DataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -48178,12 +48798,18 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT TVQ_ID, TV_QueryName, TV_QuerySql, TV_QueryConnectionKey, TVQ_IDOld FROM T"& _ 
                 "VQueryDefs"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT TVQ_ID, TV_QueryName, TV_QuerySql, TV_QueryConnectionKey, TVQ_IDOld FROM T"& _ 
+                "VQueryDefs WHERE TVQ_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("TVQ_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "TVQ_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -48205,6 +48831,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.TVQueryDefsDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.TVQueryDefsDataTable = New TEMPLATECP.TVQueryDefsDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal TVQ_ID As Integer) As TEMPLATECP.TVQueryDefsDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(TVQ_ID,Integer)
             Dim dataTable As TEMPLATECP.TVQueryDefsDataTable = New TEMPLATECP.TVQueryDefsDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -48567,12 +49205,18 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT TVQ_ID, TV_QueryName, TV_QuerySql, TV_QueryConnectionKey FROM TVQueryDefs2"& _ 
                 "003"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT TVQ_ID, TV_QueryName, TV_QuerySql, TV_QueryConnectionKey FROM TVQueryDefs2"& _ 
+                "003 WHERE TVQ_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("TVQ_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "TVQ_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -48594,6 +49238,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.TVQueryDefs2003DataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.TVQueryDefs2003DataTable = New TEMPLATECP.TVQueryDefs2003DataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal TVQ_ID As Integer) As TEMPLATECP.TVQueryDefs2003DataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(TVQ_ID,Integer)
             Dim dataTable As TEMPLATECP.TVQueryDefs2003DataTable = New TEMPLATECP.TVQueryDefs2003DataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -49375,7 +50031,7 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT User_ID, User_Name, User_Password, User_Rights, User_StateSettings, User_M"& _ 
@@ -49391,6 +50047,22 @@ Namespace TEMPLATECPTableAdapters
                 ", PLDAEXPORTPRINTSETTING, [DIGITAL SIGNATURE OPTION], [DIGITAL SIGNATURE SELECTE"& _ 
                 "D], User_TaskPaneVisible FROM Users"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT User_ID, User_Name, User_Password, User_Rights, User_StateSettings, User_M"& _ 
+                "ainDimensionPosition, User_TreeWidth, User_Level, User_ButtonGroup, User_ButtonB"& _ 
+                "arWidth, [ADMINISTRATOR RIGHTS], [MAINTAIN TABLES], [ALL LOGICAL IDS], [SHOW ALL"& _ 
+                " SENT], [SHOW ALL WITH ERRORS], [SHOW ALL WAITING], [SHOW ALL DELETED], [CLEAN U"& _ 
+                "P DELETED], EVERY, [DAYS OR ITEMS], [DELETE OTHER USERS ITEMS], [DELETE SENT IN "& _ 
+                "N DAYS], [WITH SECURITY], [REFRESH IN SECONDS], [RELATE L1 TO S1], [SUPPLIER BOX"& _ 
+                "], [LAST USED PRINTER], [LAST DV PRINTER], [LOGID DESCRIPTION], [FIXED USER], LO"& _ 
+                "GGED, SDICOUNT, SDECOUNT, SDTCOUNT, DECOUNT, [SHOW ONLY DOCTYPE], [SHOW ONLY VAT"& _ 
+                "NUM], [SHOW ONLY CTRYCODE], [SAVE NEW TARICCTRY], [SHOW ALL TOBEPRINTED], [SHOW "& _ 
+                "ALL DRAFTS], SDI2COUNT, SDE2COUNT, SDT2COUNT, [LANGUAGE], PLDAIMPORTPRINTSETTING"& _ 
+                ", PLDAEXPORTPRINTSETTING, [DIGITAL SIGNATURE OPTION], [DIGITAL SIGNATURE SELECTE"& _ 
+                "D], User_TaskPaneVisible FROM Users WHERE User_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("User_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "User_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -49412,6 +50084,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.UsersDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.UsersDataTable = New TEMPLATECP.UsersDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal User_ID As Integer) As TEMPLATECP.UsersDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(User_ID,Integer)
             Dim dataTable As TEMPLATECP.UsersDataTable = New TEMPLATECP.UsersDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -50819,7 +51503,7 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT UVC_ID, TView_ID, View_ID, User_ID, UVC_DVCIDs, UVC_ColumnAlignments, UVC_"& _ 
@@ -50829,6 +51513,16 @@ Namespace TEMPLATECPTableAdapters
                 "rmat, UVC_SelectedView, UVC_AutoGroup, UVC_ExpandCollapseDefault, UVC_ReadingPan"& _ 
                 "e, UVC_LastX, UVC_LastY FROM UserViewColumns"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT UVC_ID, TView_ID, View_ID, User_ID, UVC_DVCIDs, UVC_ColumnAlignments, UVC_"& _ 
+                "ColumnWidths, UVC_GroupHeaders, UVC_Sort, UVC_Filter, Node_ID, UVC_GroupHeaderVi"& _ 
+                "sible, UVC_CardsView, UVC_OddEvenColor, UVC_GridLines, UVC_RequirementIs1, UVC_G"& _ 
+                "roupRowFormat, UVC_IsGroupRowExpanded, UVC_SelectedItem, UVC_FCIDs, UVC_ColumnFo"& _ 
+                "rmat, UVC_SelectedView, UVC_AutoGroup, UVC_ExpandCollapseDefault, UVC_ReadingPan"& _ 
+                "e, UVC_LastX, UVC_LastY FROM UserViewColumns WHERE UVC_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("UVC_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "UVC_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -50850,6 +51544,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.UserViewColumnsDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.UserViewColumnsDataTable = New TEMPLATECP.UserViewColumnsDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal UVC_ID As Integer) As TEMPLATECP.UserViewColumnsDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(UVC_ID,Integer)
             Dim dataTable As TEMPLATECP.UserViewColumnsDataTable = New TEMPLATECP.UserViewColumnsDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -51669,7 +52375,7 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT UVC_ID, TView_ID, User_ID, UVC_DVCIDs, UVC_ColumnAlignments, UVC_ColumnWid"& _ 
@@ -51678,6 +52384,15 @@ Namespace TEMPLATECPTableAdapters
                 "rmat, UVC_IsGroupRowExpanded, UVC_SelectedItem, UVC_FCIDs, UVC_ColumnFormat, UVC"& _ 
                 "_LastX, UVC_LastY FROM UserViewColumns2003"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT UVC_ID, TView_ID, User_ID, UVC_DVCIDs, UVC_ColumnAlignments, UVC_ColumnWid"& _ 
+                "ths, UVC_GroupHeaders, UVC_Sort, UVC_Filter, Node_ID, UVC_GroupHeaderVisible, UV"& _ 
+                "C_CardsView, UVC_OddEvenColor, UVC_GridLines, UVC_RequirementIs1, UVC_GroupRowFo"& _ 
+                "rmat, UVC_IsGroupRowExpanded, UVC_SelectedItem, UVC_FCIDs, UVC_ColumnFormat, UVC"& _ 
+                "_LastX, UVC_LastY FROM UserViewColumns2003 WHERE UVC_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("UVC_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "UVC_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -51699,6 +52414,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.UserViewColumns2003DataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.UserViewColumns2003DataTable = New TEMPLATECP.UserViewColumns2003DataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal UVC_ID As Integer) As TEMPLATECP.UserViewColumns2003DataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(UVC_ID,Integer)
             Dim dataTable As TEMPLATECP.UserViewColumns2003DataTable = New TEMPLATECP.UserViewColumns2003DataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -52478,7 +53205,7 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT FC_ID, FC_Name, FC_Operator, FC_Value1, FC_Value2, FC_FontBold, FC_FontIta"& _ 
@@ -52486,6 +53213,14 @@ Namespace TEMPLATECPTableAdapters
                 "ValueList, UVC_ID, FC_Field, FC_ColumnType, FC_ColumnText, FC_Selected, FC_Remar"& _ 
                 "ks, FC_Priority, FC_Default, Node_ID FROM UVCFormatCondition"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT FC_ID, FC_Name, FC_Operator, FC_Value1, FC_Value2, FC_FontBold, FC_FontIta"& _ 
+                "lic, FC_FontStrikeThru, FC_FontUnderline, FC_ForeColor, FC_Icon, FC_Text, FC_Has"& _ 
+                "ValueList, UVC_ID, FC_Field, FC_ColumnType, FC_ColumnText, FC_Selected, FC_Remar"& _ 
+                "ks, FC_Priority, FC_Default, Node_ID FROM UVCFormatCondition WHERE FC_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("FC_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "FC_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -52507,6 +53242,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.UVCFormatConditionDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.UVCFormatConditionDataTable = New TEMPLATECP.UVCFormatConditionDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal FC_ID As Integer) As TEMPLATECP.UVCFormatConditionDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(FC_ID,Integer)
             Dim dataTable As TEMPLATECP.UVCFormatConditionDataTable = New TEMPLATECP.UVCFormatConditionDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -53316,13 +54063,20 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT FC_ID, FC_Operator, FC_Value1, FC_Value2, FC_FontBold, FC_FontItalic, FC_F"& _ 
                 "ontStrikeThru, FC_FontUnderline, FC_ForeColor, FC_Icon, FC_Text, FC_HasValueList"& _ 
                 ", FC_Remarks FROM UVCFormatCondition2003"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT FC_ID, FC_Operator, FC_Value1, FC_Value2, FC_FontBold, FC_FontItalic, FC_F"& _ 
+                "ontStrikeThru, FC_FontUnderline, FC_ForeColor, FC_Icon, FC_Text, FC_HasValueList"& _ 
+                ", FC_Remarks FROM UVCFormatCondition2003 WHERE FC_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("FC_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "FC_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -53344,6 +54098,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.UVCFormatCondition2003DataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.UVCFormatCondition2003DataTable = New TEMPLATECP.UVCFormatCondition2003DataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal FC_ID As Integer) As TEMPLATECP.UVCFormatCondition2003DataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(FC_ID,Integer)
             Dim dataTable As TEMPLATECP.UVCFormatCondition2003DataTable = New TEMPLATECP.UVCFormatCondition2003DataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -53857,12 +54623,18 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT View_ID, Node_ID, View_Caption, View_Position, View_Default, View_Filter F"& _ 
                 "ROM Views"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT View_ID, Node_ID, View_Caption, View_Position, View_Default, View_Filter F"& _ 
+                "ROM Views WHERE View_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("View_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "View_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -53884,6 +54656,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.ViewsDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.ViewsDataTable = New TEMPLATECP.ViewsDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal View_ID As Integer) As TEMPLATECP.ViewsDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(View_ID,Integer)
             Dim dataTable As TEMPLATECP.ViewsDataTable = New TEMPLATECP.ViewsDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable
@@ -54322,13 +55106,20 @@ Namespace TEMPLATECPTableAdapters
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")>  _
         Private Sub InitCommandCollection()
-            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(0) {}
+            Me._commandCollection = New Global.System.Data.OleDb.OleDbCommand(1) {}
             Me._commandCollection(0) = New Global.System.Data.OleDb.OleDbCommand()
             Me._commandCollection(0).Connection = Me.Connection
             Me._commandCollection(0).CommandText = "SELECT Window_ID, User_ID, Window_Key, Window_Height, Window_Width, Window_Top, W"& _ 
                 "indow_Left, Window_State, Window_ShowCmd, Window_Flags, Window_MinX, Window_MinY"& _ 
                 " FROM WindowSettings"
             Me._commandCollection(0).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1) = New Global.System.Data.OleDb.OleDbCommand()
+            Me._commandCollection(1).Connection = Me.Connection
+            Me._commandCollection(1).CommandText = "SELECT Window_ID, User_ID, Window_Key, Window_Height, Window_Width, Window_Top, W"& _ 
+                "indow_Left, Window_State, Window_ShowCmd, Window_Flags, Window_MinX, Window_MinY"& _ 
+                " FROM WindowSettings WHERE Window_ID = ?"
+            Me._commandCollection(1).CommandType = Global.System.Data.CommandType.Text
+            Me._commandCollection(1).Parameters.Add(New Global.System.Data.OleDb.OleDbParameter("Window_ID", Global.System.Data.OleDb.OleDbType.[Integer], 0, Global.System.Data.ParameterDirection.Input, CType(0,Byte), CType(0,Byte), "Window_ID", Global.System.Data.DataRowVersion.Current, false, Nothing))
         End Sub
         
         <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
@@ -54350,6 +55141,18 @@ Namespace TEMPLATECPTableAdapters
          Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], true)>  _
         Public Overloads Overridable Function GetData() As TEMPLATECP.WindowSettingsDataTable
             Me.Adapter.SelectCommand = Me.CommandCollection(0)
+            Dim dataTable As TEMPLATECP.WindowSettingsDataTable = New TEMPLATECP.WindowSettingsDataTable()
+            Me.Adapter.Fill(dataTable)
+            Return dataTable
+        End Function
+        
+        <Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0"),  _
+         Global.System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter"),  _
+         Global.System.ComponentModel.DataObjectMethodAttribute(Global.System.ComponentModel.DataObjectMethodType.[Select], false)>  _
+        Public Overloads Overridable Function GetDataByPK(ByVal Window_ID As Integer) As TEMPLATECP.WindowSettingsDataTable
+            Me.Adapter.SelectCommand = Me.CommandCollection(1)
+            Me.Adapter.SelectCommand.Parameters(0).Value = CType(Window_ID,Integer)
             Dim dataTable As TEMPLATECP.WindowSettingsDataTable = New TEMPLATECP.WindowSettingsDataTable()
             Me.Adapter.Fill(dataTable)
             Return dataTable

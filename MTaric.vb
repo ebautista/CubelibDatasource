@@ -9,13 +9,33 @@ Module MTaric
 
         Select Case TableName
             Case TaricTableType.CLIENTS
+                adapter = New TARICTableAdapters.CLIENTSTableAdapter
+                table = adapter.GetByPK(adoRow.Fields("TARIC CODE").Value)
+
             Case TaricTableType.CN
+                adapter = New TARICTableAdapters.CNTableAdapter
+                table = adapter.GetByPK(adoRow.Fields("CN CODE").Value)
+
             Case TaricTableType.COMMON
+                adapter = New TARICTableAdapters.COMMONTableAdapter
+                table = adapter.GetByPK(adoRow.Fields("TARIC CODE").Value)
+
             Case TaricTableType.DBProperties
+                AddToTrace("TaricTableType.DBProperties does not have an update support.")
+
             Case TaricTableType.EXPORT
+                adapter = New TARICTableAdapters.EXPORTTableAdapter
+                table = adapter.GetByPK(adoRow.Fields("TARIC CODE").Value)
+
             Case TaricTableType.IMPORT
+                adapter = New TARICTableAdapters.IMPORTTableAdapter
+                table = adapter.GetByPK(adoRow.Fields("TARIC CODE").Value)
+
             Case TaricTableType.PROPERTIES
+                AddToTrace("TaricTableType.PROPERTIES does not have an update support.")
+
             Case TaricTableType.SUPP_UNITS
+                AddToTrace("TaricTableType.SUPP_UNITS does not have an update support.")
 
             Case Else
                 Throw New NotSupportedException("Error in FindAndUpdateRowTaric: Unsupported enum encountered: " + TableName.GetType.Name)
@@ -41,13 +61,36 @@ Module MTaric
 
         Select Case TableName
             Case TaricTableType.CLIENTS
+                adapter = New TARICTableAdapters.CLIENTSTableAdapter
+                table = New TARIC.CLIENTSDataTable
+
             Case TaricTableType.CN
+                adapter = New TARICTableAdapters.CNTableAdapter
+                table = New TARIC.CNDataTable
+
             Case TaricTableType.COMMON
+                adapter = New TARICTableAdapters.COMMONTableAdapter
+                table = New TARIC.COMMONDataTable
+
             Case TaricTableType.DBProperties
+                adapter = New TARICTableAdapters.DBPropertiesTableAdapter
+                table = New TARIC.DBPropertiesDataTable
+
             Case TaricTableType.EXPORT
+                adapter = New TARICTableAdapters.EXPORTTableAdapter
+                table = New TARIC.EXPORTDataTable
+
             Case TaricTableType.IMPORT
+                adapter = New TARICTableAdapters.IMPORTTableAdapter
+                table = New TARIC.IMPORTDataTable
+
             Case TaricTableType.PROPERTIES
+                adapter = New TARICTableAdapters.PROPERTIESTableAdapter
+                table = New TARIC.PROPERTIESDataTable
+
             Case TaricTableType.SUPP_UNITS
+                adapter = New TARICTableAdapters.SUPP_UNITSTableAdapter
+                table = New TARIC.SUPP_UNITSDataTable
 
             Case Else
                 Throw New NotSupportedException("Error in InsertRowTaric: Unsupported enum encountered: " + TableName.GetType.Name)
