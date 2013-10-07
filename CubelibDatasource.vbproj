@@ -92,6 +92,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>EDIFACT.xsd</DependentUpon>
     </Compile>
+    <Compile Include="EDIFACT.vb">
+      <DependentUpon>EDIFACT.xsd</DependentUpon>
+    </Compile>
     <Compile Include="EDI_HISTORY.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
