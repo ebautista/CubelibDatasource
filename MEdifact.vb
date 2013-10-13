@@ -9,8 +9,16 @@ Module MEdifact
 
         Select Case TableName
             Case EdifactTableType.BOX_SEARCH_MAP
+                AddToTrace("EdifactTableType.BOX_SEARCH_MAP does not have an update support.")
+
             Case EdifactTableType.DATA_NCTS
+                adapter = New EDIFACTTableAdapters.DATA_NCTSTableAdapter
+                table = adapter.GetByPK(adoRow.Fields("DATA_NCTS_ID").Value)
+
             Case EdifactTableType.DATA_NCTS_BERICHT
+                adapter = New EDIFACTTableAdapters.DATA_NCTS_BERICHTTableAdapter
+                table = adapter.GetByPK(adoRow.Fields("CODE").Value, adoRow.Fields("ORDINAL").Value)
+
             Case EdifactTableType.DATA_NCTS_BERICHT_DOUANEKANTOOR
             Case EdifactTableType.DATA_NCTS_BERICHT_HANDELAAR
             Case EdifactTableType.DATA_NCTS_BERICHT_HOOFDING
