@@ -11,7 +11,7 @@ Public Class CRecordset
 #End Region
 
     Private m_rstADO As ADODB.Recordset
-    Private m_strConnection As String
+    Private m_bookMark As Double
 
     ' A creatable COM class must have a Public Sub New() 
     ' with no parameters, otherwise, the class will not be 
@@ -21,24 +21,27 @@ Public Class CRecordset
         MyBase.New()
     End Sub
 
-    'Parameterized constructor
-    Public Sub New(ByRef rstADO As ADODB.Recordset, ByVal ConnectionString As String)
+    'Parameterized constructor for unit testing
+    Public Sub New(ByRef rstADO As ADODB.Recordset, ByVal BookMark As Double)
         MyBase.New()
         m_rstADO = rstADO
-        m_strConnection = ConnectionString
+        m_bookMark = BookMark
     End Sub
 
+    'Offline recordset to update
     Public Function Recordset() As ADODB.Recordset
         Return m_rstADO
     End Function
 
-    Public Function Connection() As String
-        Return m_strConnection
+    'Connection String used to populate the offline recordset
+    Public Function BookMark() As Double
+        Return m_bookMark
     End Function
 
-    Public Sub InitializeClass(ByRef rstADO As ADODB.Recordset, ByVal ConnectionString As String)
+    'Parameterized constructor does not work in VB6, this is a workaround
+    Public Sub InitializeClass(ByRef rstADO As ADODB.Recordset, ByVal bookMark As Double)
         m_rstADO = rstADO
-        m_strConnection = ConnectionString
+        m_bookMark = bookMark
     End Sub
 
 End Class

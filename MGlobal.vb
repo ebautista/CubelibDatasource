@@ -1,8 +1,17 @@
 ﻿Imports ADODB
 Imports System.Data.Common
 Imports System.Data.OleDb
+Imports CubelibDatasource.CDatasource
+Imports CubelibDatasource.CDatabaseProperty
+Imports System.Text
+Imports System.IO
+Imports System.Data.SqlClient
 
 Module MGlobal
+
+    Public Const FAILURE As Integer = -1
+    Public Const SUCCESS As Integer = 0
+
     Public Enum CrudType
         CREATE
         READ
@@ -11,6 +20,8 @@ Module MGlobal
     End Enum
 
     Public Const ACCESS_DB_EXTENSION_97_2003 As String = ".mdb"
+
+    Public objProp As New CDatabaseProperty
 
     Public Function TranslateType(ByVal columnType As Type) As DataTypeEnum
 
@@ -62,117 +73,203 @@ Module MGlobal
 
             Case Else
                 Return DataTypeEnum.adVarChar
-
         End Select
     End Function
 
-    'Public Function MapSystemToOle(ByVal columnType As Type) As OleDbType
+    Public Function getConnectionObjectsNonQuery(ByVal SQL As String, _
+                                                 ByVal Database As DBInstanceType, _
+                                        Optional ByVal Year As String = vbNullString) As DbCommand
 
-    '    Select Case columnType.UnderlyingSystemType.ToString()
-    '        Case "System.Boolean"
-    '            Return OleDbType.Boolean
+        Dim conTemp As DbConnection
+        Dim command As DbCommand
+        Dim strDBName As String
 
-    '        Case "System.Byte"
-    '            Return OleDbType.UnsignedTinyInt
+        strDBName = getDatabaseName(Database, Year, objProp.getDatabaseType())
+        conTemp = getConnection(strDBName, objProp, False)
 
-    '        Case "System.Char"
-    '            Return OleDbType.Char
+        Select Case objProp.getDatabaseType()
+            Case DatabaseType.ACCESS
+                AddToTrace("Connecting To Access Database...", True)
 
-    '        Case "System.DateTime"
-    '            Return OleDbType.Date
+                command = New OleDbCommand(SQL, conTemp)
+            Case DatabaseType.SQLSERVER
+                AddToTrace("Connecting To SQL Server...", True)
 
-    '        Case "System.Decimal"
-    '            Return OleDbType.Currency
+                command = New SqlCommand(SQL, conTemp)
+            Case Else
+                Throw New NotSupportedException("ExecuteNonQuery: Unknown Database Type or Database Type not supported.")
 
-    '        Case "System.Double"
-    '            Return OleDbType.Double
+        End Select
 
-    '        Case "System.Int16"
-    '            Return OleDbType.SmallInt
+        Return command
+    End Function
 
-    '        Case "System.Int32"
-    '            Return OleDbType.Integer
+    Public Function getTableSchema(ByVal TableName As String, _
+                                   ByVal Database As DBInstanceType, _
+                          Optional ByVal Year As String = vbNullString) As DataSet
 
-    '        Case "System.Int64"
-    '            Return OleDbType.BigInt
+        Dim conTemp As DbConnection
+        Dim command As DbCommand
+        Dim adapter As DataAdapter
+        Dim dsTemp As New DataSet
+        Dim strDBName As String
 
-    '        Case "System.SByte"
-    '            Return OleDbType.TinyInt
+        strDBName = getDatabaseName(Database, Year, objProp.getDatabaseType())
+        conTemp = getConnection(strDBName, objProp, False)
 
-    '        Case "System.Single"
-    '            Return OleDbType.Single
+        Select Case objProp.getDatabaseType()
+            Case DatabaseType.ACCESS
+                AddToTrace("Connecting To Access Database...", True)
 
-    '        Case "System.UInt16"
-    '            Return OleDbType.UnsignedSmallInt
+                adapter = New OleDbDataAdapter("SELECT * FROM [" & TableName & "] WHERE 1=2", conTemp)
+                adapter.Fill(dsTemp)
+                adapter.FillSchema(dsTemp, SchemaType.Source)
 
-    '        Case "System.UInt32"
-    '            Return OleDbType.UnsignedInt
+            Case DatabaseType.SQLSERVER
+                AddToTrace("Connecting To SQL Server...", True)
 
-    '        Case "System.UInt64"
-    '            Return OleDbType.UnsignedBigInt
+                adapter = New SqlClient.SqlDataAdapter("SELECT * FROM [" & TableName & "] WHERE 1=2", conTemp)
+                adapter.Fill(dsTemp)
+                adapter.FillSchema(dsTemp, SchemaType.Mapped)
 
-    '        Case "System.String"
-    '            Return OleDbType.VarChar
 
-    '        Case Else
-    '            Return OleDbType.VarChar
+            Case Else
+                Throw New NotSupportedException("ExecuteNonQuery: Unknown Database Type or Database Type not supported.")
 
-    '    End Select
-    'End Function
+        End Select
 
-    'Public Function MapAdoToOle(ByVal columnType As ADODB.DataTypeEnum) As OleDbType
+        Return dsTemp
+    End Function
 
-    '    Select Case columnType
-    '        Case DataTypeEnum.adBoolean
-    '            Return OleDbType.Boolean
+    Public Function getDatabaseName(ByVal DBInstanceType As DBInstanceType, _
+                                     ByVal Year As String, _
+                                     ByVal DBType As DatabaseType) As String
 
-    '        Case DataTypeEnum.adUnsignedTinyInt
-    '            Return OleDbType.UnsignedTinyInt
+        Dim strDatabaseName As String = vbNullString
 
-    '        Case DataTypeEnum.adChar
-    '            Return OleDbType.Char
+        'GET DB INSTANCE NAME
+        Select Case DBInstanceType
+            Case CDatasource.DBInstanceType.DATABASE_SADBEL
+                strDatabaseName = "mdb_sadbel"
 
-    '        Case DataTypeEnum.adDate
-    '            Return OleDbType.Date
+            Case CDatasource.DBInstanceType.DATABASE_DATA
+                strDatabaseName = "mdb_data"
 
-    '        Case DataTypeEnum.adCurrency
-    '            Return OleDbType.Currency
+            Case CDatasource.DBInstanceType.DATABASE_EDIFACT
+                strDatabaseName = "mdb_edifact"
 
-    '        Case DataTypeEnum.adDouble
-    '            Return OleDbType.Double
+            Case CDatasource.DBInstanceType.DATABASE_SCHEDULER
+                strDatabaseName = "mdb_scheduler"
 
-    '        Case DataTypeEnum.adSmallInt
-    '            Return OleDbType.SmallInt
+            Case CDatasource.DBInstanceType.DATABASE_TEMPLATE
+                strDatabaseName = "TemplateCP"
 
-    '        Case DataTypeEnum.adInteger
-    '            Return OleDbType.Integer
+            Case CDatasource.DBInstanceType.DATABASE_TARIC
+                strDatabaseName = "mdb_taric"
 
-    '        Case DataTypeEnum.adBigInt
-    '            Return OleDbType.BigInt
+            Case CDatasource.DBInstanceType.DATABASE_HISTORY
+                If Year.Length <> 2 Then
+                    Throw New InvalidDataException("Year supplied is of invalid format, correct format is YY.")
+                End If
 
-    '        Case DataTypeEnum.adTinyInt
-    '            Return OleDbType.TinyInt
+                strDatabaseName = "mdb_history" + Year
 
-    '        Case DataTypeEnum.adSingle
-    '            Return OleDbType.Single
+            Case CDatasource.DBInstanceType.DATABASE_REPERTORY
+                If Year.Length <> 4 Then
+                    Throw New InvalidDataException("Year supplied is of invalid format, correct format is YYYY.")
+                End If
 
-    '        Case DataTypeEnum.adUnsignedSmallInt
-    '            Return OleDbType.UnsignedSmallInt
+                If Now.Year = Year Then
+                    strDatabaseName = "mdb_repertory"
+                Else
+                    strDatabaseName = "mdb_repertory_" + Year
+                End If
 
-    '        Case DataTypeEnum.adUnsignedInt
-    '            Return OleDbType.UnsignedInt
+            Case CDatasource.DBInstanceType.DATABASE_EDI_HISTORY
+                If Year.Length <> 2 Then
+                    Throw New InvalidDataException("Year supplied is of invalid format, correct format is YY.")
+                End If
 
-    '        Case DataTypeEnum.adUnsignedBigInt
-    '            Return OleDbType.UnsignedBigInt
+                If Now.Year = Year Then
+                    strDatabaseName = "mdb_EDIhistory"
+                Else
+                    strDatabaseName = "mdb_EDIhistory" + Year
+                End If
 
-    '        Case DataTypeEnum.adVarChar
-    '            Return OleDbType.VarChar
+            Case Else
+                Throw New NotSupportedException("Database instance not supported.")
 
-    '        Case Else
-    '            Return OleDbType.VarChar
+        End Select
 
-    '    End Select
-    'End Function
+        'ADD FILE EXTENSION FOR ACCESS DB
+        If DatabaseType.ACCESS.Equals(DBType) Then
+            strDatabaseName = strDatabaseName & ACCESS_DB_EXTENSION_97_2003
+        End If
 
-    Public objProp As New CDatabaseProperty
+        Return strDatabaseName
+    End Function
+
+    Public Function getConnection(ByVal DBName As String, _
+                                  ByVal objProp As CDatabaseProperty, _
+                         Optional ByVal UseDataShaping As Boolean = False) As DbConnection
+
+        Dim conTemp As DbConnection
+        Dim sbConn As New StringBuilder
+
+        Select Case objProp.getDatabaseType()
+            Case DatabaseType.ACCESS
+                If UseDataShaping Then
+                    sbConn.Append("Provider=MSDataShape;Provider=Microsoft.Jet.OLEDB.4.0;Data Source=")
+                    sbConn.Append(objProp.getDatabasePath())
+                    sbConn.Append("\")
+                    sbConn.Append(DBName)
+                    sbConn.Append(";Persist Security Info=False;Jet OLEDB:Database Password=")
+                    sbConn.Append(objProp.getPassword())
+                Else
+                    sbConn.Append("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=")
+                    sbConn.Append(objProp.getDatabasePath())
+                    sbConn.Append("\")
+                    sbConn.Append(DBName)
+                    sbConn.Append(";Persist Security Info=False;Jet OLEDB:Database Password=")
+                    sbConn.Append(objProp.getPassword())
+                End If
+
+                conTemp = New OleDbConnection(sbConn.ToString())
+
+            Case DatabaseType.SQLSERVER
+                If UseDataShaping Then
+                    sbConn.Append("Provider=MSDataShape;Data Source=")
+                    sbConn.Append(objProp.getServerName())
+                    sbConn.Append(";Integrated Security=SSPI;Initial Catalog=")
+                    sbConn.Append(DBName)
+                    sbConn.Append(";User ID=")
+                    sbConn.Append(objProp.getUserName())
+                    sbConn.Append(";Password=")
+                    sbConn.Append(objProp.getPassword())
+                    sbConn.Append(";")
+                Else
+                    sbConn.Append("Data Source=")
+                    sbConn.Append(objProp.getServerName())
+                    sbConn.Append(";Integrated Security=SSPI;Initial Catalog=")
+                    sbConn.Append(DBName)
+                    sbConn.Append(";User ID=")
+                    sbConn.Append(objProp.getUserName())
+                    sbConn.Append(";Password=")
+                    sbConn.Append(objProp.getPassword())
+                    sbConn.Append(";")
+                End If
+
+                conTemp = New SqlConnection(sbConn.ToString())
+            Case Else
+                Throw New NotSupportedException("ExecuteNonQuery: Unknown Database Type.")
+
+        End Select
+
+        conTemp.Open()
+        Return conTemp
+    End Function
+
+    Public Function IsPrimaryKeyColumn(ByRef Table As DataTable, ByRef Column As DataColumn) As Boolean
+        Return Array.IndexOf(Table.PrimaryKey, Column) >= 0
+    End Function
 End Module

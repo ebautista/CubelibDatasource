@@ -19,3 +19,9 @@ Namespace SADBELTableAdapters
         End Function
     End Class
 End Namespace
+
+Namespace CubelibDatasource.SADBELTableAdapters
+    
+    Partial Public Class BOX_DEFAULT_COMBINED_NCTS_ADMINTableAdapter
+    End Class
+End Namespace
