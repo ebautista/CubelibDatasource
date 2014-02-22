@@ -76,6 +76,180 @@ Module MGlobal
         End Select
     End Function
 
+    Public Function CreateNewParameterADODB(ByRef AdoRow As ADODB.Recordset,
+                                            ByVal FieldName As String,
+                                            ByVal ADOType As ADODB.DataTypeEnum) As DbParameter
+
+        Select Case objProp.getDatabaseType()
+            Case DatabaseType.ACCESS
+                Dim parameter As New OleDbParameter
+                parameter.Value = AdoRow.Fields(FieldName).Value
+                parameter.ParameterName = "@" + FieldName.Replace(" ", "_")
+                parameter.OleDbType = ConvertADODBToDBType(ADOType)
+                Return parameter
+
+            Case DatabaseType.SQLSERVER
+                Dim parameter As New SqlParameter
+                parameter.Value = AdoRow.Fields(FieldName).Value
+                parameter.ParameterName = "@" + FieldName.Replace(" ", "_")
+                parameter.SqlDbType = ConvertADODBToDBType(ADOType)
+                Return parameter
+
+            Case Else
+                Throw New NotSupportedException("CreateNewParameter: Unknown Database Type or Database Type not supported.")
+
+        End Select
+    End Function
+
+    Public Function CreateNewParameterADONET(ByRef AdoRow As ADODB.Recordset,
+                                             ByVal FieldName As String,
+                                             ByVal NETType As System.Type) As DbParameter
+
+        Select Case objProp.getDatabaseType()
+            Case DatabaseType.ACCESS
+                Dim parameter As New OleDbParameter
+                parameter.Value = AdoRow.Fields(FieldName).Value
+                parameter.ParameterName = "@" + FieldName.Replace(" ", "_")
+                parameter.OleDbType = ConvertADONETToDBType(NETType)
+                Return parameter
+
+            Case DatabaseType.SQLSERVER
+                Dim parameter As New SqlParameter
+                parameter.Value = AdoRow.Fields(FieldName).Value
+                parameter.ParameterName = "@" + FieldName.Replace(" ", "_")
+                parameter.SqlDbType = ConvertADONETToDBType(NETType)
+                Return parameter
+
+            Case Else
+                Throw New NotSupportedException("CreateNewParameter: Unknown Database Type or Database Type not supported.")
+
+        End Select
+    End Function
+
+    Public Function ConvertADODBToDBType(ByVal ADOType As ADODB.DataTypeEnum) As DbType
+
+        Select Case objProp.getDatabaseType()
+            Case DatabaseType.ACCESS
+                Select Case ADOType
+                    Case DataTypeEnum.adInteger
+                        Return OleDbType.Integer
+                    Case DataTypeEnum.adBoolean
+                        Return OleDbType.Boolean
+                    Case DataTypeEnum.adDate
+                        Return OleDbType.Date
+                    Case DataTypeEnum.adDouble
+                        Return OleDbType.Double
+                    Case DataTypeEnum.adNumeric
+                        Return OleDbType.Decimal
+                    Case DataTypeEnum.adLongVarWChar
+                        Return OleDbType.VarWChar
+                    Case DataTypeEnum.adSingle
+                        Return OleDbType.Single
+                    Case DataTypeEnum.adUnsignedTinyInt
+                        Return OleDbType.UnsignedTinyInt
+                    Case DataTypeEnum.adSmallInt
+                        Return OleDbType.SmallInt
+                    Case DataTypeEnum.adLongVarBinary
+                        Return OleDbType.LongVarBinary
+                    Case DataTypeEnum.adVarWChar
+                        Return OleDbType.VarWChar
+                    Case Else
+                        Throw New NotSupportedException("ConvertADODBToDBType: Unknown or not supported ADODB DataType.")
+                End Select
+
+            Case DatabaseType.SQLSERVER
+                Select Case ADOType
+                    Case DataTypeEnum.adInteger
+                        Return SqlDbType.Int
+                    Case DataTypeEnum.adBoolean
+                        Return SqlDbType.Bit
+                    Case DataTypeEnum.adDate
+                        Return SqlDbType.DateTime
+                    Case DataTypeEnum.adDouble
+                        Return SqlDbType.Float
+                    Case DataTypeEnum.adNumeric
+                        Return SqlDbType.Decimal
+                    Case DataTypeEnum.adLongVarWChar
+                        Return SqlDbType.NText
+                    Case DataTypeEnum.adSingle
+                        Return SqlDbType.Real
+                    Case DataTypeEnum.adUnsignedTinyInt
+                        Return SqlDbType.TinyInt
+                    Case DataTypeEnum.adSmallInt
+                        Return SqlDbType.SmallInt
+                    Case DataTypeEnum.adLongVarBinary
+                        Return SqlDbType.VarBinary
+                    Case DataTypeEnum.adVarWChar
+                        Return SqlDbType.NVarChar
+                    Case Else
+                        Throw New NotSupportedException("ConvertADODBToDBType: Unknown or not supported ADODB DataType.")
+                End Select
+
+
+            Case Else
+                Throw New NotSupportedException("ConvertADODBToDBType: Unknown Database Type or Database Type not supported.")
+
+        End Select
+    End Function
+
+    Public Function ConvertADONETToDBType(ByVal NETType As System.Type) As DbType
+
+        Select Case objProp.getDatabaseType()
+            Case DatabaseType.ACCESS
+                Select Case NETType.UnderlyingSystemType.ToString()
+                    Case "System.Int32"
+                        Return OleDbType.Integer
+                    Case "System.Boolean"
+                        Return OleDbType.Boolean
+                    Case "System.DateTime"
+                        Return OleDbType.Date
+                    Case "System.Double"
+                        Return OleDbType.Double
+                    Case "System.Decimal"
+                        Return OleDbType.Decimal
+                    Case "System.Single"
+                        Return OleDbType.Single
+                    Case "System.Byte"
+                        Return OleDbType.UnsignedTinyInt
+                    Case "System.Int16"
+                        Return OleDbType.SmallInt
+                    Case "System.String"
+                        Return OleDbType.VarWChar
+                    Case Else
+                        Throw New NotSupportedException("ConvertADODBToDBType: Unknown or not supported ADODB DataType.")
+                End Select
+
+            Case DatabaseType.SQLSERVER
+                Select Case NETType.UnderlyingSystemType.ToString()
+                    Case "System.Int32"
+                        Return SqlDbType.Int
+                    Case "System.Boolean"
+                        Return SqlDbType.Bit
+                    Case "System.DateTime"
+                        Return SqlDbType.DateTime
+                    Case "System.Double"
+                        Return SqlDbType.Float
+                    Case "System.Decimal"
+                        Return SqlDbType.Decimal
+                    Case "System.Single"
+                        Return SqlDbType.Real
+                    Case "System.Byte"
+                        Return SqlDbType.TinyInt
+                    Case "System.Int16"
+                        Return SqlDbType.SmallInt
+                    Case "System.String"
+                        Return SqlDbType.NVarChar
+                    Case Else
+                        Throw New NotSupportedException("ConvertADODBToDBType: Unknown or not supported ADODB DataType.")
+                End Select
+
+
+            Case Else
+                Throw New NotSupportedException("ConvertADODBToDBType: Unknown Database Type or Database Type not supported.")
+
+        End Select
+    End Function
+
     Public Function getConnectionObjectsNonQuery(ByVal SQL As String, _
                                                  ByVal Database As DBInstanceType, _
                                         Optional ByVal Year As String = vbNullString) As DbCommand
@@ -97,7 +271,7 @@ Module MGlobal
 
                 command = New SqlCommand(SQL, conTemp)
             Case Else
-                Throw New NotSupportedException("ExecuteNonQuery: Unknown Database Type or Database Type not supported.")
+                Throw New NotSupportedException("getConnectionObjectsNonQuery: Unknown Database Type or Database Type not supported.")
 
         End Select
 
@@ -109,7 +283,6 @@ Module MGlobal
                           Optional ByVal Year As String = vbNullString) As DataSet
 
         Dim conTemp As DbConnection
-        Dim command As DbCommand
         Dim adapter As DataAdapter
         Dim dsTemp As New DataSet
         Dim strDBName As String
