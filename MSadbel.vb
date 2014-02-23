@@ -6,7 +6,9 @@ Imports CubelibDatasource.CDatabaseProperty
 
 Module MSadbel
 
-    Public Function FindAndUpdateRowSADBEL(ByRef RecordsetToUpdate As CRecordset, ByVal TableName As SadbelTableType) As Integer
+    Public Function FindAndUpdateRow(ByRef RecordsetToUpdate As CRecordset,
+                                     ByVal TableName As IConvertible,
+                            Optional ByVal Year As String = vbNullString) As Integer
 
         Dim adoRow As Recordset = RecordsetToUpdate.Recordset
         Dim source As New CDatasource
@@ -20,28 +22,29 @@ Module MSadbel
         adoRow.Bookmark = RecordsetToUpdate.BookMark
 
         'Get the TableName
-        strTableName = GetSadbelTableName(adoRow, TableName)
+        strTableName = GetTableName(adoRow, TableName)
 
         'Get the Table Schema
-        dataset = getTableSchema(strTableName, DBInstanceType.DATABASE_SADBEL)
+        dataset = getTableSchema(strTableName, GetDBInstanceTypeFromTableEnumType(TableName))
 
         'Generate the fullUpdateClause
         fullUpdateClause = CreateUpdateClause(strTableName, dataset, adoRow)
 
         If fullUpdateClause = vbNullString Then
-            AddToTrace("Error in FindAndUpdateRowSADBEL() - Primary Keys on table " & strTableName & " has not been defined or ADO record does not contain a row to update.", False)
+            AddToTrace("Error in FindAndUpdateRow() - Primary Keys on table " & strTableName & " has not been defined or ADO record does not contain a row to update.", False)
             Return MGlobal.FAILURE
         End If
 
         'Set the update command with the connection object 
-        command = getConnectionObjectsNonQuery(fullUpdateClause, DBInstanceType.DATABASE_SADBEL)
+        command = getConnectionObjectsNonQuery(fullUpdateClause, GetDBInstanceTypeFromTableEnumType(TableName), Year)
 
+        'Set Update Paramater values
         For Each Field As ADODB.Field In adoRow.Fields
-            Debug.Print(Field.Name & " " & Field.Type)
             Dim param As DbParameter = CreateNewParameterADODB(adoRow, Field.Name, Field.Type)
             command.Parameters.Add(param)
         Next
 
+        'Set WHERE clause values using PKs
         columns = dataset.Tables(0).Columns
         For Each column As DataColumn In columns
             If IsPrimaryKeyColumn(dataset.Tables(0), column) Then
@@ -224,26 +227,6 @@ Module MSadbel
         table.AcceptChanges()
     End Sub
 
-
-    Private Function GetSadbelTableName(ByRef adoRow As ADODB.Recordset,
-                                        ByVal TableName As SadbelTableType) As String
-
-        Select Case TableName
-            Case SadbelTableType.DIGISIGN_PLDA_COMBINED
-            Case SadbelTableType.DIGISIGN_PLDA_IMPORT
-            Case SadbelTableType.MAIL_BOX
-            Case SadbelTableType.MAIL_GROUPS
-            Case SadbelTableType.MAIL_SETTINGS
-                Return TableName.ToString
-
-            Case Else
-                Return TableName.ToString.Replace("_", " ")
-
-        End Select
-
-        Return vbNullString
-    End Function
-
     Private Function CreateUpdateClause(ByVal strTableName As String,
                                         ByRef Data As DataSet,
                                         ByRef adoRow As Recordset) As String
@@ -267,7 +250,7 @@ Module MSadbel
                     Case DatabaseType.ACCESS
                         command.Append("[").Append(Field.Name).Append("] = ?, ")
                     Case DatabaseType.SQLSERVER
-                        command.Append("[").Append(Field.Name).Append("] = @").Append(Field.Name.Replace(" ", "_")).Append(", ")
+                        command.Append("[").Append(Field.Name).Append("] = @").Append(Field.Name.Replace(" ", "_").Replace("-", "_")).Append(", ")
 
                 End Select
 
@@ -284,7 +267,7 @@ Module MSadbel
                         Case DatabaseType.ACCESS
                             command.Append("[").Append(column.ColumnName).Append("] = ? AND ")
                         Case DatabaseType.SQLSERVER
-                            command.Append("[").Append(column.ColumnName).Append("] = @").Append(column.ColumnName.Replace(" ", "_")).Append(" AND ")
+                            command.Append("[").Append(column.ColumnName).Append("] = @PK_").Append(column.ColumnName.Replace(" ", "_").Replace("-", "_")).Append(" AND ")
 
                     End Select
 

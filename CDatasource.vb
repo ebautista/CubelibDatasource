@@ -544,7 +544,7 @@ Public Class CDatasource
         Dim conObjects() As Object
 
         Try
-            conObjects = getConnectionObjects(SQL, Database, False, False)
+            conObjects = getConnectionObjects(SQL, Database, False, False, Year)
             conObjects(1).ExecuteNonQuery()
 
             conObjects(1).Dispose()
@@ -562,126 +562,48 @@ Public Class CDatasource
     Public Function UpdateSadbel(ByRef RecordsetToUpdate As CRecordset, _
                                  ByVal TableName As Integer) As Integer
 
-        Return FindAndUpdateRowSADBEL(RecordsetToUpdate, CType(TableName, SadbelTableType))
+        Return FindAndUpdateRow(RecordsetToUpdate, CType(TableName, SadbelTableType))
     End Function
 
     Public Function UpdateEdifact(ByRef RecordsetToUpdate As CRecordset, _
-                                  ByVal Bookmark As Double,
                                   ByVal TableName As Integer) As Integer
 
-        Return Update(RecordsetToUpdate, Bookmark, CType(TableName, EdifactTableType))
+        Return FindAndUpdateRow(RecordsetToUpdate, CType(TableName, EdifactTableType))
     End Function
 
     Public Function UpdateData(ByRef RecordsetToUpdate As CRecordset, _
-                               ByVal Bookmark As Double,
                                ByVal TableName As Integer) As Integer
 
-        Return Update(RecordsetToUpdate, Bookmark, CType(TableName, DataTableType))
+        Return FindAndUpdateRow(RecordsetToUpdate, CType(TableName, DataTableType))
     End Function
 
     Public Function UpdateEdifactHistory(ByRef RecordsetToUpdate As CRecordset, _
-                                         ByVal Bookmark As Double,
                                          ByVal TableName As Integer,
                                          ByVal Year As Integer) As Integer
-        'TODO: How to add year
-        Return Update(RecordsetToUpdate, Bookmark, CType(TableName, EdiHistoryTableType))
+
+        Return FindAndUpdateRow(RecordsetToUpdate, CType(TableName, EdiHistoryTableType), Year)
     End Function
 
     Public Function UpdateSadbelHistory(ByRef RecordsetToUpdate As CRecordset, _
-                                        ByVal Bookmark As Double,
                                         ByVal TableName As Integer,
                                         ByVal Year As Integer) As Integer
-        'TODO: How to add year
-        Return Update(RecordsetToUpdate, Bookmark, CType(TableName, SadbelHistoryTableType))
+
+        Return FindAndUpdateRow(RecordsetToUpdate, CType(TableName, SadbelHistoryTableType), Year)
     End Function
 
     Public Function UpdateRepertory(ByRef RecordsetToUpdate As CRecordset, _
-                                    ByVal Bookmark As Double,
                                     ByVal TableName As Integer,
-                                    Year As Integer) As Integer
-        'TODO: How to add year
-        Return Update(RecordsetToUpdate, Bookmark, CType(TableName, RepertoryTableType))
+                                    ByVal Year As Integer) As Integer
+        Return FindAndUpdateRow(RecordsetToUpdate, CType(TableName, RepertoryTableType), Year)
     End Function
 
     Public Function UpdateTemplateCP(ByRef RecordsetToUpdate As CRecordset, _
-                                     ByVal Bookmark As Double,
                                      ByVal TableName As Integer) As Integer
 
-        Return Update(RecordsetToUpdate, Bookmark, CType(TableName, TemplateCPTableType))
+        Return FindAndUpdateRow(RecordsetToUpdate, CType(TableName, TemplateCPTableType))
     End Function
 
-    Private Function Update(ByRef RecordsetToUpdate As CRecordset, _
-                           ByVal Bookmark As Double,
-                           ByVal TableName As IConvertible) As Integer
-
-        If RecordsetToUpdate Is Nothing AndAlso RecordsetToUpdate.Recordset.Source Is Nothing Then
-            AddToTrace("Error in CDatasource.Update() - source recordset was not properly initialized.")
-        End If
-
-        RecordsetToUpdate.Recordset.Bookmark = Bookmark
-
-        Try
-            DelegateUpdate(RecordsetToUpdate.Recordset, TableName)
-            Return SUCCESS
-        Catch ex As Exception
-            AddToTrace("Error in CubelibDatasource.Update: " & ex.Message)
-        End Try
-
-        Return FAILURE
-    End Function
-
-    'Public Function Update(ByRef RecordsetToUpdate As CRecordset, _
-    '                       ByVal Bookmark As Double,
-    '                       ByVal TableName As IConvertible) As Integer
-
-    '    Dim conObjects() As Object
-    '    Dim dbType As DBInstanceType
-
-    '    If RecordsetToUpdate Is Nothing AndAlso RecordsetToUpdate.Recordset.Source Is Nothing Then
-    '        AddToTrace("Error in CDatasource.Update() - source recordset was not properly initialized.")
-    '    End If
-
-    '    RecordsetToUpdate.Recordset.Bookmark = Bookmark
-
-    '    Try
-    '        dbType = GetDatabaseInstanceType(RecordsetToUpdate.Connection)
-    '        conObjects = getConnectionObjects(RecordsetToUpdate.Recordset.Source, dbType, False, True)
-
-    '        Dim ds As DataSet = conObjects(2)
-    '        Dim adapter As DataAdapter = conObjects(1)
-
-    '        If ds.Tables.Count > 0 AndAlso ds.Tables(0).Rows.Count > 0 AndAlso RecordsetToUpdate.Recordset.RecordCount > 0 Then
-    '            Dim table As DataTable = ds.Tables(0)
-
-    '            Dim columns() As DataColumn = table.PrimaryKey
-    '            Dim pk() As Object
-
-    '            If columns.Length > 0 Then
-    '                For index = 0 To columns.Length - 1
-    '                    ReDim Preserve pk(index)
-    '                    pk(index) = RecordsetToUpdate.Recordset.Fields(columns(index).ColumnName).Value
-    '                    Debug.Print(columns(index).ColumnName)
-    '                Next
-
-    '                DelegateUpdate(RecordsetToUpdate.Recordset, pk, TableName)
-
-    '                conObjects(2).Dispose()
-    '                conObjects(1).Dispose()
-    '                conObjects(0).Close()
-    '                conObjects(0).Dispose()
-
-    '                Return SUCCESS
-    '            Else
-    '                AddToTrace("Error in CubelibDatasource.Update: No Primary Key define for : " & RecordsetToUpdate.Recordset.Source)
-    '            End If
-    '        End If
-    '    Catch ex As Exception
-    '        AddToTrace("Error in CubelibDatasource.Update: " & ex.Message)
-    '    End Try
-
-    '    Return FAILURE
-    'End Function
-
+    'TODO: Same approach as with Update
     Public Function Insert(ByRef RecordsetToUpdate As CRecordset,
                            ByVal Bookmark As Double,
                            ByVal TableName As IConvertible) As Integer
@@ -693,7 +615,7 @@ Public Class CDatasource
         RecordsetToUpdate.Recordset.Bookmark = Bookmark
 
         Try
-            DelegateInsert(RecordsetToUpdate.Recordset, TableName)
+            'DelegateInsert(RecordsetToUpdate.Recordset, TableName)
             Return SUCCESS
         Catch ex As Exception
             AddToTrace("Error in CubelibDatasource.Insert: " & ex.Message)
@@ -819,111 +741,6 @@ Public Class CDatasource
         Return rstADO
     End Function
 
-    Public Function getConnectionObjects(ByVal SQL As String, _
-                                         ByVal Database As DBInstanceType, _
-                                Optional ByVal UseDataShaping As Boolean = False,
-                                Optional ByVal IsQuery As Boolean = True, _
-                                Optional ByVal Year As String = vbNullString) As Object()
-
-        Dim conObjects(IIf(IsQuery, 3, 2)) As Object
-
-        Dim conTemp As DbConnection
-        Dim adapter As DataAdapter
-        Dim dsTemp As New DataSet
-        Dim command As DbCommand
-        Dim strDBName As String
-
-        strDBName = getDatabaseName(Database, Year, objProp.getDatabaseType())
-        conTemp = getConnection(strDBName, objProp, UseDataShaping)
-
-        Select Case objProp.getDatabaseType()
-            Case DatabaseType.ACCESS
-                conObjects.SetValue(conTemp, 0)
-
-                AddToTrace("Connecting To Access Database...", True)
-
-                If IsQuery Then
-                    adapter = New OleDbDataAdapter(SQL, conTemp)
-                    adapter.Fill(dsTemp)
-                    adapter.FillSchema(dsTemp, SchemaType.Source)
-
-                    conObjects.SetValue(adapter, 1)
-                    conObjects.SetValue(dsTemp, 2)
-                Else
-                    command = New OleDbCommand(SQL, conTemp)
-                    conObjects.SetValue(command, 1)
-                End If
-
-            Case DatabaseType.SQLSERVER
-                conObjects.SetValue(conTemp, 0)
-
-                AddToTrace("Connecting To SQL Server...", True)
-
-                If IsQuery Then
-                    adapter = New SqlClient.SqlDataAdapter(SQL, conTemp)
-                    adapter.Fill(dsTemp)
-                    adapter.FillSchema(dsTemp, SchemaType.Mapped)
-                    conObjects.SetValue(adapter, 1)
-                    conObjects.SetValue(dsTemp, 2)
-                Else
-                    command = New SqlCommand(SQL, conTemp)
-                    conObjects.SetValue(command, 1)
-                End If
-
-            Case Else
-                Throw New NotSupportedException("ExecuteNonQuery: Unknown Database Type or Database Type not supported.")
-
-        End Select
-
-        Return conObjects
-    End Function
-
-    
-    Private Function GetDatabaseInstanceType(ByVal ConnectionString As String) As DBInstanceType
-        Dim dbRegex As New Regex("Source=.*mdb")
-        Dim match As Match = dbRegex.Match(ConnectionString)
-
-        If match.Success Then
-            Dim dbName As String = match.Value
-            dbName = dbName.Substring(dbName.LastIndexOf("\") + 1)
-            dbName = dbName.Replace(".mdb", vbNullString)
-
-            Select Case dbName
-                Case "mdb_sadbel"
-                    Return DBInstanceType.DATABASE_SADBEL
-
-                Case "mdb_data"
-                    Return DBInstanceType.DATABASE_DATA
-
-                Case "mdb_edifact"
-                    Return DBInstanceType.DATABASE_EDIFACT
-
-                Case "mdb_scheduler"
-                    Return DBInstanceType.DATABASE_SCHEDULER
-
-                Case "CPTemplate"
-                    Return DBInstanceType.DATABASE_TEMPLATE
-
-                Case "mdb_taric"
-                    Return DBInstanceType.DATABASE_TARIC
-
-                Case "mdb_history"
-                    Return DBInstanceType.DATABASE_HISTORY
-
-                Case "mdb_repertory"
-                    Return DBInstanceType.DATABASE_REPERTORY
-
-                Case Else
-                    AddToTrace("Error in CDatasource.GetDatabaseInstanceType() - could not determine db type from connectionString = " & ConnectionString)
-                    Return Nothing
-
-            End Select
-        Else
-            AddToTrace("Error in CDatasource.GetDatabaseInstanceType() - could not extract database name from connectionString = " & ConnectionString)
-            Return Nothing
-        End If
-    End Function
-
     Private Function EliminateLastColumn(ByVal dt As DataTable) As String()
         Dim strColumns(0) As String
         Dim idx As Integer = 0
@@ -937,51 +754,6 @@ Public Class CDatasource
 
         Return strColumns
     End Function
-
-    Private Sub DelegateUpdate(ByRef adoRow As ADODB.Recordset, ByRef TableName As IConvertible)
-        Dim type As Type = CType(TableName, Object).GetType
-
-        If type.Equals(GetType(SadbelTableType)) Then
-            FindAndUpdateRowSADBEL(adoRow, TableName)
-        ElseIf type.Equals(GetType(EdifactTableType)) Then
-            FindAndUpdateRowEdifact(adoRow, TableName)
-        ElseIf type.Equals(GetType(DataTableType)) Then
-            FindAndUpdateRowData(adoRow, TableName)
-        ElseIf type.Equals(GetType(EdiHistoryTableType)) Then
-            FindAndUpdateRowEdifactHistory(adoRow, TableName)
-        ElseIf type.Equals(GetType(SadbelHistoryTableType)) Then
-            FindAndUpdateRowSadbelHistory(adoRow, TableName)
-        ElseIf type.Equals(GetType(SchedulerTableType)) Then
-            FindAndUpdateRowScheduler(adoRow, TableName)
-        ElseIf type.Equals(GetType(RepertoryTableType)) Then
-            FindAndUpdateRowRepertory(adoRow, TableName)
-        ElseIf type.Equals(GetType(TemplateCPTableType)) Then
-            FindAndUpdateRowTemplateCP(adoRow, TableName)
-        End If
-
-    End Sub
-
-    Private Sub DelegateInsert(ByRef adoRow As ADODB.Recordset, ByRef TableName As IConvertible)
-        Dim type As Type = CType(TableName, Object).GetType
-
-        If type.Equals(GetType(SadbelTableType)) Then
-            InsertRowSADBEL(adoRow, TableName)
-        ElseIf type.Equals(GetType(EdifactTableType)) Then
-            InsertRowEdifact(adoRow, TableName)
-        ElseIf type.Equals(GetType(DataTableType)) Then
-            InsertRowData(adoRow, TableName)
-        ElseIf type.Equals(GetType(EdiHistoryTableType)) Then
-            InsertRowEdifactHistory(adoRow, TableName)
-        ElseIf type.Equals(GetType(SadbelHistoryTableType)) Then
-            InsertRowSadbelHistory(adoRow, TableName)
-        ElseIf type.Equals(GetType(SchedulerTableType)) Then
-            InsertRowScheduler(adoRow, TableName)
-        ElseIf type.Equals(GetType(RepertoryTableType)) Then
-            InsertRowRepertory(adoRow, TableName)
-        ElseIf type.Equals(GetType(TemplateCPTableType)) Then
-            InsertRowTemplateCP(adoRow, TableName)
-        End If
-    End Sub
 End Class
 
 

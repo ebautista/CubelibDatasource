@@ -84,14 +84,14 @@ Module MGlobal
             Case DatabaseType.ACCESS
                 Dim parameter As New OleDbParameter
                 parameter.Value = AdoRow.Fields(FieldName).Value
-                parameter.ParameterName = "@" + FieldName.Replace(" ", "_")
+                parameter.ParameterName = "@" + FieldName.Replace(" ", "_").Replace("-", "_")
                 parameter.OleDbType = ConvertADODBToDBType(ADOType)
                 Return parameter
 
             Case DatabaseType.SQLSERVER
                 Dim parameter As New SqlParameter
                 parameter.Value = AdoRow.Fields(FieldName).Value
-                parameter.ParameterName = "@" + FieldName.Replace(" ", "_")
+                parameter.ParameterName = "@" + FieldName.Replace(" ", "_").Replace("-", "_")
                 parameter.SqlDbType = ConvertADODBToDBType(ADOType)
                 Return parameter
 
@@ -109,14 +109,14 @@ Module MGlobal
             Case DatabaseType.ACCESS
                 Dim parameter As New OleDbParameter
                 parameter.Value = AdoRow.Fields(FieldName).Value
-                parameter.ParameterName = "@" + FieldName.Replace(" ", "_")
+                parameter.ParameterName = "@PK_" + FieldName.Replace(" ", "_").Replace("-", "_")
                 parameter.OleDbType = ConvertADONETToDBType(NETType)
                 Return parameter
 
             Case DatabaseType.SQLSERVER
                 Dim parameter As New SqlParameter
                 parameter.Value = AdoRow.Fields(FieldName).Value
-                parameter.ParameterName = "@" + FieldName.Replace(" ", "_")
+                parameter.ParameterName = "@PK_" + FieldName.Replace(" ", "_").Replace("-", "_")
                 parameter.SqlDbType = ConvertADONETToDBType(NETType)
                 Return parameter
 
@@ -154,7 +154,7 @@ Module MGlobal
                     Case DataTypeEnum.adVarWChar
                         Return OleDbType.VarWChar
                     Case Else
-                        Throw New NotSupportedException("ConvertADODBToDBType: Unknown or not supported ADODB DataType.")
+                        Return OleDbType.VarWChar
                 End Select
 
             Case DatabaseType.SQLSERVER
@@ -182,7 +182,7 @@ Module MGlobal
                     Case DataTypeEnum.adVarWChar
                         Return SqlDbType.NVarChar
                     Case Else
-                        Throw New NotSupportedException("ConvertADODBToDBType: Unknown or not supported ADODB DataType.")
+                        Return SqlDbType.NVarChar
                 End Select
 
 
@@ -444,5 +444,133 @@ Module MGlobal
 
     Public Function IsPrimaryKeyColumn(ByRef Table As DataTable, ByRef Column As DataColumn) As Boolean
         Return Array.IndexOf(Table.PrimaryKey, Column) >= 0
+    End Function
+
+    Public Function GetTableName(ByRef adoRow As ADODB.Recordset,
+                                  ByVal TableName As IConvertible) As String
+
+        Dim type As Type = CType(TableName, Object).GetType
+
+        If type.Equals(GetType(SadbelTableType)) Then
+            Select Case CType(TableName, SadbelTableType)
+                Case SadbelTableType.DIGISIGN_PLDA_COMBINED
+                Case SadbelTableType.DIGISIGN_PLDA_IMPORT
+                Case SadbelTableType.MAIL_BOX
+                Case SadbelTableType.MAIL_GROUPS
+                Case SadbelTableType.MAIL_SETTINGS
+                    Return CType(TableName, SadbelTableType).ToString
+                Case Else
+                    Return CType(TableName, SadbelTableType).ToString.Replace("_", " ")
+            End Select
+        ElseIf type.Equals(GetType(EdifactTableType)) Then
+            Select Case CType(TableName, EdifactTableType)
+                Case EdifactTableType.NCTS_DEPARTURE_FOLLOW_UP_REQUEST
+                    Return CType(TableName, SadbelTableType).ToString.Replace("_", " ")
+                Case Else
+                    Return CType(TableName, SadbelTableType).ToString
+            End Select
+        ElseIf type.Equals(GetType(DataTableType)) Then
+            Return CType(TableName, DataTableType).ToString
+        ElseIf type.Equals(GetType(EdiHistoryTableType)) Then
+            Return CType(TableName, EdiHistoryTableType).ToString
+        ElseIf type.Equals(GetType(SadbelHistoryTableType)) Then
+            Return CType(TableName, SadbelHistoryTableType).ToString.Replace("_", " ")
+        ElseIf type.Equals(GetType(SchedulerTableType)) Then
+            Return CType(TableName, SchedulerTableType).ToString.Replace("_", " ")
+        ElseIf type.Equals(GetType(RepertoryTableType)) Then
+            Return CType(TableName, RepertoryTableType).ToString.Replace("_", " ")
+        ElseIf type.Equals(GetType(TemplateCPTableType)) Then
+            Select Case CType(TableName, TemplateCPTableType)
+                Case TemplateCPTableType.DELETEITEM_LOG
+                    Return CType(TableName, TemplateCPTableType).ToString.Replace("_", " ")
+                Case Else
+                    Return CType(TableName, TemplateCPTableType).ToString
+            End Select
+        End If
+
+        Return vbNullString
+    End Function
+
+    Public Function GetDBInstanceTypeFromTableEnumType(ByVal TableName As IConvertible) As DBInstanceType
+        Dim type As Type = CType(TableName, Object).GetType
+
+        If type.Equals(GetType(SadbelTableType)) Then
+            Return DBInstanceType.DATABASE_SADBEL
+        ElseIf type.Equals(GetType(EdifactTableType)) Then
+            Return DBInstanceType.DATABASE_EDIFACT
+        ElseIf type.Equals(GetType(DataTableType)) Then
+            Return DBInstanceType.DATABASE_DATA
+        ElseIf type.Equals(GetType(EdiHistoryTableType)) Then
+            Return DBInstanceType.DATABASE_EDI_HISTORY
+        ElseIf type.Equals(GetType(SadbelHistoryTableType)) Then
+            Return DBInstanceType.DATABASE_HISTORY
+        ElseIf type.Equals(GetType(SchedulerTableType)) Then
+            Return DBInstanceType.DATABASE_SCHEDULER
+        ElseIf type.Equals(GetType(RepertoryTableType)) Then
+            Return DBInstanceType.DATABASE_REPERTORY
+        ElseIf type.Equals(GetType(TemplateCPTableType)) Then
+            Return DBInstanceType.DATABASE_TEMPLATE
+        End If
+
+        Throw New NotSupportedException("GetDBInstanceTypeFromTableEnumType: Unknown Database Instance Type.")
+    End Function
+
+    Public Function getConnectionObjects(ByVal SQL As String, _
+                                         ByVal Database As DBInstanceType, _
+                                Optional ByVal UseDataShaping As Boolean = False,
+                                Optional ByVal IsQuery As Boolean = True, _
+                                Optional ByVal Year As String = vbNullString) As Object()
+
+        Dim conObjects(IIf(IsQuery, 3, 2)) As Object
+
+        Dim conTemp As DbConnection
+        Dim adapter As DataAdapter
+        Dim dsTemp As New DataSet
+        Dim command As DbCommand
+        Dim strDBName As String
+
+        strDBName = getDatabaseName(Database, Year, objProp.getDatabaseType())
+        conTemp = getConnection(strDBName, objProp, UseDataShaping)
+
+        Select Case objProp.getDatabaseType()
+            Case DatabaseType.ACCESS
+                conObjects.SetValue(conTemp, 0)
+
+                AddToTrace("Connecting To Access Database...", True)
+
+                If IsQuery Then
+                    adapter = New OleDbDataAdapter(SQL, conTemp)
+                    adapter.Fill(dsTemp)
+                    adapter.FillSchema(dsTemp, SchemaType.Source)
+
+                    conObjects.SetValue(adapter, 1)
+                    conObjects.SetValue(dsTemp, 2)
+                Else
+                    command = New OleDbCommand(SQL, conTemp)
+                    conObjects.SetValue(command, 1)
+                End If
+
+            Case DatabaseType.SQLSERVER
+                conObjects.SetValue(conTemp, 0)
+
+                AddToTrace("Connecting To SQL Server...", True)
+
+                If IsQuery Then
+                    adapter = New SqlClient.SqlDataAdapter(SQL, conTemp)
+                    adapter.Fill(dsTemp)
+                    adapter.FillSchema(dsTemp, SchemaType.Mapped)
+                    conObjects.SetValue(adapter, 1)
+                    conObjects.SetValue(dsTemp, 2)
+                Else
+                    command = New SqlCommand(SQL, conTemp)
+                    conObjects.SetValue(command, 1)
+                End If
+
+            Case Else
+                Throw New NotSupportedException("ExecuteNonQuery: Unknown Database Type or Database Type not supported.")
+
+        End Select
+
+        Return conObjects
     End Function
 End Module
