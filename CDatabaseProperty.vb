@@ -53,7 +53,7 @@ Public Class CDatabaseProperty
         End If
     End Function
 
-    'Need to add a registry source for SQL UserName and SQL Data Source
+    'TODO: Need to add a registry source for SQL UserName and SQL Data Source
     Public Function GetRegistryKey(ByVal Key As String) As String
         Dim strDBPath As String
         Dim regKey As RegistryKey

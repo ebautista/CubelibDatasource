@@ -534,9 +534,9 @@ Public Class CDatasource
         WindowSettings
     End Enum
 
-    Private Const FAILURE As Integer = -1
-    Private Const SUCCESS As Integer = 0
-
+    ''' <summary>
+    ''' DELETE, UPDATE and INSERT via SQL Script
+    ''' </summary>
     Public Function ExecuteNonQuery(ByVal SQL As String, _
                                     ByVal Database As DBInstanceType, _
                            Optional ByVal Year As String = vbNullString) As Integer
@@ -559,71 +559,142 @@ Public Class CDatasource
 
     End Function
 
+    ''' <summary>
+    ''' Update a selected ADODB.Recordset.Row for mdb_sadbel
+    ''' </summary>
     Public Function UpdateSadbel(ByRef RecordsetToUpdate As CRecordset, _
-                                 ByVal TableName As Integer) As Integer
+                                 ByVal TableName As SadbelTableType) As Integer
 
-        Return FindAndUpdateRow(RecordsetToUpdate, CType(TableName, SadbelTableType))
+        Return FindAndUpdateRow(RecordsetToUpdate, TableName)
     End Function
 
+    ''' <summary>
+    ''' Update a selected ADODB.Recordset.Row for edifact
+    ''' </summary>
     Public Function UpdateEdifact(ByRef RecordsetToUpdate As CRecordset, _
-                                  ByVal TableName As Integer) As Integer
+                                  ByVal TableName As EdifactTableType) As Integer
 
-        Return FindAndUpdateRow(RecordsetToUpdate, CType(TableName, EdifactTableType))
+        Return FindAndUpdateRow(RecordsetToUpdate, TableName)
     End Function
 
+    ''' <summary>
+    ''' Update a selected ADODB.Recordset.Row for mdb_data
+    ''' </summary>
     Public Function UpdateData(ByRef RecordsetToUpdate As CRecordset, _
-                               ByVal TableName As Integer) As Integer
+                               ByVal TableName As DataTableType) As Integer
 
-        Return FindAndUpdateRow(RecordsetToUpdate, CType(TableName, DataTableType))
+        Return FindAndUpdateRow(RecordsetToUpdate, TableName)
     End Function
 
+    ''' <summary>
+    ''' Update a selected ADODB.Recordset.Row for mdb_EDIHistoryXX
+    ''' </summary>
     Public Function UpdateEdifactHistory(ByRef RecordsetToUpdate As CRecordset, _
-                                         ByVal TableName As Integer,
+                                         ByVal TableName As EdifactTableType,
                                          ByVal Year As Integer) As Integer
 
-        Return FindAndUpdateRow(RecordsetToUpdate, CType(TableName, EdiHistoryTableType), Year)
+        Return FindAndUpdateRow(RecordsetToUpdate, TableName, Year)
     End Function
 
+    ''' <summary>
+    ''' Update a selected ADODB.Recordset.Row for mdb_historyXX
+    ''' </summary>
     Public Function UpdateSadbelHistory(ByRef RecordsetToUpdate As CRecordset, _
-                                        ByVal TableName As Integer,
+                                        ByVal TableName As SadbelHistoryTableType,
                                         ByVal Year As Integer) As Integer
 
-        Return FindAndUpdateRow(RecordsetToUpdate, CType(TableName, SadbelHistoryTableType), Year)
+        Return FindAndUpdateRow(RecordsetToUpdate, TableName, Year)
     End Function
 
+    ''' <summary>
+    ''' Update a selected ADODB.Recordset.Row for mdb_RepertoryXXXX
+    ''' </summary>
     Public Function UpdateRepertory(ByRef RecordsetToUpdate As CRecordset, _
-                                    ByVal TableName As Integer,
+                                    ByVal TableName As RepertoryTableType,
                                     ByVal Year As Integer) As Integer
-        Return FindAndUpdateRow(RecordsetToUpdate, CType(TableName, RepertoryTableType), Year)
+
+        Return FindAndUpdateRow(RecordsetToUpdate, TableName, Year)
     End Function
 
+    ''' <summary>
+    ''' Update a selected ADODB.Recordset.Row for TemplateCP
+    ''' </summary>
     Public Function UpdateTemplateCP(ByRef RecordsetToUpdate As CRecordset, _
-                                     ByVal TableName As Integer) As Integer
+                                     ByVal TableName As TemplateCPTableType) As Integer
 
-        Return FindAndUpdateRow(RecordsetToUpdate, CType(TableName, TemplateCPTableType))
+        Return FindAndUpdateRow(RecordsetToUpdate, TableName)
     End Function
 
-    'TODO: Same approach as with Update
-    Public Function Insert(ByRef RecordsetToUpdate As CRecordset,
-                           ByVal Bookmark As Double,
-                           ByVal TableName As IConvertible) As Integer
+    ''' <summary>
+    ''' Insert a selected ADODB.Recordset.Row for mdb_sadbel
+    ''' </summary>
+    Public Function InsertSadbel(ByRef RecordsetToInsert As CRecordset, _
+                                 ByVal TableName As SadbelTableType) As Integer
 
-        If RecordsetToUpdate Is Nothing AndAlso RecordsetToUpdate.Recordset.Source Is Nothing Then
-            AddToTrace("Error in CDatasource.Insert() - source recordset was not properly initialized.")
-        End If
-
-        RecordsetToUpdate.Recordset.Bookmark = Bookmark
-
-        Try
-            'DelegateInsert(RecordsetToUpdate.Recordset, TableName)
-            Return SUCCESS
-        Catch ex As Exception
-            AddToTrace("Error in CubelibDatasource.Insert: " & ex.Message)
-        End Try
-
-        Return FAILURE
+        Return InsertRow(RecordsetToInsert, TableName)
     End Function
 
+    ''' <summary>
+    ''' Insert a selected ADODB.Recordset.Row for edifact
+    ''' </summary>
+    Public Function InsertEdifact(ByRef RecordsetToInsert As CRecordset, _
+                                  ByVal TableName As EdifactTableType) As Integer
+
+        Return InsertRow(RecordsetToInsert, TableName)
+    End Function
+
+    ''' <summary>
+    ''' Insert a selected ADODB.Recordset.Row for mdb_data
+    ''' </summary>
+    Public Function InsertData(ByRef RecordsetToInsert As CRecordset, _
+                               ByVal TableName As DataTableType) As Integer
+
+        Return InsertRow(RecordsetToInsert, TableName)
+    End Function
+
+    ''' <summary>
+    ''' Insert a selected ADODB.Recordset.Row for EdiHistoryXX
+    ''' </summary>
+    Public Function InsertEdifactHistory(ByRef RecordsetToInsert As CRecordset, _
+                                         ByVal TableName As EdifactTableType,
+                                         ByVal Year As Integer) As Integer
+
+        Return InsertRow(RecordsetToInsert, TableName, Year)
+    End Function
+
+    ''' <summary>
+    ''' Insert a selected ADODB.Recordset.Row for mdb_historyXX
+    ''' </summary>
+    Public Function InsertSadbelHistory(ByRef RecordsetToInsert As CRecordset, _
+                                        ByVal TableName As SadbelHistoryTableType,
+                                        ByVal Year As Integer) As Integer
+
+        Return InsertRow(RecordsetToInsert, TableName, Year)
+    End Function
+
+    ''' <summary>
+    ''' Insert a selected ADODB.Recordset.Row for mdb_repertoryXXXX
+    ''' </summary>
+    Public Function InsertRepertory(ByRef RecordsetToInsert As CRecordset, _
+                                    ByVal TableName As RepertoryTableType,
+                                    ByVal Year As Integer) As Integer
+
+        Return InsertRow(RecordsetToInsert, TableName, Year)
+    End Function
+
+    ''' <summary>
+    ''' Insert a selected ADODB.Recordset.Row for TemplateCP
+    ''' </summary>
+    Public Function InsertTemplateCP(ByRef RecordsetToInsert As CRecordset, _
+                                     ByVal TableName As TemplateCPTableType) As Integer
+
+        Return InsertRow(RecordsetToInsert, TableName)
+    End Function
+
+    ''' <summary>
+    ''' SELECT query interface to VB.NET
+    ''' </summary>
+    ''' <returns>an ADODB.Recordset containing the queried record</returns>
     Public Function ExecuteQuery(ByVal SQL As String, _
                                  ByVal Database As DBInstanceType, _
                         Optional ByVal UseDataShaping As Boolean = False, _

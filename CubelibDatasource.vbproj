@@ -79,38 +79,8 @@
     <Compile Include="ConvertToRs.vb" />
     <Compile Include="CProperty.vb" />
     <Compile Include="CRecordset.vb" />
-    <Compile Include="DATA.Designer.vb">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DATA.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="DATA.vb">
-      <DependentUpon>DATA.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="EDIFACT.Designer.vb">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EDIFACT.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="EDIFACT.vb">
-      <DependentUpon>EDIFACT.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="EDI_HISTORY.Designer.vb">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EDI_HISTORY.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="ITableAdapter.vb" />
-    <Compile Include="MData.vb" />
-    <Compile Include="MEdifact.vb" />
-    <Compile Include="MEdifactHistory.vb" />
-    <Compile Include="MRepertory.vb" />
     <Compile Include="MSadbel.vb" />
     <Compile Include="MGlobal.vb" />
-    <Compile Include="MSadbelHistory.vb" />
-    <Compile Include="MScheduler.vb" />
-    <Compile Include="MTaric.vb" />
-    <Compile Include="MTemplateCP.vb" />
     <Compile Include="MTrace.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
@@ -127,49 +97,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="REPERTORY.Designer.vb">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>REPERTORY.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="SADBEL.Designer.vb">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SADBEL.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="SADBEL.vb">
-      <DependentUpon>SADBEL.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="SADBEL_HISTORY.Designer.vb">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SADBEL_HISTORY.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="SCHEDULER.Designer.vb">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SCHEDULER.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="SCHEDULER.vb">
-      <DependentUpon>SCHEDULER.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="Settings.vb" />
-    <Compile Include="TARIC.Designer.vb">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TARIC.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="TARIC.vb">
-      <DependentUpon>TARIC.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="TEMPLATECP.Designer.vb">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TEMPLATECP.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="TEMPLATECP.vb">
-      <DependentUpon>TEMPLATECP.xsd</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">
@@ -182,39 +109,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="CubelibDatasource.pfx" />
-    <None Include="DATA.xsc">
-      <DependentUpon>DATA.xsd</DependentUpon>
-    </None>
-    <None Include="DATA.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>DATA.Designer.vb</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="DATA.xss">
-      <DependentUpon>DATA.xsd</DependentUpon>
-    </None>
-    <None Include="EDIFACT.xsc">
-      <DependentUpon>EDIFACT.xsd</DependentUpon>
-    </None>
-    <None Include="EDIFACT.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>EDIFACT.Designer.vb</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="EDIFACT.xss">
-      <DependentUpon>EDIFACT.xsd</DependentUpon>
-    </None>
-    <None Include="EDI_HISTORY.xsc">
-      <DependentUpon>EDI_HISTORY.xsd</DependentUpon>
-    </None>
-    <None Include="EDI_HISTORY.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>EDI_HISTORY.Designer.vb</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="EDI_HISTORY.xss">
-      <DependentUpon>EDI_HISTORY.xsd</DependentUpon>
-    </None>
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
@@ -223,72 +117,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <CustomToolNamespace>My</CustomToolNamespace>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
-    </None>
-    <None Include="REPERTORY.xsc">
-      <DependentUpon>REPERTORY.xsd</DependentUpon>
-    </None>
-    <None Include="REPERTORY.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>REPERTORY.Designer.vb</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="REPERTORY.xss">
-      <DependentUpon>REPERTORY.xsd</DependentUpon>
-    </None>
-    <None Include="SADBEL.xsc">
-      <DependentUpon>SADBEL.xsd</DependentUpon>
-    </None>
-    <None Include="SADBEL.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>SADBEL.Designer.vb</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="SADBEL.xss">
-      <DependentUpon>SADBEL.xsd</DependentUpon>
-    </None>
-    <None Include="SADBEL_HISTORY.xsc">
-      <DependentUpon>SADBEL_HISTORY.xsd</DependentUpon>
-    </None>
-    <None Include="SADBEL_HISTORY.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>SADBEL_HISTORY.Designer.vb</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="SADBEL_HISTORY.xss">
-      <DependentUpon>SADBEL_HISTORY.xsd</DependentUpon>
-    </None>
-    <None Include="SCHEDULER.xsc">
-      <DependentUpon>SCHEDULER.xsd</DependentUpon>
-    </None>
-    <None Include="SCHEDULER.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>SCHEDULER.Designer.vb</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="SCHEDULER.xss">
-      <DependentUpon>SCHEDULER.xsd</DependentUpon>
-    </None>
-    <None Include="TARIC.xsc">
-      <DependentUpon>TARIC.xsd</DependentUpon>
-    </None>
-    <None Include="TARIC.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>TARIC.Designer.vb</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="TARIC.xss">
-      <DependentUpon>TARIC.xsd</DependentUpon>
-    </None>
-    <None Include="TEMPLATECP.xsc">
-      <DependentUpon>TEMPLATECP.xsd</DependentUpon>
-    </None>
-    <None Include="TEMPLATECP.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>TEMPLATECP.Designer.vb</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="TEMPLATECP.xss">
-      <DependentUpon>TEMPLATECP.xsd</DependentUpon>
     </None>
   </ItemGroup>
   <ItemGroup>
