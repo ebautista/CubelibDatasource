@@ -626,6 +626,15 @@ Public Class CDatasource
     End Function
 
     ''' <summary>
+    ''' Update a selected ADODB.Recordset.Row for Scheduler
+    ''' </summary>
+    Public Function UpdateScheduler(ByRef RecordsetToUpdate As CRecordset, _
+                                     ByVal TableName As SchedulerTableType) As Integer
+
+        Return FindAndUpdateRow(RecordsetToUpdate, TableName)
+    End Function
+
+    ''' <summary>
     ''' Insert a selected ADODB.Recordset.Row for mdb_sadbel
     ''' </summary>
     Public Function InsertSadbel(ByRef RecordsetToInsert As CRecordset, _
@@ -687,6 +696,15 @@ Public Class CDatasource
     ''' </summary>
     Public Function InsertTemplateCP(ByRef RecordsetToInsert As CRecordset, _
                                      ByVal TableName As TemplateCPTableType) As Integer
+
+        Return InsertRow(RecordsetToInsert, TableName)
+    End Function
+
+    ''' <summary>
+    ''' Insert a selected ADODB.Recordset.Row for Scheduler
+    ''' </summary>
+    Public Function InsertScheduler(ByRef RecordsetToInsert As CRecordset, _
+                                    ByVal TableName As SchedulerTableType) As Integer
 
         Return InsertRow(RecordsetToInsert, TableName)
     End Function

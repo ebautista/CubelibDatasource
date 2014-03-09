@@ -132,7 +132,16 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\EDIFACT.sql" />
+    <Content Include="Resources\MDB_DATA.sql" />
+    <Content Include="Resources\MDB_EDIHISTORY.sql" />
+    <Content Include="Resources\MDB_HISTORY13.sql" />
+    <Content Include="Resources\MDB_REPERTORY.sql" />
+    <Content Include="Resources\MDB_SADBEL.sql" />
     <Content Include="Resources\persistence.txt" />
+    <Content Include="Resources\SCHEDULER.sql" />
+    <Content Include="Resources\TARIC.sql" />
+    <Content Include="Resources\TEMPLATECP.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
