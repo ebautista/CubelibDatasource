@@ -843,6 +843,60 @@ Public Class CDatasource
 
         Return strColumns
     End Function
+
+    Public Function GetEnumFromTableName(ByVal TableName As String, ByVal DBType As DBInstanceType) As Integer
+        Select Case DBType
+            Case DBInstanceType.DATABASE_DATA
+                Dim tableEnum As DataTableType = [Enum].Parse(GetType(DataTableType), TableName.Replace(" ", "_"))
+                If [Enum].IsDefined(GetType(DataTableType), tableEnum) Then
+                    Return Convert.ToInt32(tableEnum)
+                End If
+            Case DBInstanceType.DATABASE_EDI_HISTORY
+                Dim tableEnum As EdiHistoryTableType = [Enum].Parse(GetType(EdiHistoryTableType), TableName.Replace(" ", "_"))
+                If [Enum].IsDefined(GetType(EdiHistoryTableType), tableEnum) Then
+                    Return Convert.ToInt32(tableEnum)
+                End If
+            Case DBInstanceType.DATABASE_EDIFACT
+                Dim tableEnum As EdifactTableType = [Enum].Parse(GetType(EdifactTableType), TableName.Replace(" ", "_"))
+                If [Enum].IsDefined(GetType(EdifactTableType), tableEnum) Then
+                    Return Convert.ToInt32(tableEnum)
+                End If
+            Case DBInstanceType.DATABASE_HISTORY
+                Dim tableEnum As SadbelHistoryTableType = [Enum].Parse(GetType(SadbelHistoryTableType), TableName.Replace(" ", "_"))
+                If [Enum].IsDefined(GetType(SadbelHistoryTableType), tableEnum) Then
+                    Return Convert.ToInt32(tableEnum)
+                End If
+            Case DBInstanceType.DATABASE_REPERTORY
+                Dim tableEnum As RepertoryTableType = [Enum].Parse(GetType(RepertoryTableType), TableName.Replace(" ", "_"))
+                If [Enum].IsDefined(GetType(RepertoryTableType), tableEnum) Then
+                    Return Convert.ToInt32(tableEnum)
+                End If
+            Case DBInstanceType.DATABASE_SADBEL
+                Dim tableEnum As SadbelTableType = [Enum].Parse(GetType(SadbelTableType), TableName.Replace(" ", "_"))
+                If [Enum].IsDefined(GetType(SadbelTableType), tableEnum) Then
+                    Return Convert.ToInt32(tableEnum)
+                End If
+            Case DBInstanceType.DATABASE_SCHEDULER
+                Dim tableEnum As SchedulerTableType = [Enum].Parse(GetType(SchedulerTableType), TableName.Replace(" ", "_"))
+                If [Enum].IsDefined(GetType(SchedulerTableType), tableEnum) Then
+                    Return Convert.ToInt32(tableEnum)
+                End If
+            Case DBInstanceType.DATABASE_TARIC
+                Dim tableEnum As TaricTableType = [Enum].Parse(GetType(TaricTableType), TableName.Replace(" ", "_"))
+                If [Enum].IsDefined(GetType(TaricTableType), tableEnum) Then
+                    Return Convert.ToInt32(tableEnum)
+                End If
+            Case DBInstanceType.DATABASE_TEMPLATE
+                Dim tableEnum As TemplateCPTableType = [Enum].Parse(GetType(TemplateCPTableType), TableName.Replace(" ", "_"))
+                If [Enum].IsDefined(GetType(TemplateCPTableType), tableEnum) Then
+                    Return Convert.ToInt32(tableEnum)
+                End If
+            Case Else
+                AddToTrace("Error in GetEnumFromTableName(): Unsupported Database Type.")
+        End Select
+
+        Return 0
+    End Function
 End Class
 
 
