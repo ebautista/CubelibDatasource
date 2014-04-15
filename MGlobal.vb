@@ -329,7 +329,7 @@ Module MGlobal
                 strDatabaseName = "mdb_data"
 
             Case CDatasource.DBInstanceType.DATABASE_EDIFACT
-                strDatabaseName = "mdb_edifact"
+                strDatabaseName = "edifact"
 
             Case CDatasource.DBInstanceType.DATABASE_SCHEDULER
                 strDatabaseName = "mdb_scheduler"
@@ -465,9 +465,9 @@ Module MGlobal
         ElseIf type.Equals(GetType(EdifactTableType)) Then
             Select Case CType(TableName, EdifactTableType)
                 Case EdifactTableType.NCTS_DEPARTURE_FOLLOW_UP_REQUEST
-                    Return CType(TableName, SadbelTableType).ToString.Replace("_", " ")
+                    Return CType(TableName, EdifactTableType).ToString.Replace("_", " ")
                 Case Else
-                    Return CType(TableName, SadbelTableType).ToString
+                    Return CType(TableName, EdifactTableType).ToString
             End Select
         ElseIf type.Equals(GetType(DataTableType)) Then
             Return CType(TableName, DataTableType).ToString
