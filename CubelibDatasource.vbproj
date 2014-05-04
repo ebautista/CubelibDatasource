@@ -132,7 +132,9 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\EDIFACT.sql" />
+    <Content Include="Resources\EDIFACT.sql">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Resources\MDB_DATA.sql" />
     <Content Include="Resources\MDB_EDIHISTORY.sql" />
     <Content Include="Resources\MDB_HISTORY13.sql" />

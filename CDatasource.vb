@@ -591,7 +591,7 @@ Public Class CDatasource
     ''' </summary>
     Public Function UpdateEdifactHistory(ByRef RecordsetToUpdate As CRecordset, _
                                          ByVal TableName As EdifactTableType,
-                                         ByVal Year As Integer) As Integer
+                                Optional ByVal Year As String = vbNullString) As Integer
 
         Return FindAndUpdateRow(RecordsetToUpdate, TableName, Year)
     End Function
@@ -601,7 +601,7 @@ Public Class CDatasource
     ''' </summary>
     Public Function UpdateSadbelHistory(ByRef RecordsetToUpdate As CRecordset, _
                                         ByVal TableName As SadbelHistoryTableType,
-                                        ByVal Year As Integer) As Integer
+                               Optional ByVal Year As String = vbNullString) As Integer
 
         Return FindAndUpdateRow(RecordsetToUpdate, TableName, Year)
     End Function
@@ -611,7 +611,7 @@ Public Class CDatasource
     ''' </summary>
     Public Function UpdateRepertory(ByRef RecordsetToUpdate As CRecordset, _
                                     ByVal TableName As RepertoryTableType,
-                                    ByVal Year As Integer) As Integer
+                           Optional ByVal Year As String = vbNullString) As Integer
 
         Return FindAndUpdateRow(RecordsetToUpdate, TableName, Year)
     End Function
@@ -666,7 +666,7 @@ Public Class CDatasource
     ''' </summary>
     Public Function InsertEdifactHistory(ByRef RecordsetToInsert As CRecordset, _
                                          ByVal TableName As EdifactTableType,
-                                         ByVal Year As Integer) As Integer
+                                Optional ByVal Year As String = vbNullString) As Integer
 
         Return InsertRow(RecordsetToInsert, TableName, Year)
     End Function
@@ -676,7 +676,7 @@ Public Class CDatasource
     ''' </summary>
     Public Function InsertSadbelHistory(ByRef RecordsetToInsert As CRecordset, _
                                         ByVal TableName As SadbelHistoryTableType,
-                                        ByVal Year As Integer) As Integer
+                               Optional ByVal Year As String = vbNullString) As Integer
 
         Return InsertRow(RecordsetToInsert, TableName, Year)
     End Function
@@ -686,7 +686,7 @@ Public Class CDatasource
     ''' </summary>
     Public Function InsertRepertory(ByRef RecordsetToInsert As CRecordset, _
                                     ByVal TableName As RepertoryTableType,
-                                    ByVal Year As Integer) As Integer
+                           Optional ByVal Year As String = vbNullString) As Integer
 
         Return InsertRow(RecordsetToInsert, TableName, Year)
     End Function

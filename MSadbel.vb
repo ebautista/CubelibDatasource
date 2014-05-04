@@ -18,6 +18,9 @@ Module MSadbel
         Dim fullUpdateClause As String
         Dim strTableName As String
         Dim columns As DataColumnCollection
+        Dim aiList As List(Of String)
+        Dim pkList As List(Of String)
+        Dim notNullList As New List(Of String)()
 
         'Mark the row where to get the update value from
         adoRow.Bookmark = RecordsetToUpdate.BookMark
@@ -27,30 +30,44 @@ Module MSadbel
 
         'Get the Table Schema
         dataset = getTableSchema(strTableName, GetDBInstanceTypeFromTableEnumType(TableName))
+        columns = dataset.Tables(0).Columns
+
+        '----------------------------------------------------------------------------------------------------------------
+        'Get list of columns that are auto-incremented
+        '----------------------------------------------------------------------------------------------------------------
+        aiList = getAIColumns(dataset)
+        '----------------------------------------------------------------------------------------------------------------
+
+        '----------------------------------------------------------------------------------------------------------------
+        'Get list of columns that are primary key
+        '----------------------------------------------------------------------------------------------------------------
+        pkList = getPKColumns(columns, dataset)
+        '----------------------------------------------------------------------------------------------------------------
 
         'Generate the fullUpdateClause
-        fullUpdateClause = CreateUpdateClause(strTableName, dataset, adoRow)
-
-        If fullUpdateClause = vbNullString Then
-            AddToTrace("Error in MSadbel.FindAndUpdateRow() - Primary Keys on table " & strTableName & " has not been defined or ADO record does not contain a row to update.", False)
-            Return MGlobal.FAILURE
-        End If
+        fullUpdateClause = CreateUpdateClause(strTableName, dataset, adoRow, aiList, pkList, notNullList)
 
         'Set the update command with the connection object 
         command = getConnectionObjectsNonQuery(fullUpdateClause, GetDBInstanceTypeFromTableEnumType(TableName), Year)
 
         'Set Update Paramater values
         For Each Field As ADODB.Field In adoRow.Fields
-            Dim param As DbParameter = CreateNewParameterADODB(adoRow, Field.Name, Field.Type)
-            command.Parameters.Add(param)
+            If Not aiList.Contains(Field.Name) AndAlso notNullList.Contains(Field.Name) Then
+                Dim param As DbParameter = CreateNewParameterADODB(adoRow, Field.Name, Field.Type)
+                command.Parameters.Add(param)
+            End If
         Next
 
         'Set WHERE clause values using PKs
-        columns = dataset.Tables(0).Columns
         For Each column As DataColumn In columns
-            If IsPrimaryKeyColumn(dataset.Tables(0), column) Then
-                Dim param As DbParameter = CreateNewParameterADONET(adoRow, column.ColumnName, column.DataType)
-                command.Parameters.Add(param)
+            If pkList.Count <= 0 Then
+                AddToTrace("Error in MSadbel.FindAndUpdateRow() - Table being updated has no primary key.")
+                Return MGlobal.FAILURE
+            Else
+                If IsPrimaryKeyColumn(dataset.Tables(0), column) Then
+                    Dim param As DbParameter = CreateNewParameterADONET(adoRow, column.ColumnName, column.DataType)
+                    command.Parameters.Add(param)
+                End If
             End If
         Next
 
@@ -67,12 +84,13 @@ Module MSadbel
 
     ' Generic method for creating and executing an insert script using an ADODB.Recordeset Row
     Public Function InsertRow(ByRef RecordsetToUpdate As CRecordset,
-                                    ByVal TableName As IConvertible,
-                           Optional ByVal Year As String = vbNullString) As Integer
+                              ByVal TableName As IConvertible,
+                     Optional ByVal Year As String = vbNullString) As Integer
 
         Dim adoRow As Recordset = RecordsetToUpdate.Recordset
         Dim source As New CDatasource
         Dim command As DbCommand
+        Dim dataset As DataSet
         Dim fullInsertClause As String
         Dim strTableName As String
 
@@ -82,8 +100,11 @@ Module MSadbel
         'Get the TableName
         strTableName = GetTableName(adoRow, TableName)
 
+        'Get the Table Schema
+        dataset = getTableSchema(strTableName, GetDBInstanceTypeFromTableEnumType(TableName))
+
         'Generate the fullInsertClause
-        fullInsertClause = CreateInsertClause(strTableName, adoRow)
+        fullInsertClause = CreateInsertClause(strTableName, dataset, adoRow)
 
         If fullInsertClause = vbNullString Then
             AddToTrace("Error in MSadbel.InsertRow() - ADO record does not contain a row to insert.", False)
@@ -112,12 +133,13 @@ Module MSadbel
 
     Private Function CreateUpdateClause(ByVal strTableName As String,
                                         ByRef Data As DataSet,
-                                        ByRef adoRow As Recordset) As String
+                                        ByRef adoRow As Recordset,
+                                        ByRef aiList As List(Of String),
+                                        ByRef pkList As List(Of String),
+                                        ByRef notNullList As List(Of String)) As String
 
         Dim strSQL As String = vbNullString
         Dim command As New StringBuilder
-        Dim columns As DataColumnCollection = Data.Tables(0).Columns
-        Dim hasPK As Boolean = False
 
         '----------------------------------------------------------------------------------------------------------------
         'Build the update script
@@ -129,14 +151,18 @@ Module MSadbel
 
             'Iterate through the new values
             For Each Field As ADODB.Field In adoRow.Fields
-                Select Case objProp.getDatabaseType()
-                    Case DatabaseType.ACCESS
-                        command.Append("[").Append(Field.Name).Append("] = ?, ")
-                    Case DatabaseType.SQLSERVER
-                        command.Append("[").Append(Field.Name).Append("] = @").Append(Field.Name.Replace(" ", "_").Replace("-", "_")).Append(", ")
+                If Not aiList.Contains(Field.Name) Then
+                    If Not IsDBNull(Field.Value) Then
+                        Select Case objProp.getDatabaseType()
+                            Case DatabaseType.ACCESS
+                                command.Append("[").Append(Field.Name).Append("] = ?, ")
+                            Case DatabaseType.SQLSERVER
+                                command.Append("[").Append(Field.Name).Append("] = @").Append(Field.Name.Replace(" ", "_").Replace("-", "_")).Append(", ")
+                        End Select
 
-                End Select
-
+                        notNullList.Add(Field.Name)
+                    End If
+                End If
             Next
 
             'Remove the last comma and append WHERE
@@ -144,17 +170,19 @@ Module MSadbel
             command.Append(" WHERE ")
 
             'Add PK columns to WHERE clause
-            For Each column As DataColumn In columns
-                If IsPrimaryKeyColumn(Data.Tables(0), column) Then
-                    Select Case objProp.getDatabaseType()
-                        Case DatabaseType.ACCESS
-                            command.Append("[").Append(column.ColumnName).Append("] = ? AND ")
-                        Case DatabaseType.SQLSERVER
-                            command.Append("[").Append(column.ColumnName).Append("] = @PK_").Append(column.ColumnName.Replace(" ", "_").Replace("-", "_")).Append(" AND ")
+            For Each column As DataColumn In Data.Tables(0).Columns
+                If pkList.Count <= 0 Then
 
-                    End Select
-
-                    hasPK = True
+                    Return vbNullString
+                Else
+                    If pkList.Contains(column.ColumnName) Then
+                        Select Case objProp.getDatabaseType()
+                            Case DatabaseType.ACCESS
+                                command.Append("[").Append(column.ColumnName).Append("] = ? AND ")
+                            Case DatabaseType.SQLSERVER
+                                command.Append("[").Append(column.ColumnName).Append("] = @PK_").Append(column.ColumnName.Replace(" ", "_").Replace("-", "_")).Append(" AND ")
+                        End Select
+                    End If
                 End If
             Next
 
@@ -163,19 +191,23 @@ Module MSadbel
         End If
         '----------------------------------------------------------------------------------------------------------------
 
-        If hasPK = False Then
-            Return vbNullString
-        End If
-
         Return command.ToString()
     End Function
 
     Private Function CreateInsertClause(ByVal strTableName As String,
+                                        ByRef Data As DataSet,
                                         ByRef adoRow As Recordset) As String
 
         Dim strSQL As String = vbNullString
         Dim command As New StringBuilder
         Dim hasPK As Boolean = False
+        Dim aiList As List(Of String)
+
+        '----------------------------------------------------------------------------------------------------------------
+        'Get list of columns that are auto-incremented
+        '----------------------------------------------------------------------------------------------------------------
+        aiList = getAIColumns(Data)
+        '----------------------------------------------------------------------------------------------------------------
 
         '----------------------------------------------------------------------------------------------------------------
         'Build the insert script
@@ -187,29 +219,30 @@ Module MSadbel
 
             'Iterate through the new values
             For Each Field As ADODB.Field In adoRow.Fields
-                Select Case objProp.getDatabaseType()
-                    Case DatabaseType.ACCESS
-                        command.Append("[").Append(Field.Name).Append("], ")
-                    Case DatabaseType.SQLSERVER
-                        command.Append("[").Append(Field.Name).Append("], ")
-
-                End Select
-
+                If Not aiList.Contains(Field.Name) Then
+                    Select Case objProp.getDatabaseType()
+                        Case DatabaseType.ACCESS
+                            command.Append("[").Append(Field.Name).Append("], ")
+                        Case DatabaseType.SQLSERVER
+                            command.Append("[").Append(Field.Name).Append("], ")
+                    End Select
+                End If
             Next
 
             'Remove the last comma and append VALUES
             command.Length = command.Length - 2
             command.Append(") VALUES (")
 
-            'Add PK columns to WHERE clause
+            'Add values for columns
             For Each Field As ADODB.Field In adoRow.Fields
-                Select Case objProp.getDatabaseType()
-                    Case DatabaseType.ACCESS
-                        command.Append("?, ")
-                    Case DatabaseType.SQLSERVER
-                        command.Append("@").Append(Field.Name.Replace(" ", "_").Replace("-", "_")).Append(", ")
-
-                End Select
+                If Not aiList.Contains(Field.Name) Then
+                    Select Case objProp.getDatabaseType()
+                        Case DatabaseType.ACCESS
+                            command.Append("?, ")
+                        Case DatabaseType.SQLSERVER
+                            command.Append("@").Append(Field.Name.Replace(" ", "_").Replace("-", "_")).Append(", ")
+                    End Select
+                End If
             Next
 
             'Remove the last comma
@@ -221,5 +254,29 @@ Module MSadbel
         Return command.ToString()
     End Function
 
+    Private Function getAIColumns(ByRef Data As DataSet) As List(Of String)
+        Dim aiList As New List(Of String)()
+        Dim columns As DataColumnCollection = Data.Tables(0).Columns
+
+        For Each column As DataColumn In columns
+            If column.AutoIncrement = True Then
+                aiList.Add(column.ColumnName)
+            End If
+        Next
+
+        Return aiList
+    End Function
+
+    Private Function getPKColumns(ByRef columns As DataColumnCollection, ByRef Data As DataSet) As List(Of String)
+        Dim pkList As New List(Of String)()
+
+        For Each column As DataColumn In columns
+            If IsPrimaryKeyColumn(Data.Tables(0), column) Then
+                pkList.Add(column.ColumnName)
+            End If
+        Next
+
+        Return pkList
+    End Function
 End Module
 

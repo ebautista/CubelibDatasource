@@ -8,6 +8,7 @@
     Public Sub New(ByVal filePath As String, ByVal propFileName As String)
         MyBase.New()
         Dim objReader As System.IO.StreamReader
+
         filePath = IIf(filePath.EndsWith("\"), filePath + propFileName, filePath + "\" + propFileName)
         Try
             objReader = New System.IO.StreamReader(filePath)

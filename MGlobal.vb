@@ -348,22 +348,22 @@ Module MGlobal
                 strDatabaseName = "mdb_history" + Year
 
             Case CDatasource.DBInstanceType.DATABASE_REPERTORY
-                If Year.Length <> 4 Then
+                If Year <> "" AndAlso Year.Length <> 4 Then
                     Throw New InvalidDataException("Year supplied is of invalid format, correct format is YYYY.")
                 End If
 
-                If Now.Year = Year Then
+                If Now.Year = Year Or Year = "" Then
                     strDatabaseName = "mdb_repertory"
                 Else
                     strDatabaseName = "mdb_repertory_" + Year
                 End If
 
             Case CDatasource.DBInstanceType.DATABASE_EDI_HISTORY
-                If Year.Length <> 2 Then
+                If Year <> "" AndAlso Year.Length <> 2 Then
                     Throw New InvalidDataException("Year supplied is of invalid format, correct format is YY.")
                 End If
 
-                If Now.Year = Year Then
+                If Now.Year = Year Or Year = "" Then
                     strDatabaseName = "mdb_EDIhistory"
                 Else
                     strDatabaseName = "mdb_EDIhistory" + Year
