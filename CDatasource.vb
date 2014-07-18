@@ -41,7 +41,7 @@ Public Class CDatasource
     End Enum
 
     Public Enum SadbelTableType
-        AUTHORIZED_PARTIES
+        AUTHORIZEDPARTIES
         BOX_DEFAULT_COMBINED_NCTS_ADMIN
         BOX_DEFAULT_EDI_NCTS_ADMIN
         BOX_DEFAULT_EDI_NCTS_IE141_ADMIN
@@ -534,6 +534,10 @@ Public Class CDatasource
         WindowSettings
     End Enum
 
+    Public Sub SetPersistencePath(ByVal Path As String)
+        G_ObjProp = New CDatabaseProperty(Path)
+    End Sub
+
     ''' <summary>
     ''' DELETE, UPDATE and INSERT via SQL Script
     ''' </summary>
@@ -551,7 +555,7 @@ Public Class CDatasource
             conObjects(0).Close()
             conObjects(0).Dispose()
         Catch ex As Exception
-            AddToTrace("ExecuteNonQuery: " & ex.Message)
+            Err.Raise(vbObjectError + 513, Me.GetType().Name, ex.Message)
             Return FAILURE
         End Try
 
@@ -721,7 +725,7 @@ Public Class CDatasource
         Dim rstADO As New Recordset
         Dim conObjects() As Object
 
-        AddToTrace("Start of execute query: " & SQL, True)
+        'AddToTrace("Start of execute query: " & SQL, True)
 
         Try
             conObjects = getConnectionObjects(SQL, Database, UseDataShaping, True, Year)
@@ -821,10 +825,11 @@ Public Class CDatasource
             conObjects(0).Close()
             conObjects(0).Dispose()
         Catch ex As Exception
-            AddToTrace("ExecuteQuery: " & ex.Message)
+            Err.Raise(vbObjectError + 514, Me.GetType().Name, ex.Message)
+            Return rstADO
         End Try
 
-        AddToTrace("End of execute query: " & SQL, True)
+        'AddToTrace("End of execute query: " & SQL, True)
 
         If Not (rstADO.EOF And rstADO.BOF) Then rstADO.MoveFirst()
         Return rstADO

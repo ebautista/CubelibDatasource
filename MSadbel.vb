@@ -3,6 +3,7 @@ Imports ADODB
 Imports System.Data.Common
 Imports System.Text
 Imports CubelibDatasource.CDatabaseProperty
+Imports System.Data.OleDb
 
 Module MSadbel
 
@@ -93,6 +94,8 @@ Module MSadbel
         Dim dataset As DataSet
         Dim fullInsertClause As String
         Dim strTableName As String
+        Dim identity As Integer = MGlobal.SUCCESS
+        Dim aiList As List(Of String)
 
         'Mark the row where to get the insert value from
         adoRow.Bookmark = RecordsetToUpdate.BookMark
@@ -102,6 +105,12 @@ Module MSadbel
 
         'Get the Table Schema
         dataset = getTableSchema(strTableName, GetDBInstanceTypeFromTableEnumType(TableName))
+
+        '----------------------------------------------------------------------------------------------------------------
+        'Get list of columns that are auto-incremented
+        '----------------------------------------------------------------------------------------------------------------
+        aiList = getAIColumns(dataset)
+        '----------------------------------------------------------------------------------------------------------------
 
         'Generate the fullInsertClause
         fullInsertClause = CreateInsertClause(strTableName, dataset, adoRow)
@@ -122,13 +131,17 @@ Module MSadbel
 
         Try
             command.ExecuteNonQuery()
+
+            If (aiList.Count > 0) Then
+                command.CommandText = "SELECT MAX(" & aiList(0).ToString & ") FROM [" & strTableName & "]"
+                identity = command.ExecuteScalar()
+            End If
         Catch ex As Exception
             AddToTrace("Error in MSadbel.InsertRow() - " + ex.GetBaseException.Message)
             Return MGlobal.FAILURE
         End Try
 
-
-        Return MGlobal.SUCCESS
+        Return identity
     End Function
 
     Private Function CreateUpdateClause(ByVal strTableName As String,
@@ -153,7 +166,7 @@ Module MSadbel
             For Each Field As ADODB.Field In adoRow.Fields
                 If Not aiList.Contains(Field.Name) Then
                     If Not IsDBNull(Field.Value) Then
-                        Select Case objProp.getDatabaseType()
+                        Select Case G_ObjProp.getDatabaseType()
                             Case DatabaseType.ACCESS
                                 command.Append("[").Append(Field.Name).Append("] = ?, ")
                             Case DatabaseType.SQLSERVER
@@ -176,7 +189,7 @@ Module MSadbel
                     Return vbNullString
                 Else
                     If pkList.Contains(column.ColumnName) Then
-                        Select Case objProp.getDatabaseType()
+                        Select Case G_ObjProp.getDatabaseType()
                             Case DatabaseType.ACCESS
                                 command.Append("[").Append(column.ColumnName).Append("] = ? AND ")
                             Case DatabaseType.SQLSERVER
@@ -220,7 +233,7 @@ Module MSadbel
             'Iterate through the new values
             For Each Field As ADODB.Field In adoRow.Fields
                 If Not aiList.Contains(Field.Name) Then
-                    Select Case objProp.getDatabaseType()
+                    Select Case G_ObjProp.getDatabaseType()
                         Case DatabaseType.ACCESS
                             command.Append("[").Append(Field.Name).Append("], ")
                         Case DatabaseType.SQLSERVER
@@ -236,7 +249,7 @@ Module MSadbel
             'Add values for columns
             For Each Field As ADODB.Field In adoRow.Fields
                 If Not aiList.Contains(Field.Name) Then
-                    Select Case objProp.getDatabaseType()
+                    Select Case G_ObjProp.getDatabaseType()
                         Case DatabaseType.ACCESS
                             command.Append("?, ")
                         Case DatabaseType.SQLSERVER

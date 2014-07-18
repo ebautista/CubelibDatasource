@@ -21,7 +21,7 @@ Module MGlobal
 
     Public Const ACCESS_DB_EXTENSION_97_2003 As String = ".mdb"
 
-    Public objProp As New CDatabaseProperty
+    Public G_ObjProp As CDatabaseProperty
 
     Public Function TranslateType(ByVal columnType As Type) As DataTypeEnum
 
@@ -80,7 +80,7 @@ Module MGlobal
                                             ByVal FieldName As String,
                                             ByVal ADOType As ADODB.DataTypeEnum) As DbParameter
 
-        Select Case objProp.getDatabaseType()
+        Select Case G_ObjProp.getDatabaseType()
             Case DatabaseType.ACCESS
                 Dim parameter As New OleDbParameter
                 parameter.Value = AdoRow.Fields(FieldName).Value
@@ -105,7 +105,7 @@ Module MGlobal
                                              ByVal FieldName As String,
                                              ByVal NETType As System.Type) As DbParameter
 
-        Select Case objProp.getDatabaseType()
+        Select Case G_ObjProp.getDatabaseType()
             Case DatabaseType.ACCESS
                 Dim parameter As New OleDbParameter
                 parameter.Value = AdoRow.Fields(FieldName).Value
@@ -128,7 +128,7 @@ Module MGlobal
 
     Public Function ConvertADODBToDBType(ByVal ADOType As ADODB.DataTypeEnum) As DbType
 
-        Select Case objProp.getDatabaseType()
+        Select Case G_ObjProp.getDatabaseType()
             Case DatabaseType.ACCESS
                 Select Case ADOType
                     Case DataTypeEnum.adInteger
@@ -194,7 +194,7 @@ Module MGlobal
 
     Public Function ConvertADONETToDBType(ByVal NETType As System.Type) As DbType
 
-        Select Case objProp.getDatabaseType()
+        Select Case G_ObjProp.getDatabaseType()
             Case DatabaseType.ACCESS
                 Select Case NETType.UnderlyingSystemType.ToString()
                     Case "System.Int32"
@@ -258,10 +258,14 @@ Module MGlobal
         Dim command As DbCommand
         Dim strDBName As String
 
-        strDBName = getDatabaseName(Database, Year, objProp.getDatabaseType())
-        conTemp = getConnection(strDBName, objProp, False)
+        If G_ObjProp Is Nothing Then
+            Throw New ClearingPointException("Error in getConnectionObjectsNonQuery - Persistence Path was not initialized.")
+        End If
 
-        Select Case objProp.getDatabaseType()
+        strDBName = getDatabaseName(Database, Year, G_ObjProp.getDatabaseType())
+        conTemp = getConnection(strDBName, G_ObjProp, False)
+
+        Select Case G_ObjProp.getDatabaseType()
             Case DatabaseType.ACCESS
                 AddToTrace("Connecting To Access Database...", True)
 
@@ -287,10 +291,10 @@ Module MGlobal
         Dim dsTemp As New DataSet
         Dim strDBName As String
 
-        strDBName = getDatabaseName(Database, Year, objProp.getDatabaseType())
-        conTemp = getConnection(strDBName, objProp, False)
+        strDBName = getDatabaseName(Database, Year, G_ObjProp.getDatabaseType())
+        conTemp = getConnection(strDBName, G_ObjProp, False)
 
-        Select Case objProp.getDatabaseType()
+        Select Case G_ObjProp.getDatabaseType()
             Case DatabaseType.ACCESS
                 AddToTrace("Connecting To Access Database...", True)
 
@@ -452,12 +456,14 @@ Module MGlobal
         Dim type As Type = CType(TableName, Object).GetType
 
         If type.Equals(GetType(SadbelTableType)) Then
+            Debug.Print(CType(TableName, SadbelTableType).ToString)
             Select Case CType(TableName, SadbelTableType)
                 Case SadbelTableType.DIGISIGN_PLDA_COMBINED
                 Case SadbelTableType.DIGISIGN_PLDA_IMPORT
                 Case SadbelTableType.MAIL_BOX
                 Case SadbelTableType.MAIL_GROUPS
                 Case SadbelTableType.MAIL_SETTINGS
+                Case SadbelTableType.AUTHORIZEDPARTIES
                     Return CType(TableName, SadbelTableType).ToString
                 Case Else
                     Return CType(TableName, SadbelTableType).ToString.Replace("_", " ")
@@ -529,10 +535,14 @@ Module MGlobal
         Dim command As DbCommand
         Dim strDBName As String
 
-        strDBName = getDatabaseName(Database, Year, objProp.getDatabaseType())
-        conTemp = getConnection(strDBName, objProp, UseDataShaping)
+        If G_ObjProp Is Nothing Then
+            Throw New ClearingPointException("Error in getConnectionObjects - Persistence path was not initialized.")
+        End If
 
-        Select Case objProp.getDatabaseType()
+        strDBName = getDatabaseName(Database, Year, G_ObjProp.getDatabaseType())
+        conTemp = getConnection(strDBName, G_ObjProp, UseDataShaping)
+
+        Select Case G_ObjProp.getDatabaseType()
             Case DatabaseType.ACCESS
                 conObjects.SetValue(conTemp, 0)
 

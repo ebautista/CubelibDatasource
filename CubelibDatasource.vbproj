@@ -76,6 +76,7 @@
     <Compile Include="CConnections.vb" />
     <Compile Include="CDatabaseProperty.vb" />
     <Compile Include="CDatasource.vb" />
+    <Compile Include="ClearingPointException.vb" />
     <Compile Include="ConvertToRs.vb" />
     <Compile Include="CProperty.vb" />
     <Compile Include="CRecordset.vb" />

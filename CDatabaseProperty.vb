@@ -4,7 +4,7 @@ Public Class CDatabaseProperty
     Private Const PROPERTY_FILE As String = "persistence.txt"
     Private Const REGKEY_CLEARINGPOINT_SETTINGS As String = "Software\Wow6432Node\Cubepoint\Clearingpoint\Settings"
     Private Const REGKEY_CLEARINGPOINT_SETTINGS_XP As String = "Software\Cubepoint\ClearingPoint\Settings"
-    Private m_objProp As New CProperty(AppDomain.CurrentDomain.BaseDirectory, PROPERTY_FILE)
+    Private m_objProp As CProperty
 
     Public Enum DatabaseType
         SQLSERVER
@@ -12,6 +12,20 @@ Public Class CDatabaseProperty
         ORACLE
         MYSQL
     End Enum
+
+    Public Sub New(ByVal filePath As String)
+        MyBase.New()
+
+        If filePath = vbNullString Then
+            Throw New ClearingPointException("Error in CDatabaseProperty - Persistence path is empty or null string.")
+        End If
+
+        Try
+            m_objProp = New CProperty(filePath, PROPERTY_FILE)
+        Catch ex As Exception
+            Throw New ClearingPointException("Error in CDatabaseProperty - " & ex.Message)
+        End Try
+    End Sub
 
     Public Function getDatabaseType() As DatabaseType
         Dim dbType As String = m_objProp.getPropertyKey("database")
