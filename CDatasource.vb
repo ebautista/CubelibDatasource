@@ -569,7 +569,7 @@ Public Class CDatasource
     Public Function UpdateSadbel(ByRef RecordsetToUpdate As CRecordset, _
                                  ByVal TableName As SadbelTableType) As Integer
 
-        Return FindAndUpdateRow(RecordsetToUpdate, TableName)
+        Return FindAndUpdateRow(RecordsetToUpdate, TableName, Me)
     End Function
 
     ''' <summary>
@@ -578,7 +578,7 @@ Public Class CDatasource
     Public Function UpdateEdifact(ByRef RecordsetToUpdate As CRecordset, _
                                   ByVal TableName As EdifactTableType) As Integer
 
-        Return FindAndUpdateRow(RecordsetToUpdate, TableName)
+        Return FindAndUpdateRow(RecordsetToUpdate, TableName, Me)
     End Function
 
     ''' <summary>
@@ -587,7 +587,7 @@ Public Class CDatasource
     Public Function UpdateData(ByRef RecordsetToUpdate As CRecordset, _
                                ByVal TableName As DataTableType) As Integer
 
-        Return FindAndUpdateRow(RecordsetToUpdate, TableName)
+        Return FindAndUpdateRow(RecordsetToUpdate, TableName, Me)
     End Function
 
     ''' <summary>
@@ -597,7 +597,7 @@ Public Class CDatasource
                                          ByVal TableName As EdifactTableType,
                                 Optional ByVal Year As String = vbNullString) As Integer
 
-        Return FindAndUpdateRow(RecordsetToUpdate, TableName, Year)
+        Return FindAndUpdateRow(RecordsetToUpdate, TableName, Me, Year)
     End Function
 
     ''' <summary>
@@ -607,7 +607,7 @@ Public Class CDatasource
                                         ByVal TableName As SadbelHistoryTableType,
                                Optional ByVal Year As String = vbNullString) As Integer
 
-        Return FindAndUpdateRow(RecordsetToUpdate, TableName, Year)
+        Return FindAndUpdateRow(RecordsetToUpdate, TableName, Me, Year)
     End Function
 
     ''' <summary>
@@ -617,7 +617,7 @@ Public Class CDatasource
                                     ByVal TableName As RepertoryTableType,
                            Optional ByVal Year As String = vbNullString) As Integer
 
-        Return FindAndUpdateRow(RecordsetToUpdate, TableName, Year)
+        Return FindAndUpdateRow(RecordsetToUpdate, TableName, Me, Year)
     End Function
 
     ''' <summary>
@@ -626,7 +626,7 @@ Public Class CDatasource
     Public Function UpdateTemplateCP(ByRef RecordsetToUpdate As CRecordset, _
                                      ByVal TableName As TemplateCPTableType) As Integer
 
-        Return FindAndUpdateRow(RecordsetToUpdate, TableName)
+        Return FindAndUpdateRow(RecordsetToUpdate, TableName, Me)
     End Function
 
     ''' <summary>
@@ -635,7 +635,7 @@ Public Class CDatasource
     Public Function UpdateScheduler(ByRef RecordsetToUpdate As CRecordset, _
                                      ByVal TableName As SchedulerTableType) As Integer
 
-        Return FindAndUpdateRow(RecordsetToUpdate, TableName)
+        Return FindAndUpdateRow(RecordsetToUpdate, TableName, Me)
     End Function
 
     ''' <summary>
@@ -644,7 +644,7 @@ Public Class CDatasource
     Public Function InsertSadbel(ByRef RecordsetToInsert As CRecordset, _
                                  ByVal TableName As SadbelTableType) As Integer
 
-        Return InsertRow(RecordsetToInsert, TableName)
+        Return InsertRow(RecordsetToInsert, TableName, Me)
     End Function
 
     ''' <summary>
@@ -653,7 +653,7 @@ Public Class CDatasource
     Public Function InsertEdifact(ByRef RecordsetToInsert As CRecordset, _
                                   ByVal TableName As EdifactTableType) As Integer
 
-        Return InsertRow(RecordsetToInsert, TableName)
+        Return InsertRow(RecordsetToInsert, TableName, Me)
     End Function
 
     ''' <summary>
@@ -662,7 +662,7 @@ Public Class CDatasource
     Public Function InsertData(ByRef RecordsetToInsert As CRecordset, _
                                ByVal TableName As DataTableType) As Integer
 
-        Return InsertRow(RecordsetToInsert, TableName)
+        Return InsertRow(RecordsetToInsert, TableName, Me)
     End Function
 
     ''' <summary>
@@ -672,7 +672,7 @@ Public Class CDatasource
                                          ByVal TableName As EdifactTableType,
                                 Optional ByVal Year As String = vbNullString) As Integer
 
-        Return InsertRow(RecordsetToInsert, TableName, Year)
+        Return InsertRow(RecordsetToInsert, TableName, Me, Year)
     End Function
 
     ''' <summary>
@@ -682,7 +682,7 @@ Public Class CDatasource
                                         ByVal TableName As SadbelHistoryTableType,
                                Optional ByVal Year As String = vbNullString) As Integer
 
-        Return InsertRow(RecordsetToInsert, TableName, Year)
+        Return InsertRow(RecordsetToInsert, TableName, Me, Year)
     End Function
 
     ''' <summary>
@@ -692,7 +692,7 @@ Public Class CDatasource
                                     ByVal TableName As RepertoryTableType,
                            Optional ByVal Year As String = vbNullString) As Integer
 
-        Return InsertRow(RecordsetToInsert, TableName, Year)
+        Return InsertRow(RecordsetToInsert, TableName, Me, Year)
     End Function
 
     ''' <summary>
@@ -701,7 +701,7 @@ Public Class CDatasource
     Public Function InsertTemplateCP(ByRef RecordsetToInsert As CRecordset, _
                                      ByVal TableName As TemplateCPTableType) As Integer
 
-        Return InsertRow(RecordsetToInsert, TableName)
+        Return InsertRow(RecordsetToInsert, TableName, Me)
     End Function
 
     ''' <summary>
@@ -710,7 +710,7 @@ Public Class CDatasource
     Public Function InsertScheduler(ByRef RecordsetToInsert As CRecordset, _
                                     ByVal TableName As SchedulerTableType) As Integer
 
-        Return InsertRow(RecordsetToInsert, TableName)
+        Return InsertRow(RecordsetToInsert, TableName, Me)
     End Function
 
     ''' <summary>
@@ -850,49 +850,50 @@ Public Class CDatasource
     End Function
 
     Public Function GetEnumFromTableName(ByVal TableName As String, ByVal DBType As DBInstanceType) As Integer
+
         Select Case DBType
             Case DBInstanceType.DATABASE_DATA
-                Dim tableEnum As DataTableType = [Enum].Parse(GetType(DataTableType), TableName.Replace(" ", "_"))
+                Dim tableEnum As DataTableType = [Enum].Parse(GetType(DataTableType), TableName.Replace(" ", "_"), True)
                 If [Enum].IsDefined(GetType(DataTableType), tableEnum) Then
                     Return Convert.ToInt32(tableEnum)
                 End If
             Case DBInstanceType.DATABASE_EDI_HISTORY
-                Dim tableEnum As EdiHistoryTableType = [Enum].Parse(GetType(EdiHistoryTableType), TableName.Replace(" ", "_"))
+                Dim tableEnum As EdiHistoryTableType = [Enum].Parse(GetType(EdiHistoryTableType), TableName.Replace(" ", "_"), True)
                 If [Enum].IsDefined(GetType(EdiHistoryTableType), tableEnum) Then
                     Return Convert.ToInt32(tableEnum)
                 End If
             Case DBInstanceType.DATABASE_EDIFACT
-                Dim tableEnum As EdifactTableType = [Enum].Parse(GetType(EdifactTableType), TableName.Replace(" ", "_"))
+                Dim tableEnum As EdifactTableType = [Enum].Parse(GetType(EdifactTableType), TableName.Replace(" ", "_"), True)
                 If [Enum].IsDefined(GetType(EdifactTableType), tableEnum) Then
                     Return Convert.ToInt32(tableEnum)
                 End If
             Case DBInstanceType.DATABASE_HISTORY
-                Dim tableEnum As SadbelHistoryTableType = [Enum].Parse(GetType(SadbelHistoryTableType), TableName.Replace(" ", "_"))
+                Dim tableEnum As SadbelHistoryTableType = [Enum].Parse(GetType(SadbelHistoryTableType), TableName.Replace(" ", "_"), True)
                 If [Enum].IsDefined(GetType(SadbelHistoryTableType), tableEnum) Then
                     Return Convert.ToInt32(tableEnum)
                 End If
             Case DBInstanceType.DATABASE_REPERTORY
-                Dim tableEnum As RepertoryTableType = [Enum].Parse(GetType(RepertoryTableType), TableName.Replace(" ", "_"))
+                Dim tableEnum As RepertoryTableType = [Enum].Parse(GetType(RepertoryTableType), TableName.Replace(" ", "_"), True)
                 If [Enum].IsDefined(GetType(RepertoryTableType), tableEnum) Then
                     Return Convert.ToInt32(tableEnum)
                 End If
             Case DBInstanceType.DATABASE_SADBEL
-                Dim tableEnum As SadbelTableType = [Enum].Parse(GetType(SadbelTableType), TableName.Replace(" ", "_"))
+                Dim tableEnum As SadbelTableType = [Enum].Parse(GetType(SadbelTableType), TableName.Replace(" ", "_"), True)
                 If [Enum].IsDefined(GetType(SadbelTableType), tableEnum) Then
                     Return Convert.ToInt32(tableEnum)
                 End If
             Case DBInstanceType.DATABASE_SCHEDULER
-                Dim tableEnum As SchedulerTableType = [Enum].Parse(GetType(SchedulerTableType), TableName.Replace(" ", "_"))
+                Dim tableEnum As SchedulerTableType = [Enum].Parse(GetType(SchedulerTableType), TableName.Replace(" ", "_"), True)
                 If [Enum].IsDefined(GetType(SchedulerTableType), tableEnum) Then
                     Return Convert.ToInt32(tableEnum)
                 End If
             Case DBInstanceType.DATABASE_TARIC
-                Dim tableEnum As TaricTableType = [Enum].Parse(GetType(TaricTableType), TableName.Replace(" ", "_"))
+                Dim tableEnum As TaricTableType = [Enum].Parse(GetType(TaricTableType), TableName.Replace(" ", "_"), True)
                 If [Enum].IsDefined(GetType(TaricTableType), tableEnum) Then
                     Return Convert.ToInt32(tableEnum)
                 End If
             Case DBInstanceType.DATABASE_TEMPLATE
-                Dim tableEnum As TemplateCPTableType = [Enum].Parse(GetType(TemplateCPTableType), TableName.Replace(" ", "_"))
+                Dim tableEnum As TemplateCPTableType = [Enum].Parse(GetType(TemplateCPTableType), TableName.Replace(" ", "_"), True)
                 If [Enum].IsDefined(GetType(TemplateCPTableType), tableEnum) Then
                     Return Convert.ToInt32(tableEnum)
                 End If

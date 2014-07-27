@@ -10,10 +10,10 @@ Module MSadbel
     ' Generic method for creating and executing an update script using an ADODB.Recordeset Row
     Public Function FindAndUpdateRow(ByRef RecordsetToUpdate As CRecordset,
                                      ByVal TableName As IConvertible,
+                                     ByRef Source As Object,
                             Optional ByVal Year As String = vbNullString) As Integer
 
         Dim adoRow As Recordset = RecordsetToUpdate.Recordset
-        Dim source As New CDatasource
         Dim command As DbCommand
         Dim dataset As DataSet
         Dim fullUpdateClause As String
@@ -75,7 +75,7 @@ Module MSadbel
         Try
             command.ExecuteNonQuery()
         Catch ex As Exception
-            AddToTrace("Error in MSadbel.FindAndUpdateRow() - " + ex.GetBaseException.Message)
+            Err.Raise(vbObjectError + 516, Source.GetType().Name, ex.Message)
             Return MGlobal.FAILURE
         End Try
 
@@ -86,10 +86,10 @@ Module MSadbel
     ' Generic method for creating and executing an insert script using an ADODB.Recordeset Row
     Public Function InsertRow(ByRef RecordsetToUpdate As CRecordset,
                               ByVal TableName As IConvertible,
+                              ByRef Source As Object,
                      Optional ByVal Year As String = vbNullString) As Integer
 
         Dim adoRow As Recordset = RecordsetToUpdate.Recordset
-        Dim source As New CDatasource
         Dim command As DbCommand
         Dim dataset As DataSet
         Dim fullInsertClause As String
@@ -97,39 +97,42 @@ Module MSadbel
         Dim identity As Integer = MGlobal.SUCCESS
         Dim aiList As List(Of String)
 
-        'Mark the row where to get the insert value from
-        adoRow.Bookmark = RecordsetToUpdate.BookMark
-
-        'Get the TableName
-        strTableName = GetTableName(adoRow, TableName)
-
-        'Get the Table Schema
-        dataset = getTableSchema(strTableName, GetDBInstanceTypeFromTableEnumType(TableName))
-
-        '----------------------------------------------------------------------------------------------------------------
-        'Get list of columns that are auto-incremented
-        '----------------------------------------------------------------------------------------------------------------
-        aiList = getAIColumns(dataset)
-        '----------------------------------------------------------------------------------------------------------------
-
-        'Generate the fullInsertClause
-        fullInsertClause = CreateInsertClause(strTableName, dataset, adoRow)
-
-        If fullInsertClause = vbNullString Then
-            AddToTrace("Error in MSadbel.InsertRow() - ADO record does not contain a row to insert.", False)
-            Return MGlobal.FAILURE
-        End If
-
-        'Set the insert command with the connection object 
-        command = getConnectionObjectsNonQuery(fullInsertClause, GetDBInstanceTypeFromTableEnumType(TableName), Year)
-
-        'Set Insert Paramater values
-        For Each Field As ADODB.Field In adoRow.Fields
-            Dim param As DbParameter = CreateNewParameterADODB(adoRow, Field.Name, Field.Type)
-            command.Parameters.Add(param)
-        Next
-
         Try
+            'Mark the row where to get the insert value from
+            adoRow.Bookmark = RecordsetToUpdate.BookMark
+
+            'Get the TableName
+            strTableName = GetTableName(adoRow, TableName)
+
+            'Get the Table Schema
+            dataset = getTableSchema(strTableName, GetDBInstanceTypeFromTableEnumType(TableName))
+
+            '----------------------------------------------------------------------------------------------------------------
+            'Get list of columns that are auto-incremented
+            '----------------------------------------------------------------------------------------------------------------
+            aiList = getAIColumns(dataset)
+            '----------------------------------------------------------------------------------------------------------------
+
+            'Generate the fullInsertClause
+            fullInsertClause = CreateInsertClause(strTableName, dataset, adoRow)
+
+            If fullInsertClause = vbNullString Then
+                AddToTrace("Error in MSadbel.InsertRow() - ADO record does not contain a row to insert.", False)
+                Return MGlobal.FAILURE
+            End If
+
+            'Set the insert command with the connection object 
+            command = getConnectionObjectsNonQuery(fullInsertClause, GetDBInstanceTypeFromTableEnumType(TableName), Year)
+
+            'Set Insert Paramater values
+            For Each Field As ADODB.Field In adoRow.Fields
+                If Not aiList.Contains(Field.Name) Then
+                    Dim param As DbParameter = CreateNewParameterADODB(adoRow, Field.Name, Field.Type)
+                    command.Parameters.Add(param)
+                End If
+            Next
+
+
             command.ExecuteNonQuery()
 
             If (aiList.Count > 0) Then
@@ -137,7 +140,7 @@ Module MSadbel
                 identity = command.ExecuteScalar()
             End If
         Catch ex As Exception
-            AddToTrace("Error in MSadbel.InsertRow() - " + ex.GetBaseException.Message)
+            Err.Raise(vbObjectError + 515, Source.GetType().Name, ex.Message)
             Return MGlobal.FAILURE
         End Try
 

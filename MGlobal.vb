@@ -153,6 +153,8 @@ Module MGlobal
                         Return OleDbType.LongVarBinary
                     Case DataTypeEnum.adVarWChar
                         Return OleDbType.VarWChar
+                    Case DataTypeEnum.adLongVarChar
+                        Return OleDbType.LongVarChar
                     Case Else
                         Return OleDbType.VarWChar
                 End Select
@@ -181,6 +183,8 @@ Module MGlobal
                         Return SqlDbType.VarBinary
                     Case DataTypeEnum.adVarWChar
                         Return SqlDbType.NVarChar
+                    Case DataTypeEnum.adLongVarChar
+                        Return SqlDbType.NText
                     Case Else
                         Return SqlDbType.NVarChar
                 End Select
@@ -290,6 +294,10 @@ Module MGlobal
         Dim adapter As DataAdapter
         Dim dsTemp As New DataSet
         Dim strDBName As String
+
+        If G_ObjProp Is Nothing Then
+            Throw New ClearingPointException("Error in getTableSchema - Persistence Path was not initialized.")
+        End If
 
         strDBName = getDatabaseName(Database, Year, G_ObjProp.getDatabaseType())
         conTemp = getConnection(strDBName, G_ObjProp, False)
