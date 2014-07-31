@@ -71,6 +71,9 @@ Module MGlobal
             Case "System.String"
                 Return DataTypeEnum.adVarChar
 
+            Case "System.Byte[]"
+                Return DataTypeEnum.adLongVarBinary
+
             Case Else
                 Return DataTypeEnum.adVarChar
         End Select
@@ -81,14 +84,14 @@ Module MGlobal
                                             ByVal ADOType As ADODB.DataTypeEnum) As DbParameter
 
         Select Case G_ObjProp.getDatabaseType()
-            Case DatabaseType.ACCESS
+            Case CDatabaseProperty.DatabaseType.ACCESS
                 Dim parameter As New OleDbParameter
                 parameter.Value = AdoRow.Fields(FieldName).Value
                 parameter.ParameterName = "@" + FieldName.Replace(" ", "_").Replace("-", "_")
                 parameter.OleDbType = ConvertADODBToDBType(ADOType)
                 Return parameter
 
-            Case DatabaseType.SQLSERVER
+            Case CDatabaseProperty.DatabaseType.SQLSERVER
                 Dim parameter As New SqlParameter
                 parameter.Value = AdoRow.Fields(FieldName).Value
                 parameter.ParameterName = "@" + FieldName.Replace(" ", "_").Replace("-", "_")
@@ -106,14 +109,14 @@ Module MGlobal
                                              ByVal NETType As System.Type) As DbParameter
 
         Select Case G_ObjProp.getDatabaseType()
-            Case DatabaseType.ACCESS
+            Case CDatabaseProperty.DatabaseType.ACCESS
                 Dim parameter As New OleDbParameter
                 parameter.Value = AdoRow.Fields(FieldName).Value
                 parameter.ParameterName = "@PK_" + FieldName.Replace(" ", "_").Replace("-", "_")
                 parameter.OleDbType = ConvertADONETToDBType(NETType)
                 Return parameter
 
-            Case DatabaseType.SQLSERVER
+            Case CDatabaseProperty.DatabaseType.SQLSERVER
                 Dim parameter As New SqlParameter
                 parameter.Value = AdoRow.Fields(FieldName).Value
                 parameter.ParameterName = "@PK_" + FieldName.Replace(" ", "_").Replace("-", "_")
@@ -129,7 +132,7 @@ Module MGlobal
     Public Function ConvertADODBToDBType(ByVal ADOType As ADODB.DataTypeEnum) As DbType
 
         Select Case G_ObjProp.getDatabaseType()
-            Case DatabaseType.ACCESS
+            Case CDatabaseProperty.DatabaseType.ACCESS
                 Select Case ADOType
                     Case DataTypeEnum.adInteger
                         Return OleDbType.Integer
@@ -159,7 +162,7 @@ Module MGlobal
                         Return OleDbType.VarWChar
                 End Select
 
-            Case DatabaseType.SQLSERVER
+            Case CDatabaseProperty.DatabaseType.SQLSERVER
                 Select Case ADOType
                     Case DataTypeEnum.adInteger
                         Return SqlDbType.Int
@@ -199,7 +202,7 @@ Module MGlobal
     Public Function ConvertADONETToDBType(ByVal NETType As System.Type) As DbType
 
         Select Case G_ObjProp.getDatabaseType()
-            Case DatabaseType.ACCESS
+            Case CDatabaseProperty.DatabaseType.ACCESS
                 Select Case NETType.UnderlyingSystemType.ToString()
                     Case "System.Int32"
                         Return OleDbType.Integer
@@ -219,11 +222,13 @@ Module MGlobal
                         Return OleDbType.SmallInt
                     Case "System.String"
                         Return OleDbType.VarWChar
+                    Case "System.Byte[]"
+                        Return OleDbType.LongVarBinary
                     Case Else
                         Throw New NotSupportedException("ConvertADODBToDBType: Unknown or not supported ADODB DataType.")
                 End Select
 
-            Case DatabaseType.SQLSERVER
+            Case CDatabaseProperty.DatabaseType.SQLSERVER
                 Select Case NETType.UnderlyingSystemType.ToString()
                     Case "System.Int32"
                         Return SqlDbType.Int
@@ -243,10 +248,11 @@ Module MGlobal
                         Return SqlDbType.SmallInt
                     Case "System.String"
                         Return SqlDbType.NVarChar
+                    Case "System.Byte[]"
+                        Return SqlDbType.VarBinary
                     Case Else
                         Throw New NotSupportedException("ConvertADODBToDBType: Unknown or not supported ADODB DataType.")
                 End Select
-
 
             Case Else
                 Throw New NotSupportedException("ConvertADODBToDBType: Unknown Database Type or Database Type not supported.")
@@ -270,11 +276,11 @@ Module MGlobal
         conTemp = getConnection(strDBName, G_ObjProp, False)
 
         Select Case G_ObjProp.getDatabaseType()
-            Case DatabaseType.ACCESS
+            Case CDatabaseProperty.DatabaseType.ACCESS
                 AddToTrace("Connecting To Access Database...", True)
 
                 command = New OleDbCommand(SQL, conTemp)
-            Case DatabaseType.SQLSERVER
+            Case CDatabaseProperty.DatabaseType.SQLSERVER
                 AddToTrace("Connecting To SQL Server...", True)
 
                 command = New SqlCommand(SQL, conTemp)
@@ -303,14 +309,14 @@ Module MGlobal
         conTemp = getConnection(strDBName, G_ObjProp, False)
 
         Select Case G_ObjProp.getDatabaseType()
-            Case DatabaseType.ACCESS
+            Case CDatabaseProperty.DatabaseType.ACCESS
                 AddToTrace("Connecting To Access Database...", True)
 
                 adapter = New OleDbDataAdapter("SELECT * FROM [" & TableName & "] WHERE 1=2", conTemp)
                 adapter.Fill(dsTemp)
                 adapter.FillSchema(dsTemp, SchemaType.Source)
 
-            Case DatabaseType.SQLSERVER
+            Case CDatabaseProperty.DatabaseType.SQLSERVER
                 AddToTrace("Connecting To SQL Server...", True)
 
                 adapter = New SqlClient.SqlDataAdapter("SELECT * FROM [" & TableName & "] WHERE 1=2", conTemp)
@@ -387,7 +393,7 @@ Module MGlobal
         End Select
 
         'ADD FILE EXTENSION FOR ACCESS DB
-        If DatabaseType.ACCESS.Equals(DBType) Then
+        If CDatabaseProperty.DatabaseType.ACCESS.Equals(DBType) Then
             strDatabaseName = strDatabaseName & ACCESS_DB_EXTENSION_97_2003
         End If
 
@@ -402,7 +408,7 @@ Module MGlobal
         Dim sbConn As New StringBuilder
 
         Select Case objProp.getDatabaseType()
-            Case DatabaseType.ACCESS
+            Case CDatabaseProperty.DatabaseType.ACCESS
                 If UseDataShaping Then
                     sbConn.Append("Provider=MSDataShape;Provider=Microsoft.Jet.OLEDB.4.0;Data Source=")
                     sbConn.Append(objProp.getDatabasePath())
@@ -421,7 +427,7 @@ Module MGlobal
 
                 conTemp = New OleDbConnection(sbConn.ToString())
 
-            Case DatabaseType.SQLSERVER
+            Case CDatabaseProperty.DatabaseType.SQLSERVER
                 If UseDataShaping Then
                     sbConn.Append("Provider=MSDataShape;Data Source=")
                     sbConn.Append(objProp.getServerName())
@@ -551,7 +557,7 @@ Module MGlobal
         conTemp = getConnection(strDBName, G_ObjProp, UseDataShaping)
 
         Select Case G_ObjProp.getDatabaseType()
-            Case DatabaseType.ACCESS
+            Case CDatabaseProperty.DatabaseType.ACCESS
                 conObjects.SetValue(conTemp, 0)
 
                 AddToTrace("Connecting To Access Database...", True)
@@ -568,7 +574,7 @@ Module MGlobal
                     conObjects.SetValue(command, 1)
                 End If
 
-            Case DatabaseType.SQLSERVER
+            Case CDatabaseProperty.DatabaseType.SQLSERVER
                 conObjects.SetValue(conTemp, 0)
 
                 AddToTrace("Connecting To SQL Server...", True)

@@ -538,6 +538,46 @@ Public Class CDatasource
         G_ObjProp = New CDatabaseProperty(Path)
     End Sub
 
+
+    ReadOnly Property DatabaseType() As CDatabaseProperty.DatabaseType
+        Get
+            Select Case G_ObjProp.getDatabaseType
+                Case CDatabaseProperty.DatabaseType.ACCESS,
+                    CDatabaseProperty.DatabaseType.MYSQL,
+                    CDatabaseProperty.DatabaseType.ORACLE,
+                    CDatabaseProperty.DatabaseType.SQLSERVER
+
+                    Return G_ObjProp.getDatabaseType
+
+                Case Else
+                    Return CDatabaseProperty.DatabaseType.ACCESS
+            End Select
+        End Get
+    End Property
+
+
+    ReadOnly Property DatabasePassword() As String
+        Get
+            If G_ObjProp.getPassword.Trim().Length > 0 Then
+                Return G_ObjProp.getPassword.Trim()
+            Else
+                Return ""
+            End If
+        End Get
+    End Property
+
+
+    ReadOnly Property DatabasePath() As String
+        Get
+            If G_ObjProp.getDatabasePath.Trim().Length > 0 Then
+                Return G_ObjProp.getDatabasePath.Trim()
+            Else
+                Return ""
+            End If
+        End Get
+    End Property
+
+
     ''' <summary>
     ''' DELETE, UPDATE and INSERT via SQL Script
     ''' </summary>

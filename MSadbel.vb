@@ -124,11 +124,14 @@ Module MSadbel
             'Set the insert command with the connection object 
             command = getConnectionObjectsNonQuery(fullInsertClause, GetDBInstanceTypeFromTableEnumType(TableName), Year)
 
+            AddToTrace(command.CommandText, True)
+
             'Set Insert Paramater values
             For Each Field As ADODB.Field In adoRow.Fields
                 If Not aiList.Contains(Field.Name) Then
                     Dim param As DbParameter = CreateNewParameterADODB(adoRow, Field.Name, Field.Type)
                     command.Parameters.Add(param)
+                    AddToTrace(Field.Name & " : " & Field.Value, True)
                 End If
             Next
 
@@ -170,9 +173,9 @@ Module MSadbel
                 If Not aiList.Contains(Field.Name) Then
                     If Not IsDBNull(Field.Value) Then
                         Select Case G_ObjProp.getDatabaseType()
-                            Case DatabaseType.ACCESS
+                            Case CDatabaseProperty.DatabaseType.ACCESS
                                 command.Append("[").Append(Field.Name).Append("] = ?, ")
-                            Case DatabaseType.SQLSERVER
+                            Case CDatabaseProperty.DatabaseType.SQLSERVER
                                 command.Append("[").Append(Field.Name).Append("] = @").Append(Field.Name.Replace(" ", "_").Replace("-", "_")).Append(", ")
                         End Select
 
@@ -193,9 +196,9 @@ Module MSadbel
                 Else
                     If pkList.Contains(column.ColumnName) Then
                         Select Case G_ObjProp.getDatabaseType()
-                            Case DatabaseType.ACCESS
+                            Case CDatabaseProperty.DatabaseType.ACCESS
                                 command.Append("[").Append(column.ColumnName).Append("] = ? AND ")
-                            Case DatabaseType.SQLSERVER
+                            Case CDatabaseProperty.DatabaseType.SQLSERVER
                                 command.Append("[").Append(column.ColumnName).Append("] = @PK_").Append(column.ColumnName.Replace(" ", "_").Replace("-", "_")).Append(" AND ")
                         End Select
                     End If
@@ -237,9 +240,9 @@ Module MSadbel
             For Each Field As ADODB.Field In adoRow.Fields
                 If Not aiList.Contains(Field.Name) Then
                     Select Case G_ObjProp.getDatabaseType()
-                        Case DatabaseType.ACCESS
+                        Case CDatabaseProperty.DatabaseType.ACCESS
                             command.Append("[").Append(Field.Name).Append("], ")
-                        Case DatabaseType.SQLSERVER
+                        Case CDatabaseProperty.DatabaseType.SQLSERVER
                             command.Append("[").Append(Field.Name).Append("], ")
                     End Select
                 End If
@@ -253,9 +256,9 @@ Module MSadbel
             For Each Field As ADODB.Field In adoRow.Fields
                 If Not aiList.Contains(Field.Name) Then
                     Select Case G_ObjProp.getDatabaseType()
-                        Case DatabaseType.ACCESS
+                        Case CDatabaseProperty.DatabaseType.ACCESS
                             command.Append("?, ")
-                        Case DatabaseType.SQLSERVER
+                        Case CDatabaseProperty.DatabaseType.SQLSERVER
                             command.Append("@").Append(Field.Name.Replace(" ", "_").Replace("-", "_")).Append(", ")
                     End Select
                 End If
