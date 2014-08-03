@@ -679,6 +679,15 @@ Public Class CDatasource
     End Function
 
     ''' <summary>
+    ''' Update a selected ADODB.Recordset.Row for Taric
+    ''' </summary>
+    Public Function UpdateTaric(ByRef RecordsetToUpdate As CRecordset, _
+                                     ByVal TableName As TaricTableType) As Integer
+
+        Return FindAndUpdateRow(RecordsetToUpdate, TableName, Me)
+    End Function
+
+    ''' <summary>
     ''' Insert a selected ADODB.Recordset.Row for mdb_sadbel
     ''' </summary>
     Public Function InsertSadbel(ByRef RecordsetToInsert As CRecordset, _
@@ -749,6 +758,15 @@ Public Class CDatasource
     ''' </summary>
     Public Function InsertScheduler(ByRef RecordsetToInsert As CRecordset, _
                                     ByVal TableName As SchedulerTableType) As Integer
+
+        Return InsertRow(RecordsetToInsert, TableName, Me)
+    End Function
+
+    ''' <summary>
+    ''' Insert a selected ADODB.Recordset.Row for Taric
+    ''' </summary>
+    Public Function InsertTaric(ByRef RecordsetToInsert As CRecordset, _
+                                    ByVal TableName As TaricTableType) As Integer
 
         Return InsertRow(RecordsetToInsert, TableName, Me)
     End Function
