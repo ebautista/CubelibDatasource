@@ -10,6 +10,7 @@ Imports System.Text.RegularExpressions
 
 <ComClass(CDatasource.ClassId, CDatasource.InterfaceId, CDatasource.EventsId)> _
 Public Class CDatasource
+    Implements IDisposable
 
 #Region "COM GUIDs"
     ' These  GUIDs provide the COM identity for this class 
@@ -20,12 +21,29 @@ Public Class CDatasource
     Public Const EventsId As String = "c9fb94be-f812-4f9e-bfdf-e3710ad9ecc6"
 #End Region
 
+    Private managedResource As New System.ComponentModel.Component
+    Private unmanagedResource As IntPtr
+    Protected disposed As Boolean = False
+
     ' A creatable COM class must have a Public Sub New() 
     ' with no parameters, otherwise, the class will not be 
     ' registered in the COM registry and cannot be created 
     ' via CreateObject.
     Public Sub New()
         MyBase.New()
+    End Sub
+
+    Protected Overridable Overloads Sub Dispose( _
+            ByVal disposing As Boolean)
+        If Not Me.disposed Then
+            If disposing Then
+                managedResource.Dispose()
+            End If
+            ' Add code here to release the unmanaged resource.
+            unmanagedResource = IntPtr.Zero
+            ' Note that this is not thread safe. 
+        End If
+        Me.disposed = True
     End Sub
 
     Public Enum DBInstanceType
@@ -961,6 +979,20 @@ Public Class CDatasource
 
         Return 0
     End Function
+
+#Region " IDisposable Support "
+    ' Do not change or add Overridable to these methods. 
+    ' Put cleanup code in Dispose(ByVal disposing As Boolean). 
+    Public Overloads Sub Dispose() Implements IDisposable.Dispose
+        Dispose(True)
+        GC.SuppressFinalize(Me)
+    End Sub
+    Protected Overrides Sub Finalize()
+        Dispose(False)
+        MyBase.Finalize()
+    End Sub
+#End Region
+
 End Class
 
 
