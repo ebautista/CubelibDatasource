@@ -506,6 +506,13 @@ Module MGlobal
                 Case Else
                     Return CType(TableName, TemplateCPTableType).ToString
             End Select
+        ElseIf type.Equals(GetType(TaricTableType)) Then
+            Select Case CType(TableName, TaricTableType)
+                Case TaricTableType.SUPP_UNITS
+                    Return CType(TableName, TaricTableType).ToString.Replace("_", " ")
+                Case Else
+                    Return CType(TableName, TaricTableType).ToString
+            End Select
         End If
 
         Return vbNullString
@@ -530,6 +537,8 @@ Module MGlobal
             Return DBInstanceType.DATABASE_REPERTORY
         ElseIf type.Equals(GetType(TemplateCPTableType)) Then
             Return DBInstanceType.DATABASE_TEMPLATE
+        ElseIf type.Equals(GetType(TaricTableType)) Then
+            Return DBInstanceType.DATABASE_TARIC
         End If
 
         Throw New NotSupportedException("GetDBInstanceTypeFromTableEnumType: Unknown Database Instance Type.")
