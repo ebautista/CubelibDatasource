@@ -604,10 +604,11 @@ Public Class CDatasource
                            Optional ByVal Year As String = vbNullString) As Integer
 
         Dim conObjects() As Object
+        Dim rowsAffected As Integer
 
         Try
             conObjects = getConnectionObjects(SQL, Database, False, False, Year)
-            conObjects(1).ExecuteNonQuery()
+            rowsAffected = conObjects(1).ExecuteNonQuery()
 
             conObjects(1).Dispose()
             conObjects(0).Close()
@@ -617,7 +618,7 @@ Public Class CDatasource
             Return FAILURE
         End Try
 
-        Return SUCCESS
+        Return rowsAffected
 
     End Function
 
