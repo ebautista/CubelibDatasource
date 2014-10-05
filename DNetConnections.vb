@@ -1,6 +1,6 @@
 ﻿Imports System.Data.Common
 
-Public Class CConnections
+Public Class DNetConnections
 
     Public Const DATABASE_SADBEL As String = "SADBEL"
     Public Const DATABASE_DATA = "DATA"

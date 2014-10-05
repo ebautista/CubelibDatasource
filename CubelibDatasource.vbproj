@@ -9,8 +9,8 @@
     </SchemaVersion>
     <ProjectGuid>{E0F54AFB-B334-4D98-9BA6-F87BFA182037}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>CubelibDatasource</RootNamespace>
-    <AssemblyName>CubelibDatasource</AssemblyName>
+    <RootNamespace>CubeLibDataSource</RootNamespace>
+    <AssemblyName>CubeLibDataSource</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
@@ -21,7 +21,7 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\Debug\</OutputPath>
-    <DocumentationFile>CubelibDatasource.xml</DocumentationFile>
+    <DocumentationFile>CubeLibDataSource.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
     <RegisterForComInterop>true</RegisterForComInterop>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -32,7 +32,7 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>..\SQLExecutionBenchTest\</OutputPath>
-    <DocumentationFile>CubelibDatasource.xml</DocumentationFile>
+    <DocumentationFile>CubeLibDataSource.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
     <RegisterForComInterop>true</RegisterForComInterop>
   </PropertyGroup>
@@ -52,11 +52,16 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>CubelibDatasource.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic.Compatibility" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -73,13 +78,14 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CConnections.vb" />
+    <Compile Include="DNetConnections.vb" />
     <Compile Include="CDatabaseProperty.vb" />
     <Compile Include="CDatasource.vb" />
     <Compile Include="ClearingPointException.vb" />
     <Compile Include="ConvertToRs.vb" />
     <Compile Include="CProperty.vb" />
-    <Compile Include="CRecordset.vb" />
+    <Compile Include="DNetRecordset.vb" />
+    <Compile Include="MDatabases.vb" />
     <Compile Include="MSadbel.vb" />
     <Compile Include="MGlobal.vb" />
     <Compile Include="MTrace.vb" />
@@ -109,7 +115,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="CubelibDatasource.pfx" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>

@@ -1,5 +1,5 @@
-﻿<ComClass(CRecordset.ClassId, CRecordset.InterfaceId, CRecordset.EventsId)> _
-Public Class CRecordset
+﻿<ComClass(DNetRecordset.ClassId, DNetRecordset.InterfaceId, DNetRecordset.EventsId)> _
+Public Class DNetRecordset
 
 #Region "COM GUIDs"
     ' These  GUIDs provide the COM identity for this class 

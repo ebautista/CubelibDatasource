@@ -3,10 +3,16 @@ Imports Microsoft.Win32
 Imports System.Data.Common
 Imports System.Data.OleDb
 Imports System.Data.SqlClient
-Imports CubelibDatasource.CDatabaseProperty
+Imports CubeLibDataSource.CDatabaseProperty
 Imports System.IO
 Imports System.Text
 Imports System.Text.RegularExpressions
+Imports System.Data.Sql
+Imports System.ComponentModel
+Imports System.Drawing
+Imports Microsoft.VisualBasic.Compatibility
+Imports Microsoft.VisualBasic.Compatibility.VB6
+Imports System.Windows.Forms.AxHost
 
 <ComClass(CDatasource.ClassId, CDatasource.InterfaceId, CDatasource.EventsId)> _
 Public Class CDatasource
@@ -20,6 +26,7 @@ Public Class CDatasource
     Public Const InterfaceId As String = "08039bc1-af54-4883-8380-b52716522cb6"
     Public Const EventsId As String = "c9fb94be-f812-4f9e-bfdf-e3710ad9ecc6"
 #End Region
+    Private WithEvents m_objBackgroundWorker As New BackgroundWorker
 
     Private managedResource As New System.ComponentModel.Component
     Private unmanagedResource As IntPtr
@@ -31,6 +38,13 @@ Public Class CDatasource
     ' via CreateObject.
     Public Sub New()
         MyBase.New()
+        g_objDBConnections = New Collection
+
+        'm_objBackgroundWorker.WorkerReportsProgress = False
+        'm_objBackgroundWorker.WorkerSupportsCancellation = True
+
+        'AddHandler m_objBackgroundWorker.DoWork, AddressOf m_objBackgroundWorker_DoWork
+        'AddHandler m_objBackgroundWorker.RunWorkerCompleted, AddressOf m_objBackgroundWorker_RunWorkerCompleted
     End Sub
 
     Protected Overridable Overloads Sub Dispose( _
@@ -56,6 +70,7 @@ Public Class CDatasource
         DATABASE_HISTORY
         DATABASE_REPERTORY
         DATABASE_EDI_HISTORY
+        DATABASE_OTHER
     End Enum
 
     Public Enum SadbelTableType
@@ -67,6 +82,7 @@ Public Class CDatasource
         BOX_DEFAULT_EDI_NCTS2_ADMIN
         BOX_DEFAULT_COMBINED_ADMIN
         BOX_DEFAULT_IMPORT_ADMIN
+        BOX_DEFAULT_EXPORT_ADMIN
         BOX_DEFAULT_PLDA_COMBINED_ADMIN
         BOX_DEFAULT_PLDA_COMBINED_CHILDREN_ADMIN
         BOX_DEFAULT_PLDA_IMPORT_ADMIN
@@ -188,6 +204,7 @@ Public Class CDatasource
         REMOTE_PRINTERS
         REMOTE_DOCTYPE
         REPRESENTATIVE
+        SAD_PLDA_VALUE_LIST
         SETUP
         SHEET_PROPERTIES
         SKIP
@@ -552,43 +569,399 @@ Public Class CDatasource
         WindowSettings
     End Enum
 
-    Public Sub SetPersistencePath(ByVal Path As String)
-        G_ObjProp = New CDatabaseProperty(Path)
+    'Public Event GetSQLServerInstancesCompleted(ByRef SQLServerInstances() As String)
+
+    Private m_arrSQLServerInstances() As String
+    Private m_strPersitenceFilePath As String
+
+    Public Function GetRepertoryDBYear(ByVal RepertoryDBName As String) As String
+
+        GetRepertoryDBYear = GetRepertoryDBYear_F(RepertoryDBName)
+
+    End Function
+
+    Public Function GetEDIHistoryDBYear(ByVal EDIHistoryDBName As String) As String
+
+        GetEDIHistoryDBYear = GetEDIHistoryDBYear_F(EDIHistoryDBName)
+
+    End Function
+
+    Public Function GetHistoryDBYear(ByVal HistoryDBName As String) As String
+
+        GetHistoryDBYear = GetHistoryDBYear_F(HistoryDBName)
+
+    End Function
+
+    Public Sub UpdatePersistence(ByVal PersistenceProperty As PersistencePropertyType, _
+                                 ByVal PersistencePropertyValue As String)
+
+        If Not g_objDatabaseProperty Is Nothing Then
+
+            g_objDatabaseProperty.SetPersistenceProperty(GetPersistencePropertyPath(PersistenceProperty), PersistencePropertyValue)
+
+        End If
+
     End Sub
 
+    Public Function OpenFile(ByVal PersistencePath As String, _
+                             ByVal PersistenceFilename As String, _
+                    Optional ByVal DBTypeDef As DatabaseType = CDatabaseProperty.DatabaseType.ACCESS2003, _
+                    Optional ByVal DBServerNameDef As String = "", _
+                    Optional ByVal DBServerIntegratedAuthenticationDef As String = "FALSE", _
+                    Optional ByVal DBUserNameDef As String = "sa", _
+                    Optional ByVal DBPasswordDef As String = "wack2", _
+                    Optional ByVal DBPathDef As String = "", _
+                    Optional ByVal DataPathDef As String = "") As String
+
+        g_objDatabaseProperty = New CDatabaseProperty(PersistencePath, _
+                                                      PersistenceFilename, _
+                                                      DBTypeDef, _
+                                                      DBServerNameDef, _
+                                                      DBServerIntegratedAuthenticationDef, _
+                                                      DBUserNameDef, _
+                                                      DBPasswordDef, _
+                                                      DBPathDef, _
+                                                      DataPathDef)
+
+        'RefreshSQLServerInstances()
+
+        m_strPersitenceFilePath = PersistencePath
+
+        Return PersistencePath
+
+    End Function
+
+    Public Function GetSQLServerInstances() As String()
+        ' Retrieve the enumerator instance and then the data.
+        Dim instance As SqlDataSourceEnumerator = SqlDataSourceEnumerator.Instance
+        Dim aiList As New List(Of String)
+
+        Dim table As System.Data.DataTable = instance.GetDataSources()
+        Dim strServerName As String
+        Dim strInstanceName As String
+
+        For Each row As DataRow In table.Rows
+            strServerName = ""
+            strInstanceName = ""
+
+            For Each col As DataColumn In table.Columns
+
+                If String.Equals("ServerName".ToUpper, col.ColumnName.ToUpper) Then
+                    strServerName = row(col)
+                End If
+
+                If String.Equals("InstanceName".ToUpper, col.ColumnName.ToUpper) Then
+                    strInstanceName = row(col)
+                End If
+
+                If strServerName.Length > 0 And _
+                   strInstanceName.Length > 0 Then
+                    Exit For
+                End If
+                'Console.WriteLine("{0} = {1}", col.ColumnName, row(col))
+            Next
+
+            aiList.Add(strServerName & "\" & strInstanceName)
+        Next
+
+        Return aiList.ToArray
+    End Function
+
+
+    'Public Function CanQuit() As Boolean
+    '    Return Not (m_objBackgroundWorker.CancellationPending Or m_objBackgroundWorker.IsBusy)
+    'End Function
+
+    'Public Sub CancelWorker()
+
+    '    If Not m_objBackgroundWorker.CancellationPending Then
+    '        m_objBackgroundWorker.CancelAsync()
+    '    End If
+
+    'End Sub
+
+    'Private Sub m_objBackgroundWorker_RunWorkerCompleted(ByVal sender As Object,
+    '                                                     ByVal e As System.ComponentModel.RunWorkerCompletedEventArgs) _
+    '                                                     Handles m_objBackgroundWorker.RunWorkerCompleted
+
+    '    ' This event handler is called when the background thread finishes. 
+    '    ' This method runs on the main thread. 
+
+    '    RaiseEvent GetSQLServerInstancesCompleted(m_arrSQLServerInstances)
+
+    '    m_objBackgroundWorker.Dispose()
+
+    '    Debug.Assert(False)
+    'End Sub
+
+    'Public Sub CancelRefreshSQLServerInstances()
+    '    m_objBackgroundWorker.CancelAsync()
+    'End Sub
+
+    'Public Sub RefreshSQLServerInstances()
+
+    '    If Not m_objBackgroundWorker.IsBusy Then
+    '        ' Start the asynchronous operation.
+    '        m_objBackgroundWorker.RunWorkerAsync(Me)
+    '    End If
+    'End Sub
+
+    'Private Sub AsynchRefreshSQLServerInstances(ByVal worker As System.ComponentModel.BackgroundWorker, _
+    '                                      ByVal e As System.ComponentModel.DoWorkEventArgs)
+
+    '    If IsServiceRunning_F("SQLBrowser") Then
+    '        m_arrSQLServerInstances = GetSQLServerInstances()
+    '    End If
+
+    'End Sub
+
+    Public Function Open(ByVal PersistencePath As String, _
+                Optional ByVal DBTypeDef As DatabaseType = CDatabaseProperty.DatabaseType.ACCESS2003, _
+                Optional ByVal DBServerNameDef As String = "", _
+                Optional ByVal DBServerIntegratedAuthenticationDef As String = "FALSE", _
+                Optional ByVal DBUserNameDef As String = "sa", _
+                Optional ByVal DBPasswordDef As String = "wack2", _
+                Optional ByVal DBPathDef As String = "", _
+                Optional ByVal DataPathDef As String = "") As String
+
+        g_objDatabaseProperty = New CDatabaseProperty(PersistencePath, _
+                                                      , _
+                                                      DBTypeDef, _
+                                                      DBServerNameDef, _
+                                                      DBServerIntegratedAuthenticationDef, _
+                                                      DBUserNameDef, _
+                                                      DBPasswordDef, _
+                                                      DBPathDef, _
+                                                      DataPathDef)
+
+        'RefreshSQLServerInstances()
+
+        m_strPersitenceFilePath = PersistencePath
+
+        Return PersistencePath
+
+    End Function
+
+    'Private Sub m_objBackgroundWorker_DoWork(ByVal sender As Object,
+    '                                         ByVal e As System.ComponentModel.DoWorkEventArgs) _
+    '                                         Handles m_objBackgroundWorker.DoWork
+
+    '    ' This event handler is where the actual work is done. 
+    '    ' This method runs on the background thread. 
+
+    '    ' Get the BackgroundWorker object that raised this event. 
+    '    Dim worker As System.ComponentModel.BackgroundWorker
+    '    worker = CType(sender, System.ComponentModel.BackgroundWorker)
+
+    '    ' Get the Words object and call the main method. 
+    '    Dim objDataSource As CDatasource = CType(e.Argument, CDatasource)
+    '    objDataSource.AsynchRefreshSQLServerInstances(worker, e)
+
+    'End Sub
+
+    Public Sub RollbackTransaction(ByVal Database As DBInstanceType, _
+                          Optional ByVal Year As String = "", _
+                          Optional ByVal OtherDatabaseName As String = "", _
+                          Optional ByVal UseDataShaping As Boolean = False)
+
+        Dim conTemp As DbConnection
+
+        Dim strDBName As String
+
+        If g_objDatabaseProperty Is Nothing Then
+            Throw New ClearingPointException("Error in RollbackTransaction - Persistence path was not initialized.")
+        End If
+
+        strDBName = getDatabaseName(Database, Year, g_objDatabaseProperty.getDatabaseType(), OtherDatabaseName)
+        conTemp = getConnection(strDBName, g_objDatabaseProperty, UseDataShaping)
+
+        If g_objDBConnections.Contains(strDBName) Then
+
+            'objTransaction = g_objDBConnections.Item(strDBName)
+
+            g_objDBTransaction.Rollback()
+
+            conTemp.Close()
+            conTemp.Dispose()
+            conTemp = Nothing
+
+            g_objDBConnections.Remove(strDBName)
+
+            g_objDBTransaction.Dispose()
+            g_objDBTransaction = Nothing
+        End If
+
+    End Sub
+
+    Public Sub CommitTransaction(ByVal Database As DBInstanceType, _
+                        Optional ByVal Year As String = "", _
+                        Optional ByVal OtherDatabaseName As String = "", _
+                        Optional ByVal UseDataShaping As Boolean = False)
+
+        Dim conTemp As DbConnection
+
+        Dim strDBName As String
+
+        If g_objDatabaseProperty Is Nothing Then
+            Throw New ClearingPointException("Error in CommitTransaction - Persistence path was not initialized.")
+        End If
+
+        strDBName = getDatabaseName(Database, Year, g_objDatabaseProperty.getDatabaseType(), OtherDatabaseName)
+        conTemp = getConnection(strDBName, g_objDatabaseProperty, UseDataShaping)
+
+        If g_objDBConnections.Contains(strDBName) Then
+            'g_objDBTransaction = g_objDBConnections.Item(strDBName)
+
+            g_objDBTransaction.Commit()
+            conTemp.Close()
+            conTemp.Dispose()
+            conTemp = Nothing
+
+            g_objDBConnections.Remove(strDBName)
+
+            g_objDBTransaction.Dispose()
+            g_objDBTransaction = Nothing
+        End If
+
+    End Sub
+
+    Public Sub BeginTransaction(ByVal Database As DBInstanceType, _
+                       Optional ByVal Year As String = "", _
+                       Optional ByVal OtherDatabaseName As String = "", _
+                       Optional ByVal UseDataShaping As Boolean = False)
+
+
+        Dim conTemp As DbConnection
+
+        Dim strDBName As String
+
+        If g_objDatabaseProperty Is Nothing Then
+            Throw New ClearingPointException("Error in BeginTransaction - Persistence path was not initialized.")
+        End If
+
+        strDBName = getDatabaseName(Database, Year, g_objDatabaseProperty.getDatabaseType(), OtherDatabaseName)
+        conTemp = getConnection(strDBName, g_objDatabaseProperty, UseDataShaping)
+
+        If g_objDBConnections Is Nothing Then
+            g_objDBConnections = New Collection
+        End If
+
+        If Not g_objDBConnections.Contains(strDBName) Then
+            If g_objDBTransaction Is Nothing Then
+                g_objDBTransaction = conTemp.BeginTransaction()
+
+                'g_objDBConnections.Add(objTransaction, strDBName)
+                g_objDBConnections.Add(conTemp, strDBName)
+            End If
+        End If
+    End Sub
 
     ReadOnly Property DatabaseType() As CDatabaseProperty.DatabaseType
         Get
-            Select Case G_ObjProp.getDatabaseType
-                Case CDatabaseProperty.DatabaseType.ACCESS,
+            Select Case g_objDatabaseProperty.getDatabaseType
+                Case CDatabaseProperty.DatabaseType.ACCESS97,
+                    CDatabaseProperty.DatabaseType.ACCESS2003,
                     CDatabaseProperty.DatabaseType.MYSQL,
                     CDatabaseProperty.DatabaseType.ORACLE,
                     CDatabaseProperty.DatabaseType.SQLSERVER
 
-                    Return G_ObjProp.getDatabaseType
+                    Return g_objDatabaseProperty.getDatabaseType
 
                 Case Else
-                    Return CDatabaseProperty.DatabaseType.ACCESS
+                    Return CDatabaseProperty.DatabaseType.ACCESS2003
             End Select
         End Get
     End Property
 
-
-    ReadOnly Property DatabasePassword() As String
+    ReadOnly Property SQLServerInstances() As String()
         Get
-            If G_ObjProp.getPassword.Trim().Length > 0 Then
-                Return G_ObjProp.getPassword.Trim()
+            Return m_arrSQLServerInstances
+        End Get
+    End Property
+
+    ReadOnly Property IntegratedAuthentication() As Boolean
+        Get
+            If g_objDatabaseProperty.getServerIntegratedAuthentication.Trim().Length > 0 Then
+
+                If String.Equals(g_objDatabaseProperty.getServerIntegratedAuthentication.Trim(), "TRUE", System.StringComparison.OrdinalIgnoreCase) Then
+
+                    Return True
+
+                ElseIf String.Equals(g_objDatabaseProperty.getServerIntegratedAuthentication.Trim(), "FALSE", System.StringComparison.OrdinalIgnoreCase) Then
+
+                    Return False
+                Else
+                    Return False
+                End If
+
+            Else
+                Return False
+            End If
+
+        End Get
+    End Property
+
+    ReadOnly Property ServerName() As String
+        Get
+            If g_objDatabaseProperty.getServerName.Trim().Length > 0 Then
+                Return g_objDatabaseProperty.getServerName.Trim()
             Else
                 Return ""
             End If
         End Get
     End Property
 
-
-    ReadOnly Property DatabasePath() As String
+    ReadOnly Property PersistenceFilePath() As String
         Get
-            If G_ObjProp.getDatabasePath.Trim().Length > 0 Then
-                Return G_ObjProp.getDatabasePath.Trim()
+            Return m_strPersitenceFilePath
+        End Get
+
+    End Property
+
+    ReadOnly Property Username() As String
+        Get
+            If g_objDatabaseProperty.getUserName.Trim().Length > 0 Then
+                Return g_objDatabaseProperty.getUserName.Trim()
+            Else
+                Return ""
+            End If
+        End Get
+    End Property
+
+    ReadOnly Property DatabasePassword() As String
+        Get
+            If g_objDatabaseProperty.getPassword.Trim().Length > 0 Then
+                Return g_objDatabaseProperty.getPassword.Trim()
+            Else
+                Return ""
+            End If
+        End Get
+    End Property
+
+    ReadOnly Property OutputFilePath() As String
+        Get
+            If g_objDatabaseProperty.getOutputFilePath.Trim().Length > 0 Then
+                Return g_objDatabaseProperty.getOutputFilePath.Trim()
+            Else
+                Return ""
+            End If
+        End Get
+    End Property
+
+    ReadOnly Property DatabasePathFromPersistence() As String
+        Get
+            If g_objDatabaseProperty.getDatabasePathFromPersistence.Trim().Length > 0 Then
+                Return g_objDatabaseProperty.getDatabasePathFromPersistence.Trim()
+            Else
+                Return ""
+            End If
+        End Get
+    End Property
+
+    ReadOnly Property DatabasePathFromRegistry() As String
+        Get
+            If g_objDatabaseProperty.getDatabasePathFromRegistry.Trim().Length > 0 Then
+                Return g_objDatabaseProperty.getDatabasePathFromRegistry.Trim()
             Else
                 Return ""
             End If
@@ -599,20 +972,463 @@ Public Class CDatasource
     ''' <summary>
     ''' DELETE, UPDATE and INSERT via SQL Script
     ''' </summary>
+    Public Function ExecuteNonQueryOtherDB(ByVal SQL As String, _
+                                           ByVal OtherDatabaseName As String) As Integer
+
+        Dim conObjects() As Object
+        Dim rowsAffected As Integer
+
+        Try
+            conObjects = getConnectionObjects(SQL, DBInstanceType.DATABASE_OTHER, False, False, "", OtherDatabaseName)
+
+            rowsAffected = conObjects(1).ExecuteNonQuery()
+
+            conObjects(1).Dispose()
+            conObjects(1) = Nothing
+
+            conObjects(0).Close()
+            conObjects(0).Dispose()
+            conObjects(0) = Nothing
+
+        Catch ex As Exception
+            Err.Raise(vbObjectError + 513, Me.GetType().Name, ex.Message)
+            Return FAILURE
+        End Try
+
+        Return rowsAffected
+
+    End Function
+
+    Public Function GetDatabases(ByVal DBArchiveInstance As DBGeneralInstanceType) As String()
+
+        Dim strFilter As String
+        Dim strDatabase As String
+        Dim strDatabases As String
+        Dim obj As New List(Of String)
+
+        'If g_objDatabaseProperty Is Nothing Then
+        '    g_objDatabaseProperty = New CDatabaseProperty(
+        'End If
+        strDatabases = ""
+
+        Select Case DBArchiveInstance
+            Case DBGeneralInstanceType.DB_ARCHIVE_REPERTORY
+                strFilter = "mdb_repertory_????.mdb"
+                strFilter = "mdb_repertory_*.mdb"
+            Case DBGeneralInstanceType.DB_ARCHIVE_HISTORY
+                strFilter = "mdb_history??.mdb"
+                'strFilter = "mdb_history*.mdb"
+            Case DBGeneralInstanceType.DB_ARCHIVE_EDI_HISTORY
+                strFilter = "mdb_edihistory??.mdb"
+                strFilter = "mdb_edihistory*.mdb"
+            Case Else
+                strFilter = "*.mdb"
+        End Select
+
+        Select Case g_objDatabaseProperty.getDatabaseType
+
+            Case CDatabaseProperty.DatabaseType.SQLSERVER
+
+
+                Return GetArchiveDatabasesSQL_F(DBArchiveInstance)
+
+            Case CDatabaseProperty.DatabaseType.ACCESS97, _
+                 CDatabaseProperty.DatabaseType.ACCESS2003
+
+                strDatabase = Dir(g_objDatabaseProperty.getDatabasePathFromPersistence.TrimEnd("\") + "\" + strFilter)
+
+                Do
+                    Select Case DBArchiveInstance
+                        Case DBGeneralInstanceType.DB_ARCHIVE_REPERTORY
+
+                            If IsRepertoryDB_F(strDatabase) Then
+                                strDatabases = strDatabases + strDatabase + DATABASES_DELIM
+                                obj.Add(strDatabase)
+                            End If
+
+                        Case DBGeneralInstanceType.DB_ARCHIVE_HISTORY
+
+                            If IsHistoryDB_F(strDatabase) Then
+                                strDatabases = strDatabases + strDatabase + DATABASES_DELIM
+                                obj.Add(strDatabase)
+                            End If
+
+                        Case DBGeneralInstanceType.DB_ARCHIVE_EDI_HISTORY
+
+                            If IsEDIHistoryDB_F(strDatabase) Then
+                                strDatabases = strDatabases + strDatabase + DATABASES_DELIM
+                                obj.Add(strDatabase)
+                            End If
+
+                        Case DBGeneralInstanceType.DB_CP_DATABASES
+
+                            If IsCPDatabase_F(strDatabase) Then
+                                strDatabases = strDatabases + strDatabase + DATABASES_DELIM
+                                obj.Add(strDatabase)
+                            End If
+
+                        Case Else
+
+                            If strDatabase.Trim(" ").Length > 0 Then
+                                strDatabases = strDatabases + strDatabase + DATABASES_DELIM
+                                obj.Add(strDatabase)
+                            End If
+
+                    End Select
+
+                    strDatabase = Dir()
+
+                    If strDatabase Is Nothing Then Exit Do
+
+                Loop While strDatabase.Trim.Length > 0
+
+                If strDatabases.Length > 0 Then
+                    strDatabases = strDatabases.TrimEnd(DATABASES_DELIM)
+                End If
+
+                'Return strDatabases
+                Return obj.ToArray
+
+            Case Else
+
+                'Return strDatabases
+                Return obj.ToArray
+        End Select
+
+
+
+    End Function
+
+
+    Public Function IsServiceRunning(ByVal ServiceName As String) As Boolean
+
+        IsServiceRunning = IsServiceRunning_F(ServiceName)
+
+    End Function
+
+    Public Function GetDBInstanceTypeFromDBName(ByVal DatabaseName As String) As DBInstanceType
+
+        Dim strDatabaseName As String = DatabaseName.Trim(" ").ToUpper
+
+        If String.Equals(strDatabaseName.Substring(strDatabaseName.Length - 4), ".mdb".ToUpper) Then
+            strDatabaseName = strDatabaseName.Substring(0, strDatabaseName.Length - 4)
+        End If
+
+        Select Case strDatabaseName
+
+            Case "mdb_sadbel".ToUpper
+
+                Return CDatasource.DBInstanceType.DATABASE_SADBEL
+
+            Case "mdb_data".ToUpper
+
+                Return CDatasource.DBInstanceType.DATABASE_DATA
+
+            Case "edifact".ToUpper
+
+                Return CDatasource.DBInstanceType.DATABASE_EDIFACT
+
+            Case "mdb_scheduler".ToUpper
+
+                Return CDatasource.DBInstanceType.DATABASE_SCHEDULER
+
+            Case "TemplateCP".ToUpper
+
+                Return CDatasource.DBInstanceType.DATABASE_TEMPLATE
+
+            Case "mdb_taric".ToUpper
+
+                Return CDatasource.DBInstanceType.DATABASE_TARIC
+
+            Case Else
+
+                If IsRepertoryDB_F(strDatabaseName) Then
+
+                    Return CDatasource.DBInstanceType.DATABASE_REPERTORY
+
+                ElseIf IsHistoryDB_F(strDatabaseName) Then
+
+                    Return CDatasource.DBInstanceType.DATABASE_HISTORY
+
+                ElseIf IsEDIHistoryDB_F(strDatabaseName) Then
+
+                    Return CDatasource.DBInstanceType.DATABASE_EDI_HISTORY
+
+                Else
+                    Return CDatasource.DBInstanceType.DATABASE_OTHER
+                End If
+
+        End Select
+
+    End Function
+
+    Public Function GetArchiveDatabases(ByVal DBArchiveInstance As DBGeneralInstanceType) As String()
+
+        Dim strFilter As String
+        Dim strDatabase As String
+        Dim strDatabases As String
+        Dim obj As New List(Of String)
+
+        strDatabases = ""
+
+        Select Case DBArchiveInstance
+            Case DBGeneralInstanceType.DB_ARCHIVE_REPERTORY
+                strFilter = "mdb_repertory_????.mdb"
+                strFilter = "mdb_repertory_*.mdb"
+            Case DBGeneralInstanceType.DB_ARCHIVE_HISTORY
+                strFilter = "mdb_history??.mdb"
+                'strFilter = "mdb_history*.mdb"
+            Case DBGeneralInstanceType.DB_ARCHIVE_EDI_HISTORY
+                strFilter = "mdb_edihistory??.mdb"
+                strFilter = "mdb_edihistory*.mdb"
+            Case Else
+
+                Throw New ClearingPointException("Error in GetArchiveDatabases - Invalid DBGeneralInstanceType.")
+
+                Return obj.ToArray
+        End Select
+
+        Select Case g_objDatabaseProperty.getDatabaseType
+
+            Case CDatabaseProperty.DatabaseType.SQLSERVER
+
+
+                Return GetArchiveDatabasesSQL_F(DBArchiveInstance)
+
+            Case CDatabaseProperty.DatabaseType.ACCESS97, _
+                 CDatabaseProperty.DatabaseType.ACCESS2003
+
+                strDatabase = Dir(g_objDatabaseProperty.getDatabasePathFromPersistence.TrimEnd("\") + "\" + strFilter)
+
+                Do
+                    Select Case DBArchiveInstance
+                        Case DBGeneralInstanceType.DB_ARCHIVE_REPERTORY
+
+                            If IsRepertoryDB_F(strDatabase) Then
+                                strDatabases = strDatabases + strDatabase + DATABASES_DELIM
+                                obj.Add(strDatabase)
+                            End If
+
+                        Case DBGeneralInstanceType.DB_ARCHIVE_HISTORY
+
+                            If IsHistoryDB_F(strDatabase) Then
+                                strDatabases = strDatabases + strDatabase + DATABASES_DELIM
+                                obj.Add(strDatabase)
+                            End If
+
+                        Case DBGeneralInstanceType.DB_ARCHIVE_EDI_HISTORY
+
+                            If IsEDIHistoryDB_F(strDatabase) Then
+                                strDatabases = strDatabases + strDatabase + DATABASES_DELIM
+                                obj.Add(strDatabase)
+                            End If
+
+                        Case Else
+
+                            Return obj.ToArray
+                    End Select
+
+                    strDatabase = Dir()
+
+                    If strDatabase Is Nothing Then Exit Do
+
+                Loop While strDatabase.Trim.Length > 0
+
+                If strDatabases.Length > 0 Then
+                    strDatabases = strDatabases.TrimEnd(DATABASES_DELIM)
+                End If
+
+                'Return strDatabases
+                Return obj.ToArray
+
+            Case Else
+
+                'Return strDatabases
+                Return obj.ToArray
+        End Select
+
+
+
+    End Function
+
+    Public Function IsDatabaseExisting(ByVal DBInstanceType As CubeLibDataSource.CDatasource.DBInstanceType, _
+                              Optional ByVal DatabaseYear As String = "", _
+                              Optional ByVal OtherDatabaseName As String = "") As Boolean
+
+        Dim strDatabaseName As String
+
+        strDatabaseName = getDatabaseName(DBInstanceType, DatabaseYear, g_objDatabaseProperty.getDatabaseType, OtherDatabaseName)
+
+        Select Case g_objDatabaseProperty.getDatabaseType
+
+            Case CDatabaseProperty.DatabaseType.SQLSERVER
+
+                Return CheckDatabaseExists_F(g_objDatabaseProperty.getServerName, strDatabaseName)
+
+            Case CDatabaseProperty.DatabaseType.ACCESS97, _
+                 CDatabaseProperty.DatabaseType.ACCESS2003
+
+                Return File.Exists(g_objDatabaseProperty.getDatabasePathFromPersistence.TrimEnd("\") + "\" + strDatabaseName)
+
+            Case Else
+                Return False
+        End Select
+
+    End Function
+
+    Public Function IsCPDatabase(ByVal DBName As String) As Boolean
+
+        Return IsCPDatabase_F(DBName)
+
+    End Function
+
+    Public Function IsEDIHistoryDB(ByVal DBName As String) As Boolean
+
+        Return IsEDIHistoryDB_F(DBName)
+
+    End Function
+
+    Public Function IsHistoryDB(ByVal DBName As String) As Boolean
+
+        Return IsHistoryDB_F(DBName)
+
+    End Function
+
+    Public Function IsRepertoryDB(ByVal DBName As String) As Boolean
+
+        Return IsRepertoryDB_F(DBName)
+
+    End Function
+
+    Public Function ExecuteAppendChunkFromFile(ByVal TableName As String, _
+                                               ByVal FieldName As String, _
+                                               ByVal PathFileName As String, _
+                                               ByVal Database As DBInstanceType, _
+                                      Optional ByVal Year As String = "", _
+                                      Optional ByVal OtherDatabaseName As String = "") As Boolean
+
+        Dim command As DbCommand
+        Dim strDBName As String
+        Dim conTemp As DbConnection
+        Dim strCommand As String
+
+        If g_objDatabaseProperty Is Nothing Then
+            Throw New ClearingPointException("Error in ExecuteGetChunk - Persistence path was not initialized.")
+        End If
+
+        strDBName = getDatabaseName(Database, Year, g_objDatabaseProperty.getDatabaseType(), OtherDatabaseName)
+        conTemp = getConnection(strDBName, g_objDatabaseProperty, False)
+
+        Try
+
+            strCommand = "INSERT INTO " + TableName + " VALUES (@" + FieldName + ") "
+            Select Case g_objDatabaseProperty.getDatabaseType()
+                Case CDatabaseProperty.DatabaseType.ACCESS97,
+                    CDatabaseProperty.DatabaseType.ACCESS2003
+
+                    command = New OleDbCommand(strCommand, conTemp)
+
+                Case CDatabaseProperty.DatabaseType.SQLSERVER
+                    command = New SqlCommand(strCommand, conTemp)
+
+                Case Else
+
+                    Throw New ClearingPointException("Error in ExecuteGetChunk - Unknown Database Type.")
+            End Select
+
+            Dim ms As New MemoryStream()
+
+            Image.FromFile(PathFileName).Save(ms, System.Drawing.Imaging.ImageFormat.Bmp)
+
+            Dim data As Byte() = ms.GetBuffer()
+            Dim p As New SqlParameter("@photo", SqlDbType.Image)
+            p.Value = data
+            command.Parameters.Add(p)
+            command.ExecuteNonQuery()
+
+        Catch ex As Exception
+            Err.Raise(vbObjectError + 513, Me.GetType().Name, ex.Message)
+            Return False
+        End Try
+
+        Return True
+
+    End Function
+
+    Public Function ExecuteGetChunkToFile(ByVal SQLCommandGetChunk As String, _
+                                          ByVal PathFileName As String, _
+                                    ByVal Database As DBInstanceType, _
+                            Optional ByVal Year As String = "", _
+                            Optional ByVal OtherDatabaseName As String = "") As Boolean
+
+        Dim command As DbCommand
+        Dim strDBName As String
+        Dim conTemp As DbConnection
+        Dim imageData As Byte()
+
+        If g_objDatabaseProperty Is Nothing Then
+            Throw New ClearingPointException("Error in ExecuteGetChunk - Persistence path was not initialized.")
+        End If
+
+        strDBName = getDatabaseName(Database, Year, g_objDatabaseProperty.getDatabaseType(), OtherDatabaseName)
+        conTemp = getConnection(strDBName, g_objDatabaseProperty, False)
+
+        Try
+
+            Select Case g_objDatabaseProperty.getDatabaseType()
+                Case CDatabaseProperty.DatabaseType.ACCESS97,
+                    CDatabaseProperty.DatabaseType.ACCESS2003
+
+                    command = New OleDbCommand(SQLCommandGetChunk, conTemp)
+
+                Case CDatabaseProperty.DatabaseType.SQLSERVER
+                    command = New SqlCommand(SQLCommandGetChunk, conTemp)
+
+                Case Else
+
+                    Throw New ClearingPointException("Error in ExecuteGetChunk - Unknown Database Type.")
+            End Select
+
+            imageData = DirectCast(command.ExecuteScalar(), Byte())
+
+            If Not imageData Is Nothing Then
+                Using ms As New MemoryStream(imageData, 0, imageData.Length)
+                    ms.Write(imageData, 0, imageData.Length)
+
+                    Image.FromStream(ms, True).Save(PathFileName, System.Drawing.Imaging.ImageFormat.Bmp)
+                End Using
+            End If
+
+        Catch ex As Exception
+            Err.Raise(vbObjectError + 513, Me.GetType().Name, ex.Message)
+            Return False
+        End Try
+
+        Return True
+
+    End Function
+    ''' <summary>
+    ''' DELETE, UPDATE and INSERT via SQL Script
+    ''' </summary>
     Public Function ExecuteNonQuery(ByVal SQL As String, _
                                     ByVal Database As DBInstanceType, _
-                           Optional ByVal Year As String = vbNullString) As Integer
+                           Optional ByVal Year As String = "") As Integer
 
         Dim conObjects() As Object
         Dim rowsAffected As Integer
 
         Try
             conObjects = getConnectionObjects(SQL, Database, False, False, Year)
+
             rowsAffected = conObjects(1).ExecuteNonQuery()
 
             conObjects(1).Dispose()
+            conObjects(1) = Nothing
+
             conObjects(0).Close()
             conObjects(0).Dispose()
+            conObjects(0) = Nothing
+
         Catch ex As Exception
             Err.Raise(vbObjectError + 513, Me.GetType().Name, ex.Message)
             Return FAILURE
@@ -625,7 +1441,7 @@ Public Class CDatasource
     ''' <summary>
     ''' Update a selected ADODB.Recordset.Row for mdb_sadbel
     ''' </summary>
-    Public Function UpdateSadbel(ByRef RecordsetToUpdate As CRecordset, _
+    Public Function UpdateSadbel(ByRef RecordsetToUpdate As ADODB.Recordset,
                                  ByVal TableName As SadbelTableType) As Integer
 
         Return FindAndUpdateRow(RecordsetToUpdate, TableName, Me)
@@ -634,7 +1450,7 @@ Public Class CDatasource
     ''' <summary>
     ''' Update a selected ADODB.Recordset.Row for edifact
     ''' </summary>
-    Public Function UpdateEdifact(ByRef RecordsetToUpdate As CRecordset, _
+    Public Function UpdateEdifact(ByRef RecordsetToUpdate As ADODB.Recordset,
                                   ByVal TableName As EdifactTableType) As Integer
 
         Return FindAndUpdateRow(RecordsetToUpdate, TableName, Me)
@@ -643,7 +1459,7 @@ Public Class CDatasource
     ''' <summary>
     ''' Update a selected ADODB.Recordset.Row for mdb_data
     ''' </summary>
-    Public Function UpdateData(ByRef RecordsetToUpdate As CRecordset, _
+    Public Function UpdateData(ByRef RecordsetToUpdate As ADODB.Recordset,
                                ByVal TableName As DataTableType) As Integer
 
         Return FindAndUpdateRow(RecordsetToUpdate, TableName, Me)
@@ -652,9 +1468,9 @@ Public Class CDatasource
     ''' <summary>
     ''' Update a selected ADODB.Recordset.Row for mdb_EDIHistoryXX
     ''' </summary>
-    Public Function UpdateEdifactHistory(ByRef RecordsetToUpdate As CRecordset, _
+    Public Function UpdateEdifactHistory(ByRef RecordsetToUpdate As ADODB.Recordset,
                                          ByVal TableName As EdifactTableType,
-                                Optional ByVal Year As String = vbNullString) As Integer
+                                Optional ByVal Year As String = "") As Integer
 
         Return FindAndUpdateRow(RecordsetToUpdate, TableName, Me, Year)
     End Function
@@ -662,9 +1478,9 @@ Public Class CDatasource
     ''' <summary>
     ''' Update a selected ADODB.Recordset.Row for mdb_historyXX
     ''' </summary>
-    Public Function UpdateSadbelHistory(ByRef RecordsetToUpdate As CRecordset, _
+    Public Function UpdateSadbelHistory(ByRef RecordsetToUpdate As ADODB.Recordset,
                                         ByVal TableName As SadbelHistoryTableType,
-                               Optional ByVal Year As String = vbNullString) As Integer
+                               Optional ByVal Year As String = "") As Integer
 
         Return FindAndUpdateRow(RecordsetToUpdate, TableName, Me, Year)
     End Function
@@ -672,9 +1488,9 @@ Public Class CDatasource
     ''' <summary>
     ''' Update a selected ADODB.Recordset.Row for mdb_RepertoryXXXX
     ''' </summary>
-    Public Function UpdateRepertory(ByRef RecordsetToUpdate As CRecordset, _
+    Public Function UpdateRepertory(ByRef RecordsetToUpdate As ADODB.Recordset,
                                     ByVal TableName As RepertoryTableType,
-                           Optional ByVal Year As String = vbNullString) As Integer
+                           Optional ByVal Year As String = "") As Integer
 
         Return FindAndUpdateRow(RecordsetToUpdate, TableName, Me, Year)
     End Function
@@ -682,7 +1498,17 @@ Public Class CDatasource
     ''' <summary>
     ''' Update a selected ADODB.Recordset.Row for TemplateCP
     ''' </summary>
-    Public Function UpdateTemplateCP(ByRef RecordsetToUpdate As CRecordset, _
+    Public Function UpdateOtherDB(ByRef RecordsetToUpdate As ADODB.Recordset,
+                                  ByVal TableName As String, _
+                                  ByVal OtherDatabaseName As String) As Integer
+
+        Return FindAndUpdateRowOther(RecordsetToUpdate, TableName, Me, OtherDatabaseName)
+    End Function
+
+    ''' <summary>
+    ''' Update a selected ADODB.Recordset.Row for TemplateCP
+    ''' </summary>
+    Public Function UpdateTemplateCP(ByRef RecordsetToUpdate As ADODB.Recordset,
                                      ByVal TableName As TemplateCPTableType) As Integer
 
         Return FindAndUpdateRow(RecordsetToUpdate, TableName, Me)
@@ -691,8 +1517,8 @@ Public Class CDatasource
     ''' <summary>
     ''' Update a selected ADODB.Recordset.Row for Scheduler
     ''' </summary>
-    Public Function UpdateScheduler(ByRef RecordsetToUpdate As CRecordset, _
-                                     ByVal TableName As SchedulerTableType) As Integer
+    Public Function UpdateScheduler(ByRef RecordsetToUpdate As ADODB.Recordset,
+                                    ByVal TableName As SchedulerTableType) As Integer
 
         Return FindAndUpdateRow(RecordsetToUpdate, TableName, Me)
     End Function
@@ -700,8 +1526,8 @@ Public Class CDatasource
     ''' <summary>
     ''' Update a selected ADODB.Recordset.Row for Taric
     ''' </summary>
-    Public Function UpdateTaric(ByRef RecordsetToUpdate As CRecordset, _
-                                     ByVal TableName As TaricTableType) As Integer
+    Public Function UpdateTaric(ByRef RecordsetToUpdate As ADODB.Recordset,
+                                ByVal TableName As TaricTableType) As Integer
 
         Return FindAndUpdateRow(RecordsetToUpdate, TableName, Me)
     End Function
@@ -709,85 +1535,96 @@ Public Class CDatasource
     ''' <summary>
     ''' Insert a selected ADODB.Recordset.Row for mdb_sadbel
     ''' </summary>
-    Public Function InsertSadbel(ByRef RecordsetToInsert As CRecordset, _
+    Public Function InsertSadbel(ByRef ADORecordsetToInsert As ADODB.Recordset, _
                                  ByVal TableName As SadbelTableType) As Integer
 
-        Return InsertRow(RecordsetToInsert, TableName, Me)
+        Return InsertRow(ADORecordsetToInsert, TableName, Me)
     End Function
 
     ''' <summary>
     ''' Insert a selected ADODB.Recordset.Row for edifact
     ''' </summary>
-    Public Function InsertEdifact(ByRef RecordsetToInsert As CRecordset, _
+    Public Function InsertEdifact(ByRef ADORecordsetToInsert As ADODB.Recordset, _
                                   ByVal TableName As EdifactTableType) As Integer
 
-        Return InsertRow(RecordsetToInsert, TableName, Me)
+        Return InsertRow(ADORecordsetToInsert, TableName, Me)
     End Function
 
     ''' <summary>
     ''' Insert a selected ADODB.Recordset.Row for mdb_data
     ''' </summary>
-    Public Function InsertData(ByRef RecordsetToInsert As CRecordset, _
+    Public Function InsertData(ByRef ADORecordsetToInsert As ADODB.Recordset, _
                                ByVal TableName As DataTableType) As Integer
 
-        Return InsertRow(RecordsetToInsert, TableName, Me)
+        Return InsertRow(ADORecordsetToInsert, TableName, Me)
     End Function
 
     ''' <summary>
     ''' Insert a selected ADODB.Recordset.Row for EdiHistoryXX
     ''' </summary>
-    Public Function InsertEdifactHistory(ByRef RecordsetToInsert As CRecordset, _
+    Public Function InsertEdifactHistory(ByRef ADORecordsetToInsert As ADODB.Recordset, _
                                          ByVal TableName As EdifactTableType,
-                                Optional ByVal Year As String = vbNullString) As Integer
+                                Optional ByVal Year As String = "") As Integer
 
-        Return InsertRow(RecordsetToInsert, TableName, Me, Year)
+        Return InsertRow(ADORecordsetToInsert, TableName, Me, Year)
     End Function
 
     ''' <summary>
     ''' Insert a selected ADODB.Recordset.Row for mdb_historyXX
     ''' </summary>
-    Public Function InsertSadbelHistory(ByRef RecordsetToInsert As CRecordset, _
+    Public Function InsertSadbelHistory(ByRef ADORecordsetToInsert As ADODB.Recordset, _
                                         ByVal TableName As SadbelHistoryTableType,
-                               Optional ByVal Year As String = vbNullString) As Integer
+                               Optional ByVal Year As String = "") As Integer
 
-        Return InsertRow(RecordsetToInsert, TableName, Me, Year)
+        Return InsertRow(ADORecordsetToInsert, TableName, Me, Year)
     End Function
 
     ''' <summary>
     ''' Insert a selected ADODB.Recordset.Row for mdb_repertoryXXXX
     ''' </summary>
-    Public Function InsertRepertory(ByRef RecordsetToInsert As CRecordset, _
+    Public Function InsertRepertory(ByRef ADORecordsetToInsert As ADODB.Recordset, _
                                     ByVal TableName As RepertoryTableType,
-                           Optional ByVal Year As String = vbNullString) As Integer
+                           Optional ByVal Year As String = "") As Integer
 
-        Return InsertRow(RecordsetToInsert, TableName, Me, Year)
+        Return InsertRow(ADORecordsetToInsert, TableName, Me, Year)
     End Function
 
     ''' <summary>
     ''' Insert a selected ADODB.Recordset.Row for TemplateCP
     ''' </summary>
-    Public Function InsertTemplateCP(ByRef RecordsetToInsert As CRecordset, _
+    Public Function InsertOtherDB(ByRef ADORecordsetToInsert As ADODB.Recordset, _
+                                  ByVal TableName As String, _
+                                  ByVal OtherDatabaseName As String) As Integer
+
+        Return InsertRowOther(ADORecordsetToInsert, TableName, Me, OtherDatabaseName)
+
+    End Function
+
+    ''' <summary>
+    ''' Insert a selected ADODB.Recordset.Row for TemplateCP
+    ''' </summary>
+    Public Function InsertTemplateCP(ByRef ADORecordsetToInsert As ADODB.Recordset, _
                                      ByVal TableName As TemplateCPTableType) As Integer
 
-        Return InsertRow(RecordsetToInsert, TableName, Me)
+        Return InsertRow(ADORecordsetToInsert, TableName, Me)
     End Function
 
     ''' <summary>
     ''' Insert a selected ADODB.Recordset.Row for Scheduler
     ''' </summary>
-    Public Function InsertScheduler(ByRef RecordsetToInsert As CRecordset, _
+    Public Function InsertScheduler(ByRef ADORecordsetToInsert As ADODB.Recordset, _
                                     ByVal TableName As SchedulerTableType) As Integer
 
-        Return InsertRow(RecordsetToInsert, TableName, Me)
+        Return InsertRow(ADORecordsetToInsert, TableName, Me)
     End Function
 
     ''' <summary>
     ''' Insert a selected ADODB.Recordset.Row for Taric
     ''' </summary>
-    Public Function InsertTaric(ByRef RecordsetToInsert As CRecordset, _
-                                    ByVal TableName As TaricTableType) As Integer
+    Public Function InsertTaric(ByRef ADORecordsetToInsert As ADODB.Recordset, _
+                                ByVal TableName As TaricTableType) As Integer
 
-        Return InsertRow(RecordsetToInsert, TableName, Me)
+        Return InsertRow(ADORecordsetToInsert, TableName, Me)
     End Function
 
     ''' <summary>
@@ -797,15 +1634,16 @@ Public Class CDatasource
     Public Function ExecuteQuery(ByVal SQL As String, _
                                  ByVal Database As DBInstanceType, _
                         Optional ByVal UseDataShaping As Boolean = False, _
-                        Optional ByVal Year As String = vbNullString) As Recordset
+                        Optional ByVal Year As String = "", _
+                        Optional ByVal OtherDatabaseName As String = "") As Recordset
 
         Dim rstADO As New Recordset
         Dim conObjects() As Object
 
-        'AddToTrace("Start of execute query: " & SQL, True)
+        'AddToTrace("Start of execute query: " + SQL, True)
 
         Try
-            conObjects = getConnectionObjects(SQL, Database, UseDataShaping, True, Year)
+            conObjects = getConnectionObjects(SQL, Database, UseDataShaping, True, Year, OtherDatabaseName)
 
             'If conObjects(2).Tables.Count > 0 AndAlso conObjects(2).Tables(0).Rows.Count > 0 Then
             If Not UseDataShaping Then
@@ -829,7 +1667,10 @@ Public Class CDatasource
                         For colIdx As Integer = 0 To columns.Count - 1
                             fields(colIdx).Value = row(colIdx)
                         Next
+
+                        rstADO.Update()
                     Next
+
                 End If
             Else
                 If conObjects(2).Tables.Count > 0 Then
@@ -860,7 +1701,7 @@ Public Class CDatasource
 
                         subTableName = subTableName.Replace("Table", vbNullString)
 
-                        AddToTrace("Populating datashape child tables with data, TABLENAME: " & subTableName)
+                        AddToTrace("Populating datashape child tables with data, TABLENAME: " + subTableName)
 
                         rstADOChild = New Recordset
 
@@ -878,13 +1719,13 @@ Public Class CDatasource
                         rstADOChild.Open(System.Reflection.Missing.Value, System.Reflection.Missing.Value, CursorTypeEnum.adOpenKeyset, LockTypeEnum.adLockOptimistic, 0)
 
                         For Each row As DataRow In table.Rows
-                            'Debug.Print(table.TableName & " row count: " & table.Rows.Count)
+                            'Debug.Print(table.TableName + " row count: " + table.Rows.Count)
                             rstADOChild.AddNew(System.Reflection.Missing.Value, System.Reflection.Missing.Value)
 
                             Dim strRow As String = vbNullString
                             For colIdx As Integer = 0 To columns.Count - 1
                                 childFields(colIdx).Value = row(colIdx)
-                                strRow = strRow & columns(colIdx).ColumnName & ": " & row(colIdx) & ", "
+                                strRow = strRow + columns(colIdx).ColumnName + ": " + Convert.ToString(row(colIdx)) + ", "
                             Next
                             strRow = strRow & vbCrLf
                             Debug.Print(strRow)
@@ -898,9 +1739,15 @@ Public Class CDatasource
             End If
 
             conObjects(2).Dispose()
+            conObjects(2) = Nothing
+
             conObjects(1).Dispose()
+            conObjects(1) = Nothing
+
             conObjects(0).Close()
             conObjects(0).Dispose()
+            conObjects(0) = Nothing
+
         Catch ex As Exception
             Err.Raise(vbObjectError + 514, Me.GetType().Name, ex.Message)
             Return rstADO
@@ -920,6 +1767,8 @@ Public Class CDatasource
                 ReDim Preserve strColumns(idx)
                 strColumns(idx) = scol.ColumnName
                 idx = idx + 1
+            Else
+                Debug.Assert(False)
             End If
         Next
 
@@ -981,6 +1830,7 @@ Public Class CDatasource
         Return 0
     End Function
 
+
 #Region " IDisposable Support "
     ' Do not change or add Overridable to these methods. 
     ' Put cleanup code in Dispose(ByVal disposing As Boolean). 
@@ -988,12 +1838,15 @@ Public Class CDatasource
         Dispose(True)
         GC.SuppressFinalize(Me)
     End Sub
+
     Protected Overrides Sub Finalize()
+        m_objBackgroundWorker.Dispose()
+
         Dispose(False)
         MyBase.Finalize()
+
+
     End Sub
 #End Region
 
 End Class
-
-
