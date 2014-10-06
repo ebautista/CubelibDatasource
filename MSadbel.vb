@@ -12,10 +12,7 @@ Module MSadbel
                                           ByRef Source As Object,
                                           ByVal OtherDatabaseName As String) As Integer
 
-        Dim objRecord As CubeLibDataSource.DNetRecordset
-
-        objRecord = New CubeLibDataSource.DNetRecordset
-        objRecord.InitializeClass(RecordsetToUpdate, RecordsetToUpdate.BookMark)
+        Dim objRecord As New DNetRecordset(RecordsetToUpdate, RecordsetToUpdate.Bookmark)
 
         Dim adoRow As Recordset = objRecord.Recordset
         Dim command As DbCommand
@@ -95,10 +92,7 @@ Module MSadbel
                                      ByRef Source As Object,
                             Optional ByVal Year As String = "") As Integer
 
-        Dim objRecord As CubeLibDataSource.DNetRecordset
-
-        objRecord = New CubeLibDataSource.DNetRecordset
-        objRecord.InitializeClass(RecordsetToUpdate, RecordsetToUpdate.Bookmark)
+        Dim objRecord As New DNetRecordset(RecordsetToUpdate, RecordsetToUpdate.Bookmark)
 
         Dim adoRow As Recordset = objRecord.Recordset
         Dim command As DbCommand
@@ -175,10 +169,7 @@ Module MSadbel
                                    ByVal TableName As String,
                                    ByRef Source As Object,
                                    ByVal OtherDatabaseName As String) As Integer
-        Dim objRecord As CubeLibDataSource.DNetRecordset
-
-        objRecord = New CubeLibDataSource.DNetRecordset
-        objRecord.InitializeClass(ADORecordsetToInsert, ADORecordsetToInsert.Bookmark)
+        Dim objRecord As New DNetRecordset(ADORecordsetToInsert, ADORecordsetToInsert.Bookmark)
 
         Dim adoRow As Recordset = objRecord.Recordset
         Dim command As DbCommand
@@ -250,10 +241,7 @@ Module MSadbel
                               ByRef Source As Object,
                      Optional ByVal Year As String = "") As Integer
 
-        Dim objRecord As CubeLibDataSource.DNetRecordset
-
-        objRecord = New CubeLibDataSource.DNetRecordset
-        objRecord.InitializeClass(ADORecordsetToInsert, ADORecordsetToInsert.Bookmark)
+        Dim objRecord As New CubeLibDataSource.DNetRecordset(ADORecordsetToInsert, ADORecordsetToInsert.Bookmark)
 
         Dim adoRow As Recordset = objRecord.Recordset
         Dim command As DbCommand
