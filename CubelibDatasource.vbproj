@@ -84,6 +84,8 @@
     <Compile Include="ClearingPointException.vb" />
     <Compile Include="ConvertToRs.vb" />
     <Compile Include="CProperty.vb" />
+    <Compile Include="DNetOperator.vb" />
+    <Compile Include="DNetPickList.vb" />
     <Compile Include="DNetRecordset.vb" />
     <Compile Include="MDatabases.vb" />
     <Compile Include="MSadbel.vb" />
