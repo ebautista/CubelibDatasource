@@ -25,7 +25,7 @@ Public Class DNetPickList
         RecordUnchaged
     End Enum
 
-    Property Operators As Dictionary(Of Integer, DNetOperator)
+    Private Operators As Dictionary(Of Integer, DNetOperator)
 
     Public Function GetSelected() As DNetOperator
         For Each item As KeyValuePair(Of Integer, DNetOperator) In Operators
@@ -75,7 +75,11 @@ Public Class DNetPickList
         Loop
     End Sub
 
-    Public Sub UpdateRecord(ByRef member As DNetOperator)
+    Public Function GetRecord(ByVal pk As Integer) As DNetOperator
+        Return Operators.Item(pk)
+    End Function
+
+    Public Sub UpdateRecord(ByVal member As DNetOperator)
         If member Is Nothing Then Return
 
         If member.Status = RecordStatus.RecordNew Then
@@ -88,7 +92,7 @@ Public Class DNetPickList
         Operators.Item(member.Id) = member
     End Sub
 
-    Public Function AddRecord(ByRef member As DNetOperator) As Integer
+    Public Function AddRecord(ByVal member As DNetOperator) As Integer
         Dim minTempPk As Integer = 0
 
         For Each index As Integer In Operators.Keys
@@ -104,18 +108,118 @@ Public Class DNetPickList
         Return member.Id
     End Function
 
-    Public Sub DeleteRecord(ByRef member As DNetOperator)
+    Public Sub DeleteRecord(ByVal pk As Integer)
         Dim item As DNetOperator
 
-        If Operators.ContainsKey(member.Id) Then
-            item = Operators.Item(member.Id)
+        If Operators.ContainsKey(pk) Then
+            item = Operators.Item(pk)
 
             If item.Status = RecordStatus.RecordNew Then
-                Operators.Remove(member.Id)
+                Operators.Remove(pk)
             Else
                 item.Status = RecordStatus.RecordDeleted
             End If
         End If
+    End Sub
+
+    Public Sub CommitChanges(ByVal PersistencePath As String)
+        Dim objSource As New CDatasource
+        Dim strCommand As String
+
+        objSource.UpdatePersistence(PersistencePropertyType.MDB_PATH, PersistencePath)
+
+        For Each item As DNetOperator In Operators.Values
+            Select Case item.Status
+                Case RecordStatus.RecordUnchaged
+                    ' Do Nothing
+
+                Case RecordStatus.RecordDeleted
+                    strCommand = vbNullString
+                    strCommand = strCommand & "DELETE "
+                    strCommand = strCommand & "FROM "
+                    strCommand = strCommand & "OPERATORS "
+                    strCommand = strCommand & "WHERE [Operator_ID] = " & item.Id
+                    objSource.ExecuteNonQuery(strCommand, CDatasource.DBInstanceType.DATABASE_SADBEL)
+
+                Case RecordStatus.RecordNew
+                    strCommand = vbNullString
+                    strCommand = strCommand & "INSERT INTO "
+                    strCommand = strCommand & "OPERATORS "
+                    strCommand = strCommand & "("
+                    strCommand = strCommand & "[DTYPE],"
+                    strCommand = strCommand & "[OPERATOR_TYPE],"
+                    strCommand = strCommand & "[OPERATOR_TABTYPE],"
+                    strCommand = strCommand & "[OPERATOR_VENTURENUMBER],"
+                    strCommand = strCommand & "[OPERATOR_DECLARANTSTATUS],"
+                    strCommand = strCommand & "[OPERATOR_REGISTRATIONNUMBER],"
+                    strCommand = strCommand & "[OPERATOR_CAPACITY],"
+                    strCommand = strCommand & "[OPERATOR_AUTHORISEDIDENTITY],"
+                    strCommand = strCommand & "[OPERATOR_VENTURENAME],"
+                    strCommand = strCommand & "[OPERATOR_ADDRESS1],"
+                    strCommand = strCommand & "[OPERATOR_ADDRESS2],"
+                    strCommand = strCommand & "[OPERATOR_POSTALCODE],"
+                    strCommand = strCommand & "[OPERATOR_STATEPROVINCE],"
+                    strCommand = strCommand & "[OPERATOR_CITY],"
+                    strCommand = strCommand & "[OPERATOR_COUNTRY],"
+                    strCommand = strCommand & "[OPERATOR_CONTACTPERSONNAME],"
+                    strCommand = strCommand & "[OPERATOR_CONTACTTELNUMBER],"
+                    strCommand = strCommand & "[OPERATOR_CONTACTFAXNUMBER],"
+                    strCommand = strCommand & "[OPERATOR_CONTACTEMAIL]"
+                    strCommand = strCommand & ") "
+                    strCommand = strCommand & "VALUES "
+                    strCommand = strCommand & "("
+                    strCommand = strCommand & "" & item.DType & ", "
+                    strCommand = strCommand & "" & item.OperatorType & ", "
+                    strCommand = strCommand & "" & item.OperatorTabType & ", "
+                    strCommand = strCommand & "'" & item.OperatorVentureNumber & "', "
+                    strCommand = strCommand & "'" & item.OperatorDeclarantStatus & "', "
+                    strCommand = strCommand & "'" & item.OperatorRegistrationNumber & "', "
+                    strCommand = strCommand & "'" & item.OperatorCapacity & "', "
+                    strCommand = strCommand & "'" & item.OperatorAuthorisedIdentity & "', "
+                    strCommand = strCommand & "'" & item.OperatorVentureName & "', "
+                    strCommand = strCommand & "'" & item.OperatorAddress1 & "', "
+                    strCommand = strCommand & "'" & item.OperatorAddress2 & "', "
+                    strCommand = strCommand & "'" & item.OperatorPostalCode & "', "
+                    strCommand = strCommand & "'" & item.OperatorStateProvince & "', "
+                    strCommand = strCommand & "'" & item.OperatorCity & "', "
+                    strCommand = strCommand & "'" & item.OperatorCountry & "', "
+                    strCommand = strCommand & "'" & item.OperatorContactPersonName & "', "
+                    strCommand = strCommand & "'" & item.OperatorContactPhoneNumber & "', "
+                    strCommand = strCommand & "'" & item.OperatorContactPersonFaxNumber & "', "
+                    strCommand = strCommand & "'" & item.OperatorContactEmail & "' "
+                    strCommand = strCommand & ")"
+                    objSource.ExecuteNonQuery(strCommand, CDatasource.DBInstanceType.DATABASE_SADBEL)
+
+                Case RecordStatus.RecordUpdated
+                    strCommand = vbNullString
+                    strCommand = strCommand & "UPDATE OP "
+                    strCommand = strCommand & "SET "
+                    strCommand = strCommand & "[DTYPE] = " & item.DType & ", "
+                    strCommand = strCommand & "[OPERATOR_TYPE] = " & item.OperatorType & ", "
+                    strCommand = strCommand & "[OPERATOR_TABTYPE] = " & item.OperatorTabType & ", "
+                    strCommand = strCommand & "[OPERATOR_VENTURENUMBER] = '" & item.OperatorVentureNumber & "', "
+                    strCommand = strCommand & "[OPERATOR_DECLARANTSTATUS] = '" & item.OperatorDeclarantStatus & "', "
+                    strCommand = strCommand & "[OPERATOR_REGISTRATIONNUMBER] = '" & item.OperatorRegistrationNumber & "', "
+                    strCommand = strCommand & "[OPERATOR_CAPACITY] = '" & item.OperatorCapacity & "', "
+                    strCommand = strCommand & "[OPERATOR_AUTHORISEDIDENTITY] = '" & item.OperatorAuthorisedIdentity & "', "
+                    strCommand = strCommand & "[OPERATOR_VENTURENAME] = '" & item.OperatorVentureName & "', "
+                    strCommand = strCommand & "[OPERATOR_ADDRESS1] = '" & item.OperatorAddress1 & "', "
+                    strCommand = strCommand & "[OPERATOR_ADDRESS2] = '" & item.OperatorAddress2 & "', "
+                    strCommand = strCommand & "[OPERATOR_POSTALCODE] = '" & item.OperatorPostalCode & "', "
+                    strCommand = strCommand & "[OPERATOR_STATEPROVINCE] = '" & item.OperatorStateProvince & "', "
+                    strCommand = strCommand & "[OPERATOR_CITY] = '" & item.OperatorCity & "', "
+                    strCommand = strCommand & "[OPERATOR_COUNTRY] = '" & item.OperatorCountry & "', "
+                    strCommand = strCommand & "[OPERATOR_CONTACTPERSONNAME] = '" & item.OperatorContactPersonName & "', "
+                    strCommand = strCommand & "[OPERATOR_CONTACTTELNUMBER] = '" & item.OperatorContactPhoneNumber & "', "
+                    strCommand = strCommand & "[OPERATOR_CONTACTFAXNUMBER] = '" & item.OperatorContactPersonFaxNumber & "', "
+                    strCommand = strCommand & "[OPERATOR_CONTACTEMAIL] = '" & item.OperatorContactEmail & "', "
+                    strCommand = strCommand & "FROM "
+                    strCommand = strCommand & "OPERATORS OP "
+                    strCommand = strCommand & "WHERE [Operator_ID] = " & item.Id
+                    objSource.ExecuteNonQuery(strCommand, CDatasource.DBInstanceType.DATABASE_SADBEL)
+
+            End Select
+        Next
     End Sub
 End Class
 
