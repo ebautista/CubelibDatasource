@@ -1,4 +1,6 @@
-﻿<ComClass(DNetPickList.ClassId, DNetPickList.InterfaceId, DNetPickList.EventsId)> _
+﻿Imports ADODB
+
+<ComClass(DNetPickList.ClassId, DNetPickList.InterfaceId, DNetPickList.EventsId)> _
 Public Class DNetPickList
 
 #Region "COM GUIDs"
@@ -27,6 +29,12 @@ Public Class DNetPickList
 
     Private Operators As Dictionary(Of Integer, DNetOperator)
 
+    Public ReadOnly Property OperatorList() As Dictionary(Of Integer, DNetOperator)
+        Get
+            Return Operators
+        End Get
+    End Property
+
     Public Function GetSelected() As DNetOperator
         For Each item As KeyValuePair(Of Integer, DNetOperator) In Operators
             If item.Value.Selected Then
@@ -41,33 +49,35 @@ Public Class DNetPickList
         Dim index As Integer = 0
         Dim member As DNetOperator
 
+        Operators = New Dictionary(Of Integer, DNetOperator)
+
         If record Is Nothing Or record.RecordCount = 0 Then Return
         record.MoveFirst()
 
-        Do While record.EOF
+        Do While Not record.EOF
             member = New DNetOperator
             member.Selected = False
             member.Status = RecordStatus.RecordUnchaged
-            member.Id = record.Fields("Operator_ID").Value
-            member.DType = record.Fields("DType").Value
-            member.OperatorType = record.Fields("Operator_Type").Value
-            member.OperatorTabType = record.Fields("Operator_TabType").Value
-            member.OperatorVentureNumber = record.Fields("Operator_VentureNumber").Value
-            member.OperatorDeclarantStatus = record.Fields("Operator_DeclarantStatus").Value
-            member.OperatorRegistrationNumber = record.Fields("Operator_RegistrationNumber").Value
-            member.OperatorCapacity = record.Fields("Operator_Capacity").Value
-            member.OperatorAuthorisedIdentity = record.Fields("Operator_AuthorisedIdentity").Value
-            member.OperatorVentureName = record.Fields("Operator_VentureName").Value
-            member.OperatorAddress1 = record.Fields("Operator_Address1").Value
-            member.OperatorAddress2 = record.Fields("Operator_Address2").Value
-            member.OperatorPostalCode = record.Fields("Operator_PostalCode").Value
-            member.OperatorStateProvince = record.Fields("Operator_StateProvince").Value
-            member.OperatorCity = record.Fields("Operator_City").Value
-            member.OperatorCountry = record.Fields("Operator_Country").Value
-            member.OperatorContactPersonName = record.Fields("Operator_ContactPersonName").Value
-            member.OperatorContactPhoneNumber = record.Fields("Operator_ContactTelNumber").Value
-            member.OperatorContactPersonFaxNumber = record.Fields("Operator_ContactFaxNumber").Value
-            member.OperatorContactEmail = record.Fields("Operator_ContactEmail").Value
+            member.Id = FNullField(record, "Operator_ID")
+            member.DType = FNullField(record, "DType")
+            member.OperatorType = FNullField(record, "Operator_Type")
+            member.OperatorTabType = FNullField(record, "Operator_TabType")
+            member.OperatorVentureNumber = FNullField(record, "Operator_VentureNumber")
+            member.OperatorDeclarantStatus = FNullField(record, "Operator_DeclarantStatus")
+            member.OperatorRegistrationNumber = FNullField(record, "Operator_RegistrationNumber")
+            member.OperatorCapacity = FNullField(record, "Operator_Capacity")
+            member.OperatorAuthorisedIdentity = FNullField(record, "Operator_AuthorisedIdentity")
+            member.OperatorVentureName = FNullField(record, "Operator_VentureName")
+            member.OperatorAddress1 = FNullField(record, "Operator_Address1")
+            member.OperatorAddress2 = FNullField(record, "Operator_Address2")
+            member.OperatorPostalCode = FNullField(record, "Operator_PostalCode")
+            member.OperatorStateProvince = FNullField(record, "Operator_StateProvince")
+            member.OperatorCity = FNullField(record, "Operator_City")
+            member.OperatorCountry = FNullField(record, "Operator_Country")
+            member.OperatorContactPersonName = FNullField(record, "Operator_ContactPersonName")
+            member.OperatorContactPhoneNumber = FNullField(record, "Operator_ContactTelNumber")
+            member.OperatorContactPersonFaxNumber = FNullField(record, "Operator_ContactFaxNumber")
+            member.OperatorContactEmail = FNullField(record, "Operator_ContactEmail")
 
             Operators.Add(member.Id, member)
 
@@ -221,6 +231,46 @@ Public Class DNetPickList
             End Select
         Next
     End Sub
+
+    Public Function FNullField(ByRef record As ADODB.Recordset, ByVal columnName As String) As Object
+        Dim Data As Object = record.Fields(columnName).Value
+
+        If (Data Is Nothing) Or IsDBNull(Data) Then
+            Select Case record.Fields(columnName).Type
+                Case DataTypeEnum.adInteger
+                    Return 0
+                Case DataTypeEnum.adBoolean
+                    Return False
+                Case DataTypeEnum.adDate
+                    Return vbNull
+                Case DataTypeEnum.adDouble
+                    Return 0
+                Case DataTypeEnum.adNumeric
+                    Return 0
+                Case DataTypeEnum.adLongVarWChar
+                    Return ""
+                Case DataTypeEnum.adSingle
+                    Return 0
+                Case DataTypeEnum.adUnsignedTinyInt
+                    Return 0
+                Case DataTypeEnum.adSmallInt
+                    Return 0
+                Case DataTypeEnum.adLongVarBinary
+                    Return vbNull
+                Case DataTypeEnum.adVarWChar
+                    Return ""
+                Case DataTypeEnum.adLongVarChar
+                    Return ""
+                Case DataTypeEnum.adVarChar
+                    Return ""
+                Case Else
+                    Return ""
+            End Select
+        End If
+
+        Return Data
+    End Function
+
 End Class
 
 

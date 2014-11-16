@@ -461,9 +461,9 @@ Module MGlobal
     End Function
 
     Public Function getDatabaseName(ByVal DBInstanceType As DBInstanceType, _
-                                     ByVal Year As String, _
-                                     ByVal DBType As DatabaseType, _
-                                     ByVal OtherDatabaseName As String) As String
+                                    ByVal Year As String, _
+                                    ByVal DBType As DatabaseType, _
+                           Optional ByVal OtherDatabaseName As String = vbNullString) As String
 
         Dim strDatabaseName As String = ""
         Dim strYear As String

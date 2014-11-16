@@ -78,6 +78,7 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CDatasourceTransactional.vb" />
     <Compile Include="DNetConnections.vb" />
     <Compile Include="CDatabaseProperty.vb" />
     <Compile Include="CDatasource.vb" />
