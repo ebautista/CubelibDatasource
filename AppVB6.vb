@@ -18,34 +18,77 @@ Public Class AppVB6
         MyBase.New()
     End Sub
 
-    Public Property Comments As String
-    Public Property CompanyName As String
-    Public Property EXEName As String
-    Public Property FileDescription As String
-    Public Property HelpFile As String
-    Public Property hInstance As Long
-    Public Property LegalCopyright As String
-    Public Property LegalTrademarks As String
-    Public Property LogMode As Long
-    Public Property LogPath As String
-    Public Property Major As Integer
-    Public Property Minor As Integer
-    Public Property NonModalAllowed As Boolean
-    Public Property Path As String
-    Public Property PrevInstance As Boolean
-    Public Property ProductName As String
-    Public Property RetainedProject As Boolean
-    Public Property Revision As Integer
-    Public Property StartMode As Integer
-    Public Property TaskVisible As Boolean
-    Public Property ThreadID As Long
-    Public Property Title As String
-    Public Property UnattendedApp As Boolean
+    Property Comments As String
+    Property CompanyName As String
+    Property EXEName As String
+    Property FileDescription As String
+    Property HelpFile As String
+    Property hInstance As Long
+    Property LegalCopyright As String
+    Property LegalTrademarks As String
+    Property LogMode As Long
+    Property LogPath As String
+    Property Major As Integer
+    Property Minor As Integer
+    Property NonModalAllowed As Boolean
+    Property Path As String
+    Property PrevInstance As Boolean
+    Property ProductName As String
+    Property RetainedProject As Boolean
+    Property Revision As Integer
+    Property StartMode As Integer
+    Property TaskVisible As Boolean
+    Property ThreadID As Long
+    Property Title As String
+    Property UnattendedApp As Boolean
 
-    Public Sub SetAppProperties(ByVal Comments1 As String, _
-                                ByVal CompanyName1 As String)
-        Me.Comments = Comments1
-        Me.CompanyName = CompanyName1
+    Public Sub SetAppProperties(Optional ByVal Comments As String = "", _
+                                Optional ByVal CompanyName As String = "", _
+                                Optional ByVal EXEName As String = "", _
+                                Optional ByVal FileDescription As String = "", _
+                                Optional ByVal HelpFile As String = "", _
+                                Optional ByVal hInstance As Integer = 0, _
+                                Optional ByVal LegalCopyright As String = "", _
+                                Optional ByVal LegalTrademarks As String = "", _
+                                Optional ByVal LogMode As Integer = 0, _
+                                Optional ByVal LogPath As String = "", _
+                                Optional ByVal Major As Integer = 0, _
+                                Optional ByVal Minor As Integer = 0, _
+                                Optional ByVal NonModalAllowed As Boolean = False, _
+                                Optional ByVal Path As String = "", _
+                                Optional ByVal PrevInstance As Boolean = False, _
+                                Optional ByVal ProductName As String = "", _
+                                Optional ByVal RetainedProject As Boolean = False, _
+                                Optional ByVal Revision As Integer = 0, _
+                                Optional ByVal StartMode As Integer = 0, _
+                                Optional ByVal TaskVisible As Boolean = False, _
+                                Optional ByVal ThreadID As Integer = 0, _
+                                Optional ByVal Title As String = "", _
+                                Optional ByVal UnattendedApp As Boolean = False)
+
+        Me.Comments = Comments
+        Me.CompanyName = CompanyName
+        Me.EXEName = EXEName
+        Me.FileDescription = FileDescription
+        Me.HelpFile = HelpFile
+        Me.hInstance = hInstance
+        Me.LegalCopyright = LegalCopyright
+        Me.LegalTrademarks = LegalTrademarks
+        Me.LogMode = LogMode
+        Me.LogPath = LogPath
+        Me.Major = Major
+        Me.Minor = Minor
+        Me.NonModalAllowed = NonModalAllowed
+        Me.Path = Path
+        Me.PrevInstance = PrevInstance
+        Me.ProductName = ProductName
+        Me.RetainedProject = RetainedProject
+        Me.Revision = Revision
+        Me.StartMode = StartMode
+        Me.TaskVisible = TaskVisible
+        Me.ThreadID = ThreadID
+        Me.Title = Title
+        Me.UnattendedApp = UnattendedApp
     End Sub
 End Class
 
